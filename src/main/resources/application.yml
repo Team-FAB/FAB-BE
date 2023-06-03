@@ -2,7 +2,8 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
+  config:
+    import: jwt.yml
   datasource:
     username: root
     password: root

@@ -1,0 +1,5 @@
+jwt:
+  auth:
+    atk: ATK
+    rtk: RTK
+  secretKey: userSecret!

@@ -2,4 +2,5 @@ jwt:
   auth:
     atk: ATK
     rtk: RTK
-  secretKey: userSecret!
+  secretKey: yourSecret!
+  rtk-prefix: "RT:"

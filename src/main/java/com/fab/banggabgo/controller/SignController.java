@@ -4,6 +4,8 @@ import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.dto.SignInRequestForm;
 import com.fab.banggabgo.dto.SignUpRequestForm;
 import com.fab.banggabgo.service.SignService;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,4 +31,9 @@ public class SignController {
     return ResponseEntity.ok().body(result);
   }
 
+  @PostMapping("/logout")
+  public ResponseEntity<?> logout(HttpServletRequest req){
+    var result = signService.logout(req);
+    return ResponseEntity.ok().body(result);
+  }
 }

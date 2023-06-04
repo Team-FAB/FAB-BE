@@ -52,7 +52,6 @@ public class JwtTokenProvider {
         .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_EXPIRATION))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
-
     return token;
   }
 

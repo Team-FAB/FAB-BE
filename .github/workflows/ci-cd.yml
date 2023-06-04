@@ -1,0 +1,46 @@
+name: ci-cd
+on:
+  push:
+    branches:
+      - main
+      - CI-CD
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Branch
+        run: echo "Branch: ${GITHUB_REF#refs/heads/}"
+
+      - name: Checkout repository 👀
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 🐘
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+
+      - name: Grant execute permission for gradlew 🐘
+        run: chmod +x gradlew
+
+      - name: Build with Gradle 🐘
+        run: ./gradlew build
+
+      - name: Build Docker img 🐋
+        run: |
+          docker build -t wlals4253/BangGabGo:${{github.sha}} .
+          docker tag wlals4253/BangGabGo:${{github.sha}} wlals4253/BangGabGo:latest
+
+      - name: Log in to Docker registry 🐋
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker ✔
+        run: |
+          docker push wlals4253/BangGabGo:${{github.sha}}
+          docker push wlals4253/BangGabGo:latest

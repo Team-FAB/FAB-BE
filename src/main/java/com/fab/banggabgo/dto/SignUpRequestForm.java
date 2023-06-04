@@ -15,12 +15,12 @@ public class SignUpRequestForm {
 
   private String email;
   private String password;
-  private String name;
+  private String nickname;
   public static SignUpRequestDto toDto(SignUpRequestForm form){
     return SignUpRequestDto.builder()
         .email(form.email)
         .password(form.password)
-        .name(form.getName())
+        .nickname(form.getNickname())
         .build();
   }
 }

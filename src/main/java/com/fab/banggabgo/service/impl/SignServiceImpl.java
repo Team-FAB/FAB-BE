@@ -1,7 +1,9 @@
 package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.config.security.JwtTokenProvider;
+import com.fab.banggabgo.dto.EmailCheckResultDto;
 import com.fab.banggabgo.dto.LogOutResultDto;
+import com.fab.banggabgo.dto.NameCheckResultDto;
 import com.fab.banggabgo.dto.SignInRequestDto;
 import com.fab.banggabgo.dto.SignInResultDto;
 import com.fab.banggabgo.dto.SignUpRequestDto;
@@ -40,7 +42,7 @@ public class SignServiceImpl implements SignService {
     User savedUser = userRepository.save(
         User.builder()
             .email(dto.getEmail())
-            .name(dto.getName())
+            .nickname(dto.getNickname())
             .password(passwordEncoder.encode(dto.getPassword()))
             .build()
     );
@@ -94,6 +96,29 @@ public class SignServiceImpl implements SignService {
         .expiredToken(TokenDto.builder()
             .atk(atk)
             .build())
+        .build();
+  }
+
+  @Override
+  public EmailCheckResultDto emailCheck(String email) {
+    var result=userRepository.countByEmail(email);
+    if(result!=0){// 중복일경우
+      throw new RuntimeException("email 중복");
+    }
+
+    return EmailCheckResultDto.builder()
+        .msg("사용 가능한 이메일 입니다.")
+        .build();
+  }
+
+  @Override
+  public NameCheckResultDto nickNameCheck(String nickname) {
+    var result = userRepository.countByNickname(nickname);
+    if(result!=0){//중복일경우
+      throw new RuntimeException("");
+    }
+    return NameCheckResultDto.builder()
+        .msg("사용 가능한 별명 입니다.")
         .build();
   }
 

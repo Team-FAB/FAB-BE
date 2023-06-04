@@ -4,13 +4,16 @@ import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.dto.SignInRequestForm;
 import com.fab.banggabgo.dto.SignUpRequestForm;
 import com.fab.banggabgo.service.SignService;
+import javax.annotation.security.PermitAll;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,6 +27,18 @@ public class SignController {
   public ResponseEntity<?> signUp(@RequestBody SignUpRequestForm form){
     signService.signUp(SignUpRequestForm.toDto(form));
     return ResponseEntity.created(null).build();
+  }
+  @PermitAll
+  @GetMapping("/register/email-check")
+  public ResponseEntity<?> emailCheck(@RequestParam String email){
+    var result= signService.emailCheck(email);
+    return ResponseEntity.ok().body(result);
+  }
+  @PermitAll
+  @GetMapping("/register/nickname-check")
+  public ResponseEntity<?> nickNameCheck(@RequestParam String nickname){
+    var result= signService.nickNameCheck(nickname);
+    return ResponseEntity.ok().body(result);
   }
 
   @PostMapping("/login")

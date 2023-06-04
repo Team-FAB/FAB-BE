@@ -2,7 +2,6 @@ package com.fab.banggabgo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -17,7 +16,6 @@ import com.fab.banggabgo.dto.SignUpRequestDto;
 import com.fab.banggabgo.dto.TokenDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
-import com.fab.banggabgo.service.SignService;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 
@@ -67,10 +64,10 @@ class SignServiceImplTest {
         //given
       var user =User.builder()
           .email("test@test.com")
-          .name("테스터")
+          .nickname("테스터")
           .build();
       var requestDto=SignUpRequestDto.builder()
-          .name("테스터")
+          .nickname("테스터")
           .email("test@test.com")
           .build();
         //when
@@ -88,10 +85,10 @@ class SignServiceImplTest {
       //given
       var user =User.builder()
           .email("test@email.com")
-          .name("테스터")
+          .nickname("테스터")
           .build();
       var requestDto=SignUpRequestDto.builder()
-          .name("테스터")
+          .nickname("테스터")
           .email("test@email.com")
           .build();
       //when
@@ -118,7 +115,7 @@ class SignServiceImplTest {
       //given
       var user =User.builder()
           .email("test@email.com")
-          .name("테스터")
+          .nickname("테스터")
           .build();
       var stub_result=SignInResultDto.builder()
           .token(
@@ -151,7 +148,7 @@ class SignServiceImplTest {
       //given
       var user =User.builder()
           .email("test@email.com")
-          .name("테스터")
+          .nickname("테스터")
           .build();
       //when
 

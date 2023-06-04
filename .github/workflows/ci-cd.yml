@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Check Branch
-        run: echo "Branch: ${GITHUB_REF#refs/heads/}"
+        run : echo "현재 브랜치:= ${GITHUB_REF#refs/heads/}"
 
       - name: Checkout repository 👀
         uses: actions/checkout@v2

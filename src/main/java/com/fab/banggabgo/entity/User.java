@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,7 +37,8 @@ public class User extends BaseEntity implements UserDetails {
   private String email;
 
   private String password;
-  private String name;
+  @Column(unique = true)
+  private String nickname;
 
   @ElementCollection(fetch = FetchType.LAZY)
   @Builder.Default

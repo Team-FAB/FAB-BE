@@ -4,7 +4,7 @@ services:
   banggabda-mysql:
     image: mysql
     ports:
-      - "3306:3306"
+      - "33060:3306"
     environment:
       MYSQL_ROOT_PASSWORD : root
     networks:
@@ -12,7 +12,7 @@ services:
   banggabda-redis:
     image: redis
     ports:
-      - "6379:6379"
+      - "63790:6379"
     networks:
       - bangapgo
 

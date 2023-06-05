@@ -15,7 +15,12 @@ services:
       - "6379:6379"
     networks:
       - bangapgo
-
+  api:
+    image: wlals4253/banggabgo
+    ports:
+      - "8083:8083"
+    networks:
+      - bangapgo
 networks:
   bangapgo:
     driver: bridge

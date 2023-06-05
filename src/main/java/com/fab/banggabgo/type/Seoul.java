@@ -27,10 +27,22 @@ public enum Seoul {
     JUNGGU("중구"),
     JUNGNANG("중랑");
 
-    String name;
+    private final String value;
 
-    Seoul(String name){
-        this.name = name;
+    Seoul(String value) {
+        this.value = value;
     }
 
+    public String getValue() {
+        return value;
+    }
+
+    public static Seoul fromValue(String value) {
+        for (Seoul seoul : Seoul.values()) {
+            if (seoul.getValue().equals(value)) {
+                return seoul;
+            }
+        }
+        throw new IllegalArgumentException("Invalid Seoul value: " + value);
+    }
 }

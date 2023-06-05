@@ -12,12 +12,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -39,6 +40,11 @@ public class User extends BaseEntity implements UserDetails {
   private String password;
   @Column(unique = true)
   private String nickname;
+
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @Builder.Default
+  private List<Article> articleList = new ArrayList<>();
 
   @ElementCollection(fetch = FetchType.LAZY)
   @Builder.Default

@@ -16,7 +16,7 @@ public class ArticleRegisterForm {
 
   private String title;
   private String region;
-  private LocalDate period;
+  private String period;
   private Integer price;
   private String gender;
   private String content;

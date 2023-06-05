@@ -2,9 +2,11 @@ package com.fab.banggabgo.entity;
 
 
 import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
-import java.time.LocalDate;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,10 +38,18 @@ public class Article extends BaseEntity {
 
   private String title;
   private String content;
+
+  @Enumerated(EnumType.STRING)
   private Seoul region;
-  private LocalDate period;
+
+  @Enumerated(EnumType.STRING)
+  private Period period;
+
   private Integer price;
+
+  @Enumerated(EnumType.STRING)
   private Gender gender;
+
   private boolean isRecruit;
   private boolean isDeleted;
 }

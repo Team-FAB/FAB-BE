@@ -26,8 +26,6 @@ public class ArticleServiceImpl implements ArticleService {
       throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
     }
 
-    User user = getUserFromToken(token);
-
     Seoul region = null;
     try {
       region = Seoul.fromValue(dto.getRegion());
@@ -40,6 +38,14 @@ public class ArticleServiceImpl implements ArticleService {
       gender = Gender.fromValue(dto.getGender());
     } catch (IllegalArgumentException e) {
       throw new RuntimeException("해당 성별이 존재하지 않습니다.");
+    }
+
+    User user = getUserFromToken(token);
+
+    int userArticleCnt = articleRepository.countByUserAndIsDeletedFalse(user);
+
+    if (userArticleCnt >= 5) {
+      throw new RuntimeException("게시글은 5개까지 작성할 수 있습니다.");
     }
 
     Article article = Article.builder()

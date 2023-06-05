@@ -8,6 +8,7 @@ import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.ArticleService;
 import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void registerArticle(String token, ArticleRegisterDto dto) {
-    if (isStringEmpty(dto.getContent()) || isStringEmpty(dto.getTitle()) || dto.getPrice() <= 0) {
+    if (isStringEmpty(dto.getContent()) || isStringEmpty(dto.getTitle())
+        || dto.getPrice() < 1000000 || dto.getPrice() > 20000000) {
       throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
     }
 
@@ -40,6 +42,13 @@ public class ArticleServiceImpl implements ArticleService {
       throw new RuntimeException("해당 성별이 존재하지 않습니다.");
     }
 
+    Period period = null;
+    try {
+      period = Period.fromValue(dto.getPeriod());
+    } catch (IllegalArgumentException e) {
+      throw new RuntimeException("해당 기간이 존재하지 않습니다.");
+    }
+
     User user = getUserFromToken(token);
 
     int userArticleCnt = articleRepository.countByUserAndIsDeletedFalse(user);
@@ -53,7 +62,7 @@ public class ArticleServiceImpl implements ArticleService {
         .title(dto.getTitle())
         .content(dto.getContent())
         .region(region)
-        .period(dto.getPeriod())
+        .period(period)
         .price(dto.getPrice())
         .gender(gender)
         .isRecruit(false)

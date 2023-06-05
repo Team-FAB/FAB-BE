@@ -42,7 +42,18 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 
 }
+jar{
+	enabled=false
+}
+
+bootJar{
+	archiveFileName='BangGabGo.jar'
+}
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+clean.doLast {
+	file(querydslDir).deleteDir()
 }

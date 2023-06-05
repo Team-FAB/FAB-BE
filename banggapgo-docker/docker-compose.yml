@@ -1,7 +1,7 @@
 version: '3.2'
 
 services:
-  mysql:
+  banggabda-mysql:
     image: mysql
     ports:
       - "3306:3306"
@@ -9,12 +9,13 @@ services:
       MYSQL_ROOT_PASSWORD : root
     networks:
       - bangapgo
-  redis:
+  banggabda-redis:
     image: redis
     ports:
       - "6379:6379"
     networks:
       - bangapgo
+
   api:
     image: wlals4253/banggabgo
     ports:

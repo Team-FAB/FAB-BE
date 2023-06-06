@@ -2,6 +2,7 @@ package com.fab.banggabgo.config;
 
 import java.util.Collections;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -19,7 +20,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
-
+  @Value("${jwt.auth.atk}")
+  String ATK;
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.OAS_30)
@@ -55,11 +57,11 @@ public class SwaggerConfig {
     AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
     AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
     authorizationScopes[0] = authorizationScope;
-    return List.of(new SecurityReference("ATK", authorizationScopes));
+    return List.of(new SecurityReference(ATK, authorizationScopes));
   }
 
   private ApiKey apiKey() {
-    return new ApiKey("ATK", "ATK", "header");
+    return new ApiKey(ATK, ATK, "header");
   }
 
 }

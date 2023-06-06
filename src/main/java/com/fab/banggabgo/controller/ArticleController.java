@@ -30,7 +30,7 @@ public class ArticleController {
     articleService.registerArticle(token, ArticleRegisterForm.toDto(form));
     return ResponseEntity.created(null).build();
   }
-
+  
   @PutMapping("/{id}")
   public ResponseEntity<?> editArticle(
       @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,

@@ -15,6 +15,7 @@ import com.fab.banggabgo.type.Seoul;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +27,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void registerArticle(String token, ArticleRegisterDto dto) {
-    if (isStringEmpty(dto.getContent()) || isStringEmpty(dto.getTitle())
+    if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
       throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
@@ -55,7 +56,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     User user = getUserFromToken(token);
 
-    int userArticleCnt = articleRepository.countByUserAndIsDeletedFalse(user);
+    int userArticleCnt = articleRepository.countByUserAndIsDeletedFalseAndIsRecruitingTrue(user);
 
     if (userArticleCnt >= 5) {
       throw new RuntimeException("게시글은 5개까지 작성할 수 있습니다.");
@@ -69,7 +70,7 @@ public class ArticleServiceImpl implements ArticleService {
         .period(period)
         .price(dto.getPrice())
         .gender(gender)
-        .isRecruiting(false)
+        .isRecruiting(true)
         .isDeleted(false)
         .build();
 
@@ -78,7 +79,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void editArticle(String token, Long id, ArticleEditDto dto) {
-    if (isStringEmpty(dto.getContent()) || isStringEmpty(dto.getTitle())
+    if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
       throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
@@ -155,9 +156,5 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new RuntimeException("존재하지않는 유저"));
 
     return user;
-  }
-
-  private static boolean isStringEmpty(String str) {
-    return str == null || str.isBlank();
   }
 }

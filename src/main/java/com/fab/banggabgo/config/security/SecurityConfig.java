@@ -1,5 +1,6 @@
 package com.fab.banggabgo.config.security;
 
+import com.fab.banggabgo.config.security.OAuth2.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,12 +30,19 @@ public class SecurityConfig {
         .authorizeHttpRequests()
         .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
         .antMatchers("/api/users/**").permitAll()
-        .antMatchers("/api/article/**").permitAll()
         .anyRequest().authenticated()
 
         .and()
         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,redisTemplate),
-            UsernamePasswordAuthenticationFilter.class);
+            UsernamePasswordAuthenticationFilter.class)
+        .formLogin()
+        .disable()
+        .oauth2Login()
+        .authorizationEndpoint()
+        .baseUri("/login/oauth2")
+        .and()
+        .successHandler(new OAuth2SuccessHandler(jwtTokenProvider))
+    ;
     return http.build();
   }
 }

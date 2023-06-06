@@ -50,6 +50,6 @@ public class Article extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Gender gender;
 
-  private boolean isRecruit;
+  private boolean isRecruiting;
   private boolean isDeleted;
 }

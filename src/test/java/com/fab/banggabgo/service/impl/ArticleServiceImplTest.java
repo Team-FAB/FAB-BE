@@ -16,7 +16,6 @@ import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
-import java.time.LocalDate;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 등록 성공")
-  void registerArticleSuccess() {
+  void postArticleSuccess() {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
@@ -60,7 +59,7 @@ class ArticleServiceImplTest {
         .willReturn(Optional.ofNullable(User.builder().id(1L).build()));
 
     //when
-    articleService.registerArticle("JWT", dto);
+    articleService.postArticle("JWT", dto);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -68,7 +67,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 등록 실패 : 글 양식 오류")
-  void registerArticleFail_INVALID_REGISTER() {
+  void postArticleFail_INVALID_REGISTER() {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("")
@@ -81,7 +80,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.registerArticle("JWT", dto));
+        () -> articleService.postArticle("JWT", dto));
 
     //then
     assertEquals(exception.getMessage(), "글 등록 양식이 잘못되었습니다.");
@@ -89,7 +88,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 등록 실패 : 지역 오류")
-  void registerArticleFail_INVALID_REGION() {
+  void postArticleFail_INVALID_REGION() {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
@@ -102,7 +101,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.registerArticle("JWT", dto));
+        () -> articleService.postArticle("JWT", dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 지역이 존재하지 않습니다.");
@@ -110,7 +109,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 등록 실패 : 성별 오류")
-  void registerArticleFail_INVALID_GENDER() {
+  void postArticleFail_INVALID_GENDER() {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
@@ -123,7 +122,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.registerArticle("JWT", dto));
+        () -> articleService.postArticle("JWT", dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 성별이 존재하지 않습니다.");
@@ -131,7 +130,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 등록 실패 : 유저 오류")
-  void registerArticleFail_INVALID_USER() {
+  void postArticleFail_INVALID_USER() {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
@@ -147,7 +146,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.registerArticle("JWT", dto));
+        () -> articleService.postArticle("JWT", dto));
 
     //then
     assertEquals(exception.getMessage(), "존재하지않는 유저");
@@ -155,7 +154,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 수정 성공")
-  void editArticleSuccess() {
+  void putArticleSuccess() {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
@@ -183,7 +182,7 @@ class ArticleServiceImplTest {
             .build()));
 
     //when
-    articleService.editArticle("JWT", 1L, dto);
+    articleService.putArticle("JWT", 1L, dto);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -191,7 +190,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 수정 실패 : 글 양식 오류")
-  void editArticleFail_INVALID_EDIT() {
+  void putArticleFail_INVALID_EDIT() {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("")
@@ -204,7 +203,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.editArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT",1L , dto));
 
     //then
     assertEquals(exception.getMessage(), "글 수정 양식이 잘못되었습니다.");
@@ -212,7 +211,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 수정 실패 : 게시글 찾을 수 없음")
-  void editArticleFail_NOT_FOUND_ARTICLE() {
+  void putArticleFail_NOT_FOUND_ARTICLE() {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
@@ -235,7 +234,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.editArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT",1L , dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
@@ -243,7 +242,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 수정 실패 : 이미 삭제된 게시글")
-  void editArticleFail_DELETED_ARTICLE() {
+  void putArticleFail_DELETED_ARTICLE() {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
@@ -272,7 +271,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.editArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT",1L , dto));
 
     //then
     assertEquals(exception.getMessage(), "삭제된 게시글입니다.");
@@ -280,7 +279,7 @@ class ArticleServiceImplTest {
 
   @Test
   @DisplayName("글 수정 실패 : 해당 게시글의 작성자만 수정 가능")
-  void editArticleFail_INVALID_USER() {
+  void putArticleFail_INVALID_USER() {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
@@ -313,7 +312,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.editArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT",1L , dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");

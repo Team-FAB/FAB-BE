@@ -23,21 +23,21 @@ public class ArticleController {
   private final ArticleService articleService;
 
   @PostMapping
-  public ResponseEntity<?> registerArticle(
+  public ResponseEntity<?> postArticle(
       @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,
       @RequestBody ArticleRegisterForm form
   ) {
-    articleService.registerArticle(token, ArticleRegisterForm.toDto(form));
+    articleService.postArticle(token, ArticleRegisterForm.toDto(form));
     return ResponseEntity.created(null).build();
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> editArticle(
+  public ResponseEntity<?> putArticle(
       @RequestHeader(name = HttpHeaders.AUTHORIZATION) String token,
       @PathVariable long id,
       @RequestBody ArticleEditForm form
   ) {
-    articleService.editArticle(token, id, ArticleEditForm.toDto(form));
+    articleService.putArticle(token, id, ArticleEditForm.toDto(form));
     return ResponseEntity.created(null).build();
   }
 

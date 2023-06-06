@@ -26,7 +26,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleRepository articleRepository;
 
   @Override
-  public void registerArticle(String token, ArticleRegisterDto dto) {
+  public void postArticle(String token, ArticleRegisterDto dto) {
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
@@ -78,11 +78,11 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void editArticle(String token, Long id, ArticleEditDto dto) {
+  public void putArticle(String token, Long id, ArticleEditDto dto) {
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
-      throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
+      throw new RuntimeException("글 수정 양식이 잘못되었습니다.");
     }
 
     Seoul region = null;

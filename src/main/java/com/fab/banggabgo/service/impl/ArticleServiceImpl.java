@@ -10,6 +10,7 @@ import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.ArticleService;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
+import com.fab.banggabgo.type.Price;
 import com.fab.banggabgo.type.Seoul;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,8 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public void registerArticle(String token, ArticleRegisterDto dto) {
     if (isStringEmpty(dto.getContent()) || isStringEmpty(dto.getTitle())
-        || dto.getPrice() < 1000000 || dto.getPrice() > 20000000) {
+        || dto.getPrice() < Price.MINPRICE.getValue()
+        || dto.getPrice() > Price.MAXPRICE.getValue()) {
       throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
     }
 
@@ -67,7 +69,7 @@ public class ArticleServiceImpl implements ArticleService {
         .period(period)
         .price(dto.getPrice())
         .gender(gender)
-        .isRecruit(false)
+        .isRecruiting(false)
         .isDeleted(false)
         .build();
 
@@ -77,8 +79,9 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public void editArticle(String token, Long id, ArticleEditDto dto) {
     if (isStringEmpty(dto.getContent()) || isStringEmpty(dto.getTitle())
-        || dto.getPrice() < 1000000 || dto.getPrice() > 20000000) {
-      throw new RuntimeException("글 수정 양식이 잘못되었습니다.");
+        || dto.getPrice() < Price.MINPRICE.getValue()
+        || dto.getPrice() > Price.MAXPRICE.getValue()) {
+      throw new RuntimeException("글 등록 양식이 잘못되었습니다.");
     }
 
     Seoul region = null;

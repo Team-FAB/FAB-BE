@@ -50,7 +50,7 @@ public class SwaggerConfig {
         .contexts
         .SecurityContext
         .builder()
-        .securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build();
+        .securityReferences(defaultAuth()).operationSelector(operationContext -> true).build();
   }
 
   List<SecurityReference> defaultAuth() {

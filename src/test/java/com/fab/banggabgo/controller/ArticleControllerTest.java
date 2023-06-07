@@ -15,7 +15,6 @@ import com.fab.banggabgo.dto.ArticleEditForm;
 import com.fab.banggabgo.dto.ArticleRegisterForm;
 import com.fab.banggabgo.service.ArticleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 등록 성공")
-  void registerArticleSuccess() throws Exception {
+  void postArticleSuccess() throws Exception {
     //given
     ArticleRegisterForm form = ArticleRegisterForm.builder()
         .title("글 제목")
@@ -64,7 +63,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 등록 실패 : 글 양식 오류")
-  void registerArticleFail_INVALID_REGISTER() throws Exception {
+  void postArticleFail_INVALID_REGISTER() throws Exception {
     //given
     ArticleRegisterForm form = ArticleRegisterForm.builder()
         .title("")
@@ -77,7 +76,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("글 등록 양식이 잘못되었습니다."))
         .when(articleService)
-        .registerArticle(anyString(), any());
+        .postArticle(anyString(), any());
 
     //when
     MvcResult result = mockMvc.perform(post("/api/article")
@@ -94,7 +93,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 등록 실패 : 지역 오류")
-  void registerArticleFail_INVALID_REGION() throws Exception {
+  void postArticleFail_INVALID_REGION() throws Exception {
     //given
     ArticleRegisterForm form = ArticleRegisterForm.builder()
         .title("글 제목")
@@ -107,7 +106,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("해당 지역이 존재하지 않습니다."))
         .when(articleService)
-        .registerArticle(anyString(), any());
+        .postArticle(anyString(), any());
 
     //when
     MvcResult result = mockMvc.perform(post("/api/article")
@@ -124,7 +123,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 등록 실패 : 성별 오류")
-  void registerArticleFail_INVALID_GENDER() throws Exception {
+  void postArticleFail_INVALID_GENDER() throws Exception {
     //given
     ArticleRegisterForm form = ArticleRegisterForm.builder()
         .title("글 제목")
@@ -137,7 +136,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("해당 성별이 존재하지 않습니다."))
         .when(articleService)
-        .registerArticle(anyString(), any());
+        .postArticle(anyString(), any());
 
     //when
     MvcResult result = mockMvc.perform(post("/api/article")
@@ -154,7 +153,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 수정 성공")
-  void editArticleSuccess() throws Exception {
+  void putArticleSuccess() throws Exception {
     //given
     ArticleEditForm form = ArticleEditForm.builder()
         .title("글 제목")
@@ -177,7 +176,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 수정 실패 : 글 양식 오류")
-  void editArticleFail_INVALID_EDIT() throws Exception {
+  void putArticleFail_INVALID_EDIT() throws Exception {
     //given
     ArticleEditForm form = ArticleEditForm.builder()
         .title("글 제목")
@@ -190,7 +189,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("글 수정 양식이 잘못되었습니다."))
         .when(articleService)
-        .editArticle(anyString(), anyLong(), any());
+        .putArticle(anyString(), anyLong(), any());
 
     //when
     MvcResult result = mockMvc.perform(put("/api/article/1")
@@ -207,7 +206,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 수정 실패 : 글을 찾을 수 없음")
-  void editArticleFail_NOT_FOUND_ARTICLE() throws Exception {
+  void putArticleFail_NOT_FOUND_ARTICLE() throws Exception {
     //given
     ArticleEditForm form = ArticleEditForm.builder()
         .title("글 제목")
@@ -220,7 +219,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("해당 게시글을 찾을 수 없습니다."))
         .when(articleService)
-        .editArticle(anyString(), anyLong(), any());
+        .putArticle(anyString(), anyLong(), any());
 
     //when
     MvcResult result = mockMvc.perform(put("/api/article/1")
@@ -237,7 +236,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 수정 실패 : 삭제된 게시글은 수정 불가")
-  void editArticleFail_DELETED_ARTICLE() throws Exception {
+  void putArticleFail_DELETED_ARTICLE() throws Exception {
     //given
     ArticleEditForm form = ArticleEditForm.builder()
         .title("글 제목")
@@ -250,7 +249,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("삭제된 게시글입니다."))
         .when(articleService)
-        .editArticle(anyString(), anyLong(), any());
+        .putArticle(anyString(), anyLong(), any());
 
     //when
     MvcResult result = mockMvc.perform(put("/api/article/1")
@@ -267,7 +266,7 @@ class ArticleControllerTest {
 
   @Test
   @DisplayName("글 수정 실패 : 해당 게시글의 작성자만 수정 가능")
-  void editArticleFail_INVALID_USER() throws Exception {
+  void putArticleFail_INVALID_USER() throws Exception {
     //given
     ArticleEditForm form = ArticleEditForm.builder()
         .title("글 제목")
@@ -280,7 +279,7 @@ class ArticleControllerTest {
 
     doThrow(new RuntimeException("해당 게시글의 작성자가 아닙니다."))
         .when(articleService)
-        .editArticle(anyString(), anyLong(), any());
+        .putArticle(anyString(), anyLong(), any());
 
     //when
     MvcResult result = mockMvc.perform(put("/api/article/1")

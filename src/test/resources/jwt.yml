@@ -1,0 +1,6 @@
+jwt:
+  auth:
+    atk: Authorization
+    rtk: RTK
+  secretKey: yourSecret!
+  rtk-prefix: "RT:"

@@ -1,10 +1,10 @@
 package com.fab.banggabgo.common;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 
 /**
@@ -27,7 +27,6 @@ public class ApiResponse<T> {
    * @param code 응답 상태를 나타내는 코드입니다.
    * @param data 응답과 연관된 데이터입니다.
    */
-  @Builder
   public ApiResponse(Code code,T data){
     this.code=code.getCode();
     this.status=code.getStatus();
@@ -35,4 +34,38 @@ public class ApiResponse<T> {
     this.data=data;
   }
 
+  public static <T> ApiResponseBuilder<T> builder() {
+    return new ApiResponseBuilder<T>();
+  }
+
+
+  public static class ApiResponseBuilder<T> {
+
+    private Code code;
+    private T data;
+
+    ApiResponseBuilder() {
+    }
+
+    public ApiResponseBuilder<T> code(Code code) {
+      this.code = code;
+      return this;
+    }
+
+    public ApiResponseBuilder<T> data(T data) {
+      this.data = data;
+      return this;
+    }
+
+    public ApiResponse<T> build() {
+      return new ApiResponse<T>(code, data);
+    }
+    public ResponseEntity<?> toEntity(){
+      return ResponseEntity.status(this.code.getStatus()).body(new ApiResponse<T>(code,data));
+    }
+
+    public String toString() {
+      return "ApiResponse.ApiResponseBuilder(code=" + this.code + ", data=" + this.data + ")";
+    }
+  }
 }

@@ -1,6 +1,7 @@
 package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
+import com.fab.banggabgo.common.ResponseCode;
 import com.fab.banggabgo.dto.SignInRequestForm;
 import com.fab.banggabgo.dto.SignUpRequestForm;
 import com.fab.banggabgo.service.SignService;
@@ -26,30 +27,31 @@ public class SignController {
   @PostMapping("/register")
   public ResponseEntity<?> signUp(@RequestBody SignUpRequestForm form){
     signService.signUp(SignUpRequestForm.toDto(form));
-    return ResponseEntity.created(null).build();
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).toEntity();
   }
   @PermitAll
   @GetMapping("/register/email-check")
   public ResponseEntity<?> emailCheck(@RequestParam String email){
     var result= signService.emailCheck(email);
-    return ResponseEntity.ok().body(result);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+
   }
   @PermitAll
   @GetMapping("/register/nickname-check")
   public ResponseEntity<?> nickNameCheck(@RequestParam String nickname){
     var result= signService.nickNameCheck(nickname);
-    return ResponseEntity.ok().body(result);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
   @PostMapping("/login")
   public ResponseEntity<?> signIn(@RequestBody SignInRequestForm form){
     var result = signService.signIn(SignInRequestForm.toDto(form));
-    return ResponseEntity.ok().body(result);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
   @PostMapping("/logout")
   public ResponseEntity<?> logout(HttpServletRequest req){
     var result = signService.logout(req);
-    return ResponseEntity.ok().body(result);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 }

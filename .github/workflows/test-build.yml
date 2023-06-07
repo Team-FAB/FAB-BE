@@ -1,13 +1,12 @@
 name: test-build
 on:
-  pull:
+  pull_request:
+    types: [opened]
     branches:
-      - main
-on:
+        - main
   push:
     branches:
       - CI-CD
-
 jobs:
   build:
     runs-on: ubuntu-latest

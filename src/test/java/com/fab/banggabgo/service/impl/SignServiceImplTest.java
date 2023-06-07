@@ -71,15 +71,13 @@ class SignServiceImplTest {
           .email("test@test.com")
           .build();
         //when
-      when(userRepository.countByEmail(user.getEmail())).thenReturn(0);
+      when(userRepository.existsByEmailOrNickname(user.getEmail(),user.getNickname())).thenReturn(false);
       when(userRepository.save(any(User.class))).thenReturn(user);
-
-
         //then
       signService.signUp(requestDto);
       verify(userRepository,times(1)).save(any());
     }
-    @DisplayName("회원가입- 이미 이메일이 존재할경우")
+    @DisplayName("회원가입- 이미 이메일이나 닉네임이 존재할경우")
     @Test
     void signUp_emailExists(){
       //given
@@ -92,7 +90,7 @@ class SignServiceImplTest {
           .email("test@email.com")
           .build();
       //when
-      when(userRepository.countByEmail(user.getEmail())).thenReturn(1);
+      when(userRepository.existsByEmailOrNickname(user.getEmail(),user.getNickname())).thenReturn(true);
 
       //then
       assertThrows(RuntimeException.class,() -> signService.signUp(requestDto));

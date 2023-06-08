@@ -1,5 +1,7 @@
 package com.fab.banggabgo.service.impl;
 
+import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.EmailCheckResultDto;
 import com.fab.banggabgo.dto.LogOutResultDto;
@@ -35,10 +37,8 @@ public class SignServiceImpl implements SignService {
 
   @Override
   public void signUp(SignUpRequestDto dto) {
+    checkDuplicate(dto.getEmail(),dto.getNickname());
     //todo 회원가입 메서드 구현
-    if (userRepository.countByEmail(dto.getEmail()) > 0) {
-      throw new RuntimeException("이미존재하는 이메일 입니다.");
-    }
     User savedUser = userRepository.save(
         User.builder()
             .email(dto.getEmail())
@@ -47,15 +47,24 @@ public class SignServiceImpl implements SignService {
             .build()
     );
   }
-
+  private void checkDuplicate(String value, ErrorCode errorCode) {
+    if (userRepository.existsByEmailOrNickname(value, value)) {
+      throw new CustomException(errorCode);
+    }
+  }
+  private void checkDuplicate(String email,String nickname){
+    if(userRepository.existsByEmailOrNickname(email,nickname)){
+      throw new CustomException(ErrorCode.VALUES_ALREADY_EXISTS);
+    }
+  }
   @Override
   public SignInResultDto signIn(SignInRequestDto dto) {
     //todo 로그인 메서드구현
 
     User user = userRepository.findByEmail(dto.getEmail())
-        .orElseThrow(() -> new RuntimeException("존재하지않는 이메일"));
+        .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_EXISTS));
     if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
-      throw new RuntimeException("비밀번호 불일치");
+      throw new CustomException(ErrorCode.PASSWORD_NOT_MATCHED);
     }
     var atk = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
     var rtk = jwtTokenProvider.createRefreshToken();
@@ -78,7 +87,7 @@ public class SignServiceImpl implements SignService {
   public LogOutResultDto logout(HttpServletRequest req) {
     var atk = jwtTokenProvider.resolveAtk(req);
     if (!jwtTokenProvider.validateToken(atk)) {
-      throw new RuntimeException("만료된 ATK");
+      throw new CustomException(ErrorCode.ACCESS_TOKEN_EXPIRED);
     }
 
     var user = jwtTokenProvider.getAuthentication(atk);
@@ -101,11 +110,7 @@ public class SignServiceImpl implements SignService {
 
   @Override
   public EmailCheckResultDto emailCheck(String email) {
-    var result=userRepository.countByEmail(email);
-    if(result!=0){// 중복일경우
-      throw new RuntimeException("email 중복");
-    }
-
+    checkDuplicate(email,ErrorCode.EMAIL_ALREADY_EXISTS);
     return EmailCheckResultDto.builder()
         .msg("사용 가능한 이메일 입니다.")
         .build();
@@ -113,10 +118,7 @@ public class SignServiceImpl implements SignService {
 
   @Override
   public NameCheckResultDto nickNameCheck(String nickname) {
-    var result = userRepository.countByNickname(nickname);
-    if(result!=0){//중복일경우
-      throw new RuntimeException("");
-    }
+    checkDuplicate(nickname,ErrorCode.NICKNAME_ALREADY_EXISTS);
     return NameCheckResultDto.builder()
         .msg("사용 가능한 별명 입니다.")
         .build();

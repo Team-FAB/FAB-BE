@@ -157,6 +157,8 @@ public class ArticleServiceImpl implements ArticleService {
   @Override
   public List<ArticlePageDto> getArticleByPageable(Integer page, Integer size, boolean isRecruiting) {
 
+    page = page < 1 ? 1 : page;
+
     Pageable pageable = PageRequest.of(page - 1, size);
 
     Page<Article> articleList = articleRepository.getArticle(pageable, isRecruiting);

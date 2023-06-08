@@ -5,7 +5,7 @@ public enum Period {
   THREETOSIX("3개월 ~ 6개월"),
   SIXTONINE("6개월 ~ 9개월"),
   NINETOTWELVE("9개월 ~ 12개월"),
-  OVERTWELVE("1년 이상");
+  OVERTWELVE("1년 이상 ~");
 
   private final String value;
 

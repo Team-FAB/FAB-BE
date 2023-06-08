@@ -2,6 +2,7 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.ArticleEditDto;
+import com.fab.banggabgo.dto.ArticlePageDto;
 import com.fab.banggabgo.dto.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.User;
@@ -12,8 +13,12 @@ import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Price;
 import com.fab.banggabgo.type.Seoul;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -147,6 +152,18 @@ public class ArticleServiceImpl implements ArticleService {
     article.setDeleted(true);
 
     articleRepository.save(article);
+  }
+
+  @Override
+  public List<ArticlePageDto> getArticleByPageable(Integer page, Integer size, boolean isRecruiting) {
+
+    page = page < 1 ? 1 : page;
+
+    Pageable pageable = PageRequest.of(page - 1, size);
+
+    Page<Article> articleList = articleRepository.getArticle(pageable, isRecruiting);
+
+    return ArticlePageDto.toDtoList(articleList);
   }
 
   private User getUserFromToken(String token) {

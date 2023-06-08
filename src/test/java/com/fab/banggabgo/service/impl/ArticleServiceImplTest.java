@@ -2,6 +2,7 @@ package com.fab.banggabgo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -16,6 +17,13 @@ import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
+import com.fab.banggabgo.repository.impl.ArticleRepositoryImpl;
+import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.Period;
+import com.fab.banggabgo.type.Seoul;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
 
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceImplTest {
@@ -36,6 +45,9 @@ class ArticleServiceImplTest {
   @Mock
   private ArticleRepository articleRepository;
 
+  @Mock
+  private ArticleRepositoryImpl articleRepositoryImpl;
+
   @InjectMocks
   private ArticleServiceImpl articleService;
 
@@ -45,7 +57,7 @@ class ArticleServiceImplTest {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("남성")
@@ -71,7 +83,7 @@ class ArticleServiceImplTest {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(0)
         .gender("남성")
@@ -113,7 +125,7 @@ class ArticleServiceImplTest {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("외계인")
@@ -134,7 +146,7 @@ class ArticleServiceImplTest {
     //given
     ArticleRegisterDto dto = ArticleRegisterDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("남성")
@@ -158,7 +170,7 @@ class ArticleServiceImplTest {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("남성")
@@ -194,7 +206,7 @@ class ArticleServiceImplTest {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(0)
         .gender("남성")
@@ -203,7 +215,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT", 1L, dto));
 
     //then
     assertEquals(exception.getMessage(), "글 수정 양식이 잘못되었습니다.");
@@ -215,7 +227,7 @@ class ArticleServiceImplTest {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("남성")
@@ -234,7 +246,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT", 1L, dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
@@ -246,7 +258,7 @@ class ArticleServiceImplTest {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("남성")
@@ -271,7 +283,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT", 1L, dto));
 
     //then
     assertEquals(exception.getMessage(), "삭제된 게시글입니다.");
@@ -283,7 +295,7 @@ class ArticleServiceImplTest {
     //given
     ArticleEditDto dto = ArticleEditDto.builder()
         .title("글 제목")
-        .region("강남")
+        .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
         .gender("남성")
@@ -312,7 +324,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT",1L , dto));
+        () -> articleService.putArticle("JWT", 1L, dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");
@@ -361,7 +373,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT",1L));
+        () -> articleService.deleteArticle("JWT", 1L));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
@@ -389,7 +401,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT",1L));
+        () -> articleService.deleteArticle("JWT", 1L));
 
     //then
     assertEquals(exception.getMessage(), "이미 삭제된 게시글입니다.");
@@ -421,9 +433,77 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT",1L));
+        () -> articleService.deleteArticle("JWT", 1L));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");
+  }
+
+  @Test
+  @DisplayName("글 최신순 페이지 불러오기 성공 : 모집중인 글만")
+  void getArticleByPageableSuccess_ISRECRUITING_TRUE() {
+    //given
+    List<Article> articleList = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Article article = Article.builder().build();
+      article.setId((long) i);
+      article.setTitle("글" + i);
+      article.setUser(User.builder()
+          .nickname("유저" + i)
+          .build());
+      article.setContent("글 내용" + i);
+      article.setGender(Gender.MALE);
+      article.setCreateDate(LocalDateTime.now());
+      article.setRegion(Seoul.DONGJAK);
+      article.setPeriod(Period.ONETOTHREE);
+      article.setPrice(5000000 + i);
+      article.setRecruiting(true);
+      article.setDeleted(false);
+
+      articleList.add(article);
+    }
+
+    given(articleRepository.getArticle(any(), anyBoolean()))
+        .willReturn(new PageImpl<>(articleList));
+
+    //when
+    var result = articleService.getArticleByPageable(1, 5, true);
+
+    //then
+    assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("글 최신순 페이지 불러오기 성공 : 전체 글")
+  void getArticleByPageableSuccess_ALL_ARTICLES() {
+    //given
+    List<Article> articleList = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Article article = Article.builder().build();
+      article.setId((long) i);
+      article.setTitle("글" + i);
+      article.setUser(User.builder()
+          .nickname("유저" + i)
+          .build());
+      article.setContent("글 내용" + i);
+      article.setGender(Gender.MALE);
+      article.setCreateDate(LocalDateTime.now());
+      article.setRegion(Seoul.DONGJAK);
+      article.setPeriod(Period.ONETOTHREE);
+      article.setPrice(5000000 + i);
+      article.setRecruiting(false);
+      article.setDeleted(false);
+
+      articleList.add(article);
+    }
+
+    given(articleRepository.getArticle(any(), anyBoolean()))
+        .willReturn(new PageImpl<>(articleList));
+
+    //when
+    var result = articleService.getArticleByPageable(1, 5, false);
+
+    //then
+    assertEquals(5, result.size());
   }
 }

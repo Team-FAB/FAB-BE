@@ -22,30 +22,20 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     QArticle qArticle = QArticle.article;
     QUser qUser = QUser.user;
 
-    List<Article> articleList = new ArrayList<>();
+    var articleQuery = queryFactory.selectFrom(qArticle)
+        .join(qArticle.user, qUser)
+        .fetchJoin()
+        .orderBy(qArticle.createDate.desc())
+        .where(qArticle.isDeleted.eq(false))
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .distinct();
 
     if (isRecruiting) {
-      articleList = queryFactory.selectFrom(qArticle)
-          .join(qArticle.user, qUser)
-          .fetchJoin()
-          .orderBy(qArticle.createDate.desc())
-          .where(qArticle.isRecruiting.eq(true).and(qArticle.isDeleted).eq(false))
-          .offset(pageable.getOffset())
-          .limit(pageable.getPageSize())
-          .distinct()
-          .fetch();
-
-    } else {
-      articleList = queryFactory.selectFrom(qArticle)
-          .join(qArticle.user, qUser)
-          .fetchJoin()
-          .orderBy(qArticle.createDate.desc())
-          .where(qArticle.isDeleted.eq(false))
-          .offset(pageable.getOffset())
-          .limit(pageable.getPageSize())
-          .distinct()
-          .fetch();
+      articleQuery = articleQuery.where(qArticle.isRecruiting.eq(true));
     }
+
+    List<Article> articleList = articleQuery.fetch();
 
     return new PageImpl<>(articleList);
   }

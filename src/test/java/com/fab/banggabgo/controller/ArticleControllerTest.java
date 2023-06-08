@@ -5,16 +5,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fab.banggabgo.config.security.JwtTokenProvider;
+import com.fab.banggabgo.config.security.SecurityConfig;
 import com.fab.banggabgo.dto.ArticleEditForm;
 import com.fab.banggabgo.dto.ArticleRegisterForm;
 import com.fab.banggabgo.service.ArticleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,11 +29,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(ArticleController.class)
 @ExtendWith(MockitoExtension.class)
@@ -327,7 +336,7 @@ class ArticleControllerTest {
     mockMvc.perform(delete("/api/article/1")
             .with(SecurityMockMvcRequestPostProcessors.csrf())
             .header("Authorization", "JWT"))
-        .andExpect(status().isNoContent())
+        .andExpect(status().isOk())
         .andDo(print());
   }
 
@@ -392,5 +401,19 @@ class ArticleControllerTest {
     //then
     String responseBody = result.getResponse().getContentAsString();
     assertThat(responseBody).isEqualTo("해당 게시글의 작성자가 아닙니다.");
+  }
+
+  @Test
+  @DisplayName("글 최신순 페이지 불러오기 성공")
+  @WithMockUser
+  void getArticleByPageableSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/article?page=1&size=10&isRecruiting=true")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+        )
+        .andExpect(status().isOk())
+        .andDo(print());
   }
 }

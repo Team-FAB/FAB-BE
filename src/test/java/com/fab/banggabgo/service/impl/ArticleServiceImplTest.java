@@ -1,14 +1,14 @@
 package com.fab.banggabgo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.ArticleEditDto;
@@ -68,7 +68,7 @@ class ArticleServiceImplTest {
         .willReturn("User Email");
 
     given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(User.builder().id(1L).build()));
+        .willReturn(Optional.ofNullable(User.builder().id(1).build()));
 
     //when
     articleService.postArticle("JWT", dto);
@@ -178,7 +178,7 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     given(provider.getUser(anyString()))
@@ -187,14 +187,14 @@ class ArticleServiceImplTest {
     given(userRepository.findByEmail(anyString()))
         .willReturn(Optional.ofNullable(user));
 
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(false)
             .build()));
 
     //when
-    articleService.putArticle("JWT", 1L, dto);
+    articleService.putArticle("JWT", 1, dto);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -215,7 +215,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+        () -> articleService.putArticle("JWT", 1, dto));
 
     //then
     assertEquals(exception.getMessage(), "글 수정 양식이 잘못되었습니다.");
@@ -235,7 +235,7 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     given(provider.getUser(anyString()))
@@ -246,7 +246,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+        () -> articleService.putArticle("JWT", 1, dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
@@ -266,7 +266,7 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     given(provider.getUser(anyString()))
@@ -275,7 +275,7 @@ class ArticleServiceImplTest {
     given(userRepository.findByEmail(anyString()))
         .willReturn(Optional.ofNullable(user));
 
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(true)
@@ -283,7 +283,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+        () -> articleService.putArticle("JWT", 1, dto));
 
     //then
     assertEquals(exception.getMessage(), "삭제된 게시글입니다.");
@@ -303,11 +303,11 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     User user2 = User.builder()
-        .id(2L)
+        .id(2)
         .build();
 
     given(provider.getUser(anyString()))
@@ -316,7 +316,7 @@ class ArticleServiceImplTest {
     given(userRepository.findByEmail(anyString()))
         .willReturn(Optional.ofNullable(user));
 
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user2)
             .isDeleted(false)
@@ -324,7 +324,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+        () -> articleService.putArticle("JWT", 1, dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");
@@ -335,7 +335,7 @@ class ArticleServiceImplTest {
   void deleteArticleSuccess() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     given(provider.getUser(anyString()))
@@ -344,14 +344,14 @@ class ArticleServiceImplTest {
     given(userRepository.findByEmail(anyString()))
         .willReturn(Optional.ofNullable(user));
 
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(false)
             .build()));
 
     //when
-    articleService.deleteArticle("JWT", 1L);
+    articleService.deleteArticle("JWT", 1);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -362,7 +362,7 @@ class ArticleServiceImplTest {
   void deleteArticleFail_NOT_FOUND_ARTICLE() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     given(provider.getUser(anyString()))
@@ -373,7 +373,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT", 1L));
+        () -> articleService.deleteArticle("JWT", 1));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
@@ -384,7 +384,7 @@ class ArticleServiceImplTest {
   void deleteArticleFail_DELETED_ARTICLE() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     given(provider.getUser(anyString()))
@@ -393,7 +393,7 @@ class ArticleServiceImplTest {
     given(userRepository.findByEmail(anyString()))
         .willReturn(Optional.ofNullable(user));
 
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(true)
@@ -401,7 +401,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT", 1L));
+        () -> articleService.deleteArticle("JWT", 1));
 
     //then
     assertEquals(exception.getMessage(), "이미 삭제된 게시글입니다.");
@@ -412,11 +412,11 @@ class ArticleServiceImplTest {
   void deleteArticleFail_INVALID_USER() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     User user2 = User.builder()
-        .id(2L)
+        .id(2)
         .build();
 
     given(provider.getUser(anyString()))
@@ -425,7 +425,7 @@ class ArticleServiceImplTest {
     given(userRepository.findByEmail(anyString()))
         .willReturn(Optional.ofNullable(user));
 
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user2)
             .isDeleted(false)
@@ -433,7 +433,7 @@ class ArticleServiceImplTest {
 
     //when
     RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT", 1L));
+        () -> articleService.deleteArticle("JWT", 1));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");
@@ -446,7 +446,7 @@ class ArticleServiceImplTest {
     List<Article> articleList = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       Article article = Article.builder().build();
-      article.setId((long) i);
+      article.setId(i);
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
@@ -480,7 +480,7 @@ class ArticleServiceImplTest {
     List<Article> articleList = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       Article article = Article.builder().build();
-      article.setId((long) i);
+      article.setId(i);
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)

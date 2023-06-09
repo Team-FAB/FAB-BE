@@ -18,7 +18,7 @@ import org.springframework.data.domain.Page;
 @AllArgsConstructor
 public class ArticlePageDto {
 
-  private Long id;
+  private Integer id;
   private String title;
   private String nickname;
   private String content;

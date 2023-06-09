@@ -83,7 +83,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void putArticle(String token, Long id, ArticleEditDto dto) {
+  public void putArticle(String token, Integer id, ArticleEditDto dto) {
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
@@ -135,7 +135,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public void deleteArticle(String token, Long id) {
+  public void deleteArticle(String token, Integer id) {
     User user = getUserFromToken(token);
 
     Article article = articleRepository.findById(id)

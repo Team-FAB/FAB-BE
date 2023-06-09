@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -18,6 +19,7 @@ public class SecurityConfig {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final RedisTemplate<String,String> redisTemplate;
+
 
   @Bean
   public SecurityFilterChain defaultFilter(HttpSecurity http) throws Exception {
@@ -43,6 +45,12 @@ public class SecurityConfig {
         .baseUri("/login/oauth2")
         .and()
         .successHandler(new OAuth2SuccessHandler(jwtTokenProvider))
+        .failureUrl("/api/v2/test")
+
+        .and()
+        .exceptionHandling()
+        .and()
+        .addFilterBefore(new SecurityExceptionFilter(), OAuth2AuthorizationRequestRedirectFilter.class)
     ;
     return http.build();
   }

@@ -1,6 +1,7 @@
 package com.fab.banggabgo.entity;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -15,11 +16,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 public class BaseEntity {
 
-  @CreatedDate
-  private LocalDateTime createDate;
+    @CreatedDate
+    @Column(name = "create_date_time", updatable = false)
+    private LocalDateTime createDate;
 
-  @LastModifiedDate
-  private LocalDateTime lastModifiedDate;
+    @LastModifiedDate
+    @Column(name = "modified_date_time")
+    private LocalDateTime lastModifiedDate;
 
 }
 

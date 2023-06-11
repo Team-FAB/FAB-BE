@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticleEditDto {
+
   private String title;
   private String region;
   private String period;

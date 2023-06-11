@@ -6,7 +6,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,18 +19,19 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class LikeArticle extends BaseEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class LikeArticle extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    private User user;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "article_id")
-    @ToString.Exclude
-    private Article article;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  @ToString.Exclude
+  private User user;
+
+  @ManyToOne
+  @JoinColumn(name = "article_id")
+  @ToString.Exclude
+  private Article article;
 }

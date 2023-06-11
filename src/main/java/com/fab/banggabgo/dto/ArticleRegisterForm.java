@@ -1,6 +1,5 @@
 package com.fab.banggabgo.dto;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,7 +19,8 @@ public class ArticleRegisterForm {
   private Integer price;
   private String gender;
   private String content;
-  public static ArticleRegisterDto toDto(ArticleRegisterForm form){
+
+  public static ArticleRegisterDto toDto(ArticleRegisterForm form) {
     return ArticleRegisterDto.builder()
         .title(form.getTitle())
         .region(form.getRegion())

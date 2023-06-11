@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogOutResultDto {
+
   private TokenDto expiredToken;
 }

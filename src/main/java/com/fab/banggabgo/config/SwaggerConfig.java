@@ -21,8 +21,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
+
   @Value("${jwt.auth.atk}")
   String ATK;
+
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.OAS_30)

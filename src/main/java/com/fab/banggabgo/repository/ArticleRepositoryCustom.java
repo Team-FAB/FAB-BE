@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 public interface ArticleRepositoryCustom {
 
   Page<Article> getArticle(Pageable pageable, boolean isRecruiting);
+
   List<MyArticleDto> getMyArticle(User user);
   List<FavoriteArticleDto> getFavoriteArticle(User user);
 }

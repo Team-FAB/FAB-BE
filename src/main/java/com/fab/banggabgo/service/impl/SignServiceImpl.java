@@ -37,7 +37,7 @@ public class SignServiceImpl implements SignService {
 
   @Override
   public void signUp(SignUpRequestDto dto) {
-    checkDuplicate(dto.getEmail(),dto.getNickname());
+    checkDuplicate(dto.getEmail(), dto.getNickname());
     //todo 회원가입 메서드 구현
     User savedUser = userRepository.save(
         User.builder()
@@ -47,16 +47,19 @@ public class SignServiceImpl implements SignService {
             .build()
     );
   }
+
   private void checkDuplicate(String value, ErrorCode errorCode) {
     if (userRepository.existsByEmailOrNickname(value, value)) {
       throw new CustomException(errorCode);
     }
   }
-  private void checkDuplicate(String email,String nickname){
-    if(userRepository.existsByEmailOrNickname(email,nickname)){
+
+  private void checkDuplicate(String email, String nickname) {
+    if (userRepository.existsByEmailOrNickname(email, nickname)) {
       throw new CustomException(ErrorCode.VALUES_ALREADY_EXISTS);
     }
   }
+
   @Override
   public SignInResultDto signIn(SignInRequestDto dto) {
     //todo 로그인 메서드구현
@@ -92,8 +95,6 @@ public class SignServiceImpl implements SignService {
 
     var user = jwtTokenProvider.getAuthentication(atk);
 
-
-
     if (redisTemplate.opsForValue().get(REDIS_PREFIX + user.getName()) != null) {
       redisTemplate.delete(REDIS_PREFIX + user.getName());
     }
@@ -110,7 +111,7 @@ public class SignServiceImpl implements SignService {
 
   @Override
   public EmailCheckResultDto emailCheck(String email) {
-    checkDuplicate(email,ErrorCode.EMAIL_ALREADY_EXISTS);
+    checkDuplicate(email, ErrorCode.EMAIL_ALREADY_EXISTS);
     return EmailCheckResultDto.builder()
         .msg("사용 가능한 이메일 입니다.")
         .build();
@@ -118,7 +119,7 @@ public class SignServiceImpl implements SignService {
 
   @Override
   public NameCheckResultDto nickNameCheck(String nickname) {
-    checkDuplicate(nickname,ErrorCode.NICKNAME_ALREADY_EXISTS);
+    checkDuplicate(nickname, ErrorCode.NICKNAME_ALREADY_EXISTS);
     return NameCheckResultDto.builder()
         .msg("사용 가능한 별명 입니다.")
         .build();

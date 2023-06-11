@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 
 @AllArgsConstructor
 @Getter
-public enum ResponseCode implements Code{
+public enum ResponseCode implements Code {
 
   RESPONSE_DELETED(HttpStatus.NO_CONTENT, "DELETED"),
   RESPONSE_CREATED(HttpStatus.CREATED, "CREATED"),

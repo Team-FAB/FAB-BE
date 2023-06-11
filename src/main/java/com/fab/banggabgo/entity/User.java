@@ -32,6 +32,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Fetch;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -92,12 +93,13 @@ public class User extends BaseEntity implements UserDetails {
   private String detail;
 
 
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
   @Enumerated(EnumType.STRING)
-  @Column(name = "roles")
+  @Column(name = "roles" )
   @Builder.Default
   private List<UserRole> roles = new ArrayList<>();
+
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

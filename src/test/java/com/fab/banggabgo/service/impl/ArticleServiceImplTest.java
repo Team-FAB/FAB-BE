@@ -38,12 +38,6 @@ import org.springframework.data.domain.PageImpl;
 class ArticleServiceImplTest {
 
   @Mock
-  private JwtTokenProvider provider;
-
-  @Mock
-  private UserRepository userRepository;
-
-  @Mock
   private ArticleRepository articleRepository;
 
   @Mock
@@ -518,5 +512,19 @@ class ArticleServiceImplTest {
 
     //then
     assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("글 삭제 성공")
+  void getArticleTotalCntSuccess() {
+    //given
+    given(articleRepository.getArticleTotalCnt())
+        .willReturn(5);
+
+    //when
+    Integer result = articleService.getArticleTotalCnt();
+
+    //then
+    assertEquals(5, result);
   }
 }

@@ -2,14 +2,12 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
-import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.ArticleEditDto;
 import com.fab.banggabgo.dto.ArticlePageDto;
 import com.fab.banggabgo.dto.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
-import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.ArticleService;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
@@ -28,8 +26,6 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
 
-  private final JwtTokenProvider jwtTokenProvider;
-  private final UserRepository userRepository;
   private final ArticleRepository articleRepository;
 
   @Override
@@ -175,5 +171,11 @@ public class ArticleServiceImpl implements ArticleService {
         period, price, gender);
 
     return ArticlePageDto.toDtoList(articleList);
+  }
+
+  @Override
+  public Integer getArticleTotalCnt() {
+
+    return articleRepository.getArticleTotalCnt();
   }
 }

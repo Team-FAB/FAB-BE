@@ -12,6 +12,12 @@ public interface ArticleRepositoryCustom {
 
   Page<Article> getArticle(Pageable pageable, boolean isRecruiting);
 
+  Page<Article> getArticleByFilter(Pageable pageable, boolean isRecruiting, String region,
+      String period, String price, String gender);
+
+  Integer getArticleTotalCnt();
+
   List<MyArticleDto> getMyArticle(User user);
+
   List<FavoriteArticleDto> getFavoriteArticle(User user);
 }

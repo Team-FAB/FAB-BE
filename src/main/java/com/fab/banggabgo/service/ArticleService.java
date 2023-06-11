@@ -28,7 +28,14 @@ public interface ArticleService {
    */
   List<ArticlePageDto> getArticleByPageable(Integer page, Integer size, boolean isRecruiting);
 
+  /**
+   * 게시글 검색하기
+   */
   List<ArticlePageDto> getArticleByFilter(Integer page, Integer size, boolean isRecruiting,
       String region, String period, String price, String gender);
 
+  /**
+   * 게시글 전체 개수
+   */
+  Integer getArticleTotalCnt();
 }

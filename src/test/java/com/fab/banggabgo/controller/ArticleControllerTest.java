@@ -429,4 +429,17 @@ class ArticleControllerTest {
         .andExpect(status().isOk())
         .andDo(print());
   }
+
+  @Test
+  @DisplayName("글 삭제 성공")
+  @WithMockUser
+  void getArticleTotalCntSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/articles/total")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
 }

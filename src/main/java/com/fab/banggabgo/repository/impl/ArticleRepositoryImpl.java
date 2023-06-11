@@ -86,6 +86,14 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     return new PageImpl<>(articleList);
   }
 
+  @Override
+  public Integer getArticleTotalCnt() {
+    return Math.toIntExact(queryFactory.select(qArticle.count())
+        .from(qArticle)
+        .where(qArticle.isDeleted.eq(false))
+        .fetchFirst());
+  }
+
   public List<MyArticleDto> getMyArticle(User user) {
 
     var getMyArticleQuery=queryFactory.selectFrom(qArticle)

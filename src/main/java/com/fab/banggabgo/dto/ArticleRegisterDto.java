@@ -1,6 +1,5 @@
 package com.fab.banggabgo.dto;
 
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ArticleRegisterDto {
+
   private String title;
   private String region;
   private String period;

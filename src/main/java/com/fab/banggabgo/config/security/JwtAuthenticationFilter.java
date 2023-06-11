@@ -24,15 +24,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     var token = jwtTokenProvider.resolveAtk(request);
 
-    if(token!=null && jwtTokenProvider.validateToken(token)){
+    if (token != null && jwtTokenProvider.validateToken(token)) {
       String isLogout = redisTemplate.opsForValue().get(token);
-      if(ObjectUtils.isEmpty(isLogout)){
+      if (ObjectUtils.isEmpty(isLogout)) {
 
         Authentication authentication = jwtTokenProvider.getAuthentication(token);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
       }
     }
-    filterChain.doFilter(request,response);
+    filterChain.doFilter(request, response);
   }
 }

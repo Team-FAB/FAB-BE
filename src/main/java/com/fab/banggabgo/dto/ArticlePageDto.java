@@ -20,6 +20,7 @@ public class ArticlePageDto {
 
   private Integer id;
   private String title;
+  private String email;
   private String nickname;
   private String content;
   private String gender;
@@ -34,6 +35,7 @@ public class ArticlePageDto {
         .map(article -> ArticlePageDto.builder()
             .id(article.getId())
             .title(article.getTitle())
+            .email(article.getUser().getEmail())
             .nickname(article.getUser().getNickname())
             .content(article.getContent())
             .gender(article.getGender().getValue())

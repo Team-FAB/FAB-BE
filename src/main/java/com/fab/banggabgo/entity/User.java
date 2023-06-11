@@ -44,101 +44,101 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor
 public class User extends BaseEntity implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    private String email;
+  private String email;
 
-    private String password;
-    @Column(unique = true)
-    private String nickname;
+  private String password;
+  @Column(unique = true)
+  private String nickname;
 
-    @Enumerated(EnumType.STRING)
-    private UserType userType;
+  @Enumerated(EnumType.STRING)
+  private UserType userType;
 
-    private String image;
+  private String image;
 
-    @Enumerated(EnumType.STRING)
-    private MatchStatus matchStatus;
+  @Enumerated(EnumType.STRING)
+  private MatchStatus matchStatus;
 
-    @Column(name = "is_smoke")
-    private Boolean isSmoker;
+  @Column(name = "is_smoke")
+  private Boolean isSmoker;
 
-    @Enumerated(EnumType.STRING)
-    private ActivityTime activityTime;
+  @Enumerated(EnumType.STRING)
+  private ActivityTime activityTime;
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "region")
-    private Seoul region;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "region")
+  private Seoul region;
 
-    @Enumerated(EnumType.STRING)
-    private Mbti mbti;
+  @Enumerated(EnumType.STRING)
+  private Mbti mbti;
 
-    @Enumerated(EnumType.STRING)
-    private PreferredAge preferredAge;
+  @Enumerated(EnumType.STRING)
+  private PreferredAge preferredAge;
 
-    private int myAge;
+  private int myAge;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @ToString.Exclude
-    @Column(name = "tag")
-    @Builder.Default
-    private Set<String> tag = new HashSet<>();
+  @ElementCollection(fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @Column(name = "tag")
+  @Builder.Default
+  private Set<String> tag = new HashSet<>();
 
-    private String detail;
+  private String detail;
 
 
-    @ElementCollection
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "roles")
-    @Builder.Default
-    private List<UserRole> roles = new ArrayList<>();
+  @ElementCollection
+  @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @Enumerated(EnumType.STRING)
+  @Column(name = "roles")
+  @Builder.Default
+  private List<UserRole> roles = new ArrayList<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles.stream()
-            .map((r) -> new SimpleGrantedAuthority(r.name()))
-            .collect(Collectors.toList());
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return this.roles.stream()
+        .map((r) -> new SimpleGrantedAuthority(r.name()))
+        .collect(Collectors.toList());
+  }
 
-    @Override
-    public String getPassword() {
-        return this.password;
-    }
+  @Override
+  public String getPassword() {
+    return this.password;
+  }
 
-    @Override
-    public String getUsername() {
-        return this.email;
-    }
+  @Override
+  public String getUsername() {
+    return this.email;
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 
-    public List<String> getRoles() {
-        return this.roles.stream()
-            .map(Enum::name)
-            .collect(Collectors.toList());
-    }
+  public List<String> getRoles() {
+    return this.roles.stream()
+        .map(Enum::name)
+        .collect(Collectors.toList());
+  }
 }

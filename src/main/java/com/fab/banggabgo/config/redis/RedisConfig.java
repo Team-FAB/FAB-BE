@@ -30,19 +30,21 @@ public class RedisConfig extends CachingConfigurerSupport {
 
   @Value("${spring.redis.timeout}")
   private Long timeout;
+
   @Bean
-  public LettuceConnectionFactory lettuceConnectionFactory(){
+  public LettuceConnectionFactory lettuceConnectionFactory() {
     LettuceClientConfiguration lettuceClientConfiguration = LettuceClientConfiguration.builder()
         .build();
 
-    RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host,port);
+    RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
+        host, port);
 
-    return new LettuceConnectionFactory(redisStandaloneConfiguration,lettuceClientConfiguration);
+    return new LettuceConnectionFactory(redisStandaloneConfiguration, lettuceClientConfiguration);
   }
 
   @Bean
-  public RedisTemplate<?,?> redisTemplate(){
-    RedisTemplate<String,String>  template = new RedisTemplate<>();
+  public RedisTemplate<?, ?> redisTemplate() {
+    RedisTemplate<String, String> template = new RedisTemplate<>();
     template.setValueSerializer(new StringRedisSerializer());
     template.setKeySerializer(new StringRedisSerializer());
     template.setConnectionFactory(lettuceConnectionFactory());
@@ -58,8 +60,10 @@ public class RedisConfig extends CachingConfigurerSupport {
         .fromConnectionFactory(lettuceConnectionFactory());
 
     RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
-        .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
+        .serializeKeysWith(
+            RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+        .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(
+            new GenericJackson2JsonRedisSerializer()))
         .entryTtl(Duration.ofHours(timeout));
 
     builder.cacheDefaults(configuration);

@@ -28,7 +28,7 @@ class UserDetailsServiceImplTest {
   @BeforeEach
   void init() {
     user = User.builder()
-        .id(1L)
+        .id(1)
         .email("test@test.com")
         .build();
   }

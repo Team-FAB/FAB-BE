@@ -28,30 +28,30 @@ import lombok.ToString;
 @AllArgsConstructor
 public class Article extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @ToString.Exclude
-    private User user;
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  @ToString.Exclude
+  private User user;
 
-    private String title;
-    private String content;
+  private String title;
+  private String content;
 
-    @Enumerated(EnumType.STRING)
-    private Seoul region;
+  @Enumerated(EnumType.STRING)
+  private Seoul region;
 
-    @Enumerated(EnumType.STRING)
-    private Period period;
+  @Enumerated(EnumType.STRING)
+  private Period period;
 
-    private Integer price;
+  private Integer price;
 
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
 
-    @Column(name = "is_recruit")
-    private boolean isRecruiting;
-    private boolean isDeleted;
+  @Column(name = "is_recruit")
+  private boolean isRecruiting;
+  private boolean isDeleted;
 }

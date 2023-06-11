@@ -19,18 +19,19 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Mate extends BaseEntity{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+public class Mate extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "user1_id")
-    @ToString.Exclude
-    private User user1;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user2_id")
-    @ToString.Exclude
-    private User user2;
+  @ManyToOne
+  @JoinColumn(name = "user1_id")
+  @ToString.Exclude
+  private User user1;
+
+  @ManyToOne
+  @JoinColumn(name = "user2_id")
+  @ToString.Exclude
+  private User user2;
 }

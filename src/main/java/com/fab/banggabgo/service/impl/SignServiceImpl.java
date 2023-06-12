@@ -32,6 +32,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -107,10 +108,10 @@ public class SignServiceImpl implements SignService {
     //todo 로그인 메서드구현
     try {
       profile = getProfile(dto.getAccessToken(), oAuth2RegistrationId);
-    } catch (ParseException | NullPointerException e) {
+    } catch (ParseException | HttpClientErrorException e) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
-    if (profile == null) {
+    if (profile == null || profile.getEmail() == null ) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
 

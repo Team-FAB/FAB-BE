@@ -1,8 +1,6 @@
 package com.fab.banggabgo.dto.mycontent;
 
 import com.fab.banggabgo.entity.User;
-import com.fab.banggabgo.type.ActivityTime;
-import com.fab.banggabgo.type.Gender;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +24,13 @@ public class MyInfoDto {
   private String region;
   private String mbti;
   private Set<String> tags;
+  private int minAge;
+  private int maxAge;
   private String preferredAge;
   private int myAge;
   private String detail;
-  public static MyInfoDto toDto(User user){
+
+  public static MyInfoDto toDto(User user) {
     return MyInfoDto.builder()
         .email(user.getEmail())
         .nickname(user.getNickname())
@@ -40,7 +41,8 @@ public class MyInfoDto {
         .region(user.getRegion().getValue())
         .mbti(user.getMbti().name())
         .tags(user.getTag())
-        .preferredAge(user.getPreferredAge().name())
+        .minAge(user.getMinAge())
+        .maxAge(user.getMaxAge())
         .myAge(user.getMyAge())
         .detail(user.getDetail())
         .build();

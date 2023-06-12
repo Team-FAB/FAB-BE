@@ -1,8 +1,11 @@
 package com.fab.banggabgo.dto.mycontent;
 
 import com.fab.banggabgo.entity.User;
-import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.Seoul;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +28,7 @@ public class MyInfoDto {
   private String gender;
   private String region;
   private String mbti;
-  private Set<String> tags;
+  private Set<String> tags=new HashSet<>();
   private String preferredAge;
   private int myAge;
   private String detail;
@@ -35,14 +38,15 @@ public class MyInfoDto {
         .nickname(user.getNickname())
         .image(user.getImage())
         .isSmoker(user.getIsSmoker())
-        .activityTime(user.getActivityTime().name())
-        .gender(user.getGender().getValue())
-        .region(user.getRegion().getValue())
-        .mbti(user.getMbti().name())
+        .activityTime(Optional.ofNullable(user.getActivityTime()).map(Enum::name).orElse("null"))
+        .gender(Optional.ofNullable(user.getGender()).map(Gender::getValue).orElse("null"))
+        .region(Optional.ofNullable(user.getRegion()).map(Seoul::getValue).orElse("null"))
+        .mbti(Optional.ofNullable(user.getMbti()).map(Enum::name).orElse("null"))
         .tags(user.getTag())
-        .preferredAge(user.getPreferredAge().name())
+        .preferredAge(Optional.ofNullable(user.getMbti()).map(Enum::name).orElse("null"))
         .myAge(user.getMyAge())
         .detail(user.getDetail())
         .build();
   }
+
 }

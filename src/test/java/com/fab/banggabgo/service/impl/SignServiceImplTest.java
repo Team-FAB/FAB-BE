@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
 import com.fab.banggabgo.dto.OAuth2SignInRequestForm;
@@ -265,11 +266,30 @@ class SignServiceImplTest {
 
     @DisplayName(" 카카오 로그인 - accessToken이 올바르지 않은경우")
     @Test
-    void signUp_emailExists() {
+    void signIn_wrongAccessToken() {
       assertThrows(NullPointerException.class, () -> signService.oauth2SignIn(
           OAuth2SignInRequestDto.builder()
               .accessToken("asdkwekwlwekfwlekwl")
               .build(), OAuth2RegistrationId.KAKAO));
+    }
+
+    @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라진 경우")
+    @Test
+    void signIn_wrongAcceptJson() {
+      var wrongJson = "{\n"
+          + "    \"kakao_account\": {\n"
+          + "        \"profile\": {\n"
+          + "            \"nickname\": \"테스터\",\n"
+          + "            \"profile_image_url\": \"image\"\n"
+          + "            \"email\": \"test@email.com\"\n"
+          + "        },\n"
+          + "    }\n"
+          + "}";
+
+      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(wrongJson);
+
+      assertThrows(CustomException.class, () -> signService.oauth2SignIn(
+          dto, OAuth2RegistrationId.KAKAO));
     }
   }
 

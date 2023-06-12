@@ -1,18 +1,24 @@
 package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.MyContentService;
-import java.sql.SQLException;
+import com.fab.banggabgo.type.ActivityTime;
+import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.Mbti;
+import com.fab.banggabgo.type.Seoul;
+import java.util.HashSet;
 import java.util.List;
-import com.fab.banggabgo.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -50,8 +56,31 @@ public class MyContentServiceImpl implements MyContentService {
       return PatchMyNicknameResult.builder()
           .nickname(result.getNickname())
           .build();
-    }catch (DataIntegrityViolationException e){
+    } catch (DataIntegrityViolationException e) {
       throw new CustomException(ErrorCode.NICKNAME_ALREADY_EXISTS);
     }
+  }
+
+  @Override
+  public PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto dto) {
+    var converted_user=convertUserData(user,dto);
+    return PatchMyInfoResultDto.from(userRepository.save(converted_user));
+  }
+
+  public User convertUserData(User user, PatchMyInfoDto dto) {
+    var changed_user = user;
+    try {
+      changed_user.setGender(Gender.fromValue(dto.getGender()));
+      changed_user.setMyAge(dto.getMyAge());
+      changed_user.setIsSmoker(dto.isSmoke());
+      changed_user.setMbti(Mbti.valueOf(dto.getMbti()));
+      changed_user.setRegion(Seoul.fromValue(dto.getRegion()));
+      changed_user.setActivityTime(ActivityTime.valueOf(dto.getActivityTime()));
+      changed_user.setTag(new HashSet<>(dto.getTags()));
+      changed_user.setDetail(dto.getDetail());
+    }catch (Exception e){
+      throw new CustomException(ErrorCode.PATCH_MY_INFO_CONVERT_FAIL);
+    }
+    return changed_user;
   }
 }

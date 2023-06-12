@@ -18,8 +18,11 @@ public class MyArticleDto {
   private Integer id;
   private String title;
 
+  private String email;
+  private String nickname;
   private String content;
-  private LocalDateTime createDate;
+  private String gender;
+  private LocalDateTime createdDate;
   private LocalDateTime modifiedDate;
   private String region;
 
@@ -32,11 +35,15 @@ public class MyArticleDto {
     return MyArticleDto.builder()
         .id(article.getId())
         .title(article.getTitle())
+        .email(article.getUser().getEmail())
+        .nickname(article.getUser().getNickname())
+        .gender(article.getGender().getValue())
         .content(article.getContent())
-        .createDate(article.getCreateDate())
+        .createdDate(article.getCreateDate())
         .modifiedDate(article.getLastModifiedDate())
         .region(article.getRegion().getValue())
         .period(article.getPeriod().getValue())
+        .price(article.getPrice())
         .isRecruiting(article.isRecruiting())
         .build();
   }

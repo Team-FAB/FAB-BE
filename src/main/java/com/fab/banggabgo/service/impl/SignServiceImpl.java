@@ -111,7 +111,7 @@ public class SignServiceImpl implements SignService {
     } catch (ParseException | HttpClientErrorException e) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
-    if (profile == null || profile.getEmail() == null ) {
+    if (profile == null || profile.getEmail() == null) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
 
@@ -181,6 +181,26 @@ public class SignServiceImpl implements SignService {
 
   private OAuth2ProfileDto getProfile(String accessToken, OAuth2RegistrationId oAuth2RegistrationId)
       throws ParseException {
+    System.out.println(accessToken);
+    String response;
+    if (oAuth2RegistrationId.equals(OAuth2RegistrationId.KAKAO)) {
+      response = getKakaoProfile(accessToken);
+    } else {
+      System.out.println(accessToken);
+      response = getGoogleProfile(accessToken);
+    }
+    System.out.println(response);
+    return OAuth2ProfileDto.of(oAuth2RegistrationId,
+        new JSONParser(response).parseObject());
+  }
+
+  private String getGoogleProfile(String accessToken) {
+    return restTemplate.getForObject(
+        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken, String.class
+    );
+  }
+
+  private String getKakaoProfile(String accessToken) {
     HttpHeaders headers = new HttpHeaders();
     headers.setBearerAuth(accessToken);
     headers.add("Context-Type", "application/x-www-form-urlencoded; charset=UTF-8");
@@ -190,13 +210,9 @@ public class SignServiceImpl implements SignService {
 
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
-    String response = restTemplate.postForObject(
+    return restTemplate.postForObject(
         "https://kapi.kakao.com/v2/user/me",
         requestEntity, String.class
     );
-
-    return OAuth2ProfileDto.of(oAuth2RegistrationId,
-        new JSONParser(response).parseObject());
-
   }
 }

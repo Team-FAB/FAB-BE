@@ -1,13 +1,18 @@
 package com.fab.banggabgo.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
 import com.fab.banggabgo.entity.User;
@@ -68,7 +73,7 @@ class MyContentServiceImplTest {
     //when
     when(articleRepository.getMyArticle(any(User.class))).thenReturn(stub_list);
     //then
-    Assertions.assertEquals(myContentService.getMyArticle(stub_user),stub_list);
+    assertEquals(myContentService.getMyArticle(stub_user),stub_list);
   }
 
   @Test
@@ -84,7 +89,7 @@ class MyContentServiceImplTest {
     //when
     when(articleRepository.getFavoriteArticle(any(User.class))).thenReturn(stub_list);
     //then
-    Assertions.assertEquals(myContentService.getMyFavoriteArticle(stub_user),stub_list);
+    assertEquals(myContentService.getMyFavoriteArticle(stub_user),stub_list);
 
   }
   @Nested
@@ -116,7 +121,7 @@ class MyContentServiceImplTest {
       when(userRepository.save(stub_user)).thenReturn(stub_user);
       var result=myContentService.patchNickname(stub_user,PatchMyNicknameForm.toDto(form));
       //then
-      Assertions.assertEquals(result.getNickname(),"당당한무지");
+      assertEquals(result.getNickname(),"당당한무지");
     }
     @Test
     @DisplayName("닉네임 변경 실패(이미 존재하는 닉네임일경우)")
@@ -131,4 +136,43 @@ class MyContentServiceImplTest {
       Assertions.assertThrows(CustomException.class,() -> myContentService.patchNickname(stub_user,PatchMyNicknameForm.toDto(form)));
     }
   }
+  @Nested
+  @DisplayName("내정보 변경")
+  class patchMyInfo{
+    PatchMyInfoForm form= PatchMyInfoForm.builder()
+        .gender("남성")
+        .region("강남구")
+        .activityTime("MIDNIGHT")
+        .myAge(15)
+        .favoriteTag(new ArrayList<>(List.of(new String[]{"tag1", "tag2"})))
+        .myText("자세한정보")
+        .mbti("INFP")
+        .isSmoke(true)
+        .maxAge(25)
+        .minAge(21)
+        .build();
+    @Test
+    @DisplayName("- 성공케이스")
+    void patch_my_info_success(){
+      //given
+      //when
+      when(userRepository.save(stub_user)).thenReturn(stub_user);
+      //then
+      var result=myContentService.patchMyInfo(stub_user,PatchMyInfoForm.toDto(form));
+
+      verify(userRepository,times(1)).save(any(User.class));
+      assertEquals(result.getMbti(),"INFP");
+    }
+    @Test
+    @DisplayName("- form 값이 잘못된경우")
+    void patch_my_info_missedValue_form(){
+      //given
+      form.setActivityTime(null);
+      //when
+      //then
+      assertThrows(CustomException.class,() -> myContentService.patchMyInfo(stub_user,PatchMyInfoForm.toDto(form)));
+    }
+
+  }
+
 }

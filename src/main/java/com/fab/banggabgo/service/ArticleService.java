@@ -38,4 +38,14 @@ public interface ArticleService {
    * 게시글 전체 개수
    */
   Integer getArticleTotalCnt();
+
+  /**
+   * 게시글 찜 등록/삭제
+   */
+  String postArticleFavorite(User user, Integer id);
+
+  /**
+   * 게시글 찜했는지
+   */
+  boolean getArticleFavorite(User user, Integer id);
 }

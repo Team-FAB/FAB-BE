@@ -84,4 +84,22 @@ public class ArticleController {
         gender);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
+
+  @PostMapping("/favorites/{id}")
+  public ResponseEntity<?> postArticleFavorite(
+      @AuthenticationPrincipal User user,
+      @PathVariable int id
+  ) {
+    var result = articleService.postArticleFavorite(user, id);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
+  }
+
+  @GetMapping("/favorites/{id}")
+  public ResponseEntity<?> getArticleFavorite(
+      @AuthenticationPrincipal User user,
+      @PathVariable int id
+  ) {
+    var result = articleService.getArticleFavorite(user, id);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
 }

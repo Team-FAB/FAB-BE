@@ -180,21 +180,11 @@ class SignServiceImplTest {
   class OAuth2SignIn {
 
     String json = "{\n"
-        + "    \"id\": 2820810528,\n"
-        + "    \"connected_at\": \"2023-06-07T14:52:47Z\",\n"
         + "    \"kakao_account\": {\n"
-        + "        \"profile_nickname_needs_agreement\": false,\n"
-        + "        \"profile_image_needs_agreement\": false,\n"
         + "        \"profile\": {\n"
         + "            \"nickname\": \"테스터\",\n"
-        + "            \"thumbnail_image_url\": \"image\",\n"
-        + "            \"profile_image_url\": \"image\",\n"
-        + "            \"is_default_image\": true\n"
+        + "            \"profile_image_url\": \"image\"\n"
         + "        },\n"
-        + "        \"has_email\": true,\n"
-        + "        \"email_needs_agreement\": false,\n"
-        + "        \"is_email_valid\": true,\n"
-        + "        \"is_email_verified\": true,\n"
         + "        \"email\": \"test@email.com\"\n"
         + "    }\n"
         + "}";

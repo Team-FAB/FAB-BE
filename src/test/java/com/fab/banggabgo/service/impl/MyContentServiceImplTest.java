@@ -88,6 +88,19 @@ class MyContentServiceImplTest {
 
   }
   @Nested
+  @DisplayName("내정보 불러오기")
+  class MyInfo{
+    @Test
+    @DisplayName("특정 데이터가 null일경우")
+    void null_test(){
+        //given
+        //when
+      var result=myContentService.getMyInfo(stub_user);
+        //then
+      System.out.println(result.toString());
+    }
+  }
+  @Nested
   @DisplayName("닉네임 변경")
   class PatchNick{
     @Test

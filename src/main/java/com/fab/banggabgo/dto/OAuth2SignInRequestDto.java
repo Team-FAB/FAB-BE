@@ -12,5 +12,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OAuth2SignInRequestDto {
+
   String accessToken;
 }

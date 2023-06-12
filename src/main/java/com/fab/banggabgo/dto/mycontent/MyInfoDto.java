@@ -3,7 +3,6 @@ package com.fab.banggabgo.dto.mycontent;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Seoul;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -12,12 +11,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class MyInfoDto {
 
   private String email;
@@ -28,11 +29,12 @@ public class MyInfoDto {
   private String gender;
   private String region;
   private String mbti;
-  private Set<String> tags=new HashSet<>();
+  private Set<String> tags = new HashSet<>();
   private String preferredAge;
   private int myAge;
   private String detail;
-  public static MyInfoDto toDto(User user){
+
+  public static MyInfoDto toDto(User user) {
     return MyInfoDto.builder()
         .email(user.getEmail())
         .nickname(user.getNickname())

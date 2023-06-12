@@ -44,6 +44,8 @@ public class SignServiceImpl implements SignService {
   private final PasswordEncoder passwordEncoder;
   private final RedisTemplate<String, String> redisTemplate;
 
+  private final RestTemplate restTemplate;
+
   @Value("${jwt.rtk-prefix}")
   String REDIS_PREFIX;
 
@@ -106,6 +108,9 @@ public class SignServiceImpl implements SignService {
     try {
       profile = getProfile(dto.getAccessToken(), oAuth2RegistrationId);
     } catch (ParseException e) {
+      throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
+    }
+    if (profile == null) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
 
@@ -184,8 +189,7 @@ public class SignServiceImpl implements SignService {
 
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
 
-    RestTemplate rt = new RestTemplate();
-    String response = rt.postForObject(
+    String response = restTemplate.postForObject(
         "https://kapi.kakao.com/v2/user/me",
         requestEntity, String.class
     );

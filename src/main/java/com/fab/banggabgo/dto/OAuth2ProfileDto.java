@@ -21,8 +21,9 @@ public class OAuth2ProfileDto {
       Map<String, Object> Attributes) {
     if (registrationId.equals(OAuth2RegistrationId.KAKAO)) {
       return OAuth2ProfileDto.ofKakao(Attributes);
+    } else {
+      return OAuth2ProfileDto.ofGoogle(Attributes);
     }
-    return null;
   }
 
   public static OAuth2ProfileDto ofKakao(Map<String, Object> attributes) {
@@ -36,5 +37,10 @@ public class OAuth2ProfileDto {
         (String) kakao_account.get("email"));
   }
 
-
+  public static OAuth2ProfileDto ofGoogle(Map<String, Object> attributes) {
+    return new OAuth2ProfileDto(
+        (String) attributes.get("picture"),
+        (String) attributes.get("name"),
+        (String) attributes.get("email"));
+  }
 }

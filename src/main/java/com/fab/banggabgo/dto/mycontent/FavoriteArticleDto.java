@@ -24,7 +24,6 @@ public class FavoriteArticleDto {
   private LocalDateTime createdDate;
   private LocalDateTime modifiedDate;
   private String region;
-  private Set<String> tags;
   private String period;
   private Integer price;
   private boolean isRecruiting;
@@ -41,7 +40,6 @@ public class FavoriteArticleDto {
         .modifiedDate(article.getLastModifiedDate())
         .region(article.getRegion().getValue())
         .period(article.getPeriod().getValue())
-        .tags(article.getUser().getTag())
         .price(article.getPrice())
         .isRecruiting(article.isRecruiting())
         .build();

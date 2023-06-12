@@ -431,13 +431,61 @@ class ArticleControllerTest {
   }
 
   @Test
-  @DisplayName("글 삭제 성공")
+  @DisplayName("게시글 총 개수 가져오기")
   @WithMockUser
   void getArticleTotalCntSuccess() throws Exception {
     //given
     //when
     //then
     mockMvc.perform(get("/api/articles/total")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("글 찜 등록 및 삭제 성공")
+  @WithMockUser
+  void postArticleFavoriteSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(post("/api/articles/favorites/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isCreated())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("글 찜 등록 및 삭제 실패 : 게시글이 존재하지 않음")
+  @WithMockUser
+  void postArticleFavoriteFail_ARTICLE_NOT_EXISTS() throws Exception {
+    //given
+    doThrow(new CustomException(ErrorCode.ARTICLE_NOT_EXISTS))
+        .when(articleService)
+        .postArticleFavorite(any(), anyInt());
+
+    //when
+    MvcResult result = mockMvc.perform(post("/api/articles/favorites/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isBadRequest())
+        .andReturn();
+
+    //then
+    String responseBody = result.getResponse().getContentAsString();
+    JsonNode responseJson = objectMapper.readTree(responseBody);
+    String errorCode = responseJson.get("code").asText();
+    assertThat(errorCode).isEqualTo("ARTICLE_NOT_EXISTS");
+  }
+
+  @Test
+  @DisplayName("글 찜 했는지 여부 가져오기 성공")
+  @WithMockUser
+  void getArticleFavoriteSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/articles/favorites/1")
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andExpect(status().isOk())
         .andDo(print());

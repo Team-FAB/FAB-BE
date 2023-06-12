@@ -80,6 +80,17 @@ public class SignController {
   }
 
   @ApiOperation(
+      value = "google로그인",
+      notes = "google에서 발급한 access_token을 받고 로그인에 대한 응답값 반환"
+  )
+  @PostMapping("/login/google")
+  public ResponseEntity<?> signInGoogle(@RequestBody OAuth2SignInRequestForm form) {
+    var result = signService.oauth2SignIn(OAuth2SignInRequestForm.toDto(form),
+        OAuth2RegistrationId.GOOGLE);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
+  @ApiOperation(
       value = "로그아웃",
       notes = "로그인된 사용자를 로그아웃 처리함"
   )

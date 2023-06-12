@@ -267,7 +267,7 @@ class SignServiceImplTest {
     @DisplayName(" 카카오 로그인 - accessToken이 올바르지 않은경우")
     @Test
     void signIn_wrongAccessToken() {
-      assertThrows(NullPointerException.class, () -> signService.oauth2SignIn(
+      assertThrows(CustomException.class, () -> signService.oauth2SignIn(
           OAuth2SignInRequestDto.builder()
               .accessToken("asdkwekwlwekfwlekwl")
               .build(), OAuth2RegistrationId.KAKAO));

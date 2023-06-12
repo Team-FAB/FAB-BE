@@ -107,7 +107,7 @@ public class SignServiceImpl implements SignService {
     //todo 로그인 메서드구현
     try {
       profile = getProfile(dto.getAccessToken(), oAuth2RegistrationId);
-    } catch (ParseException e) {
+    } catch (ParseException | NullPointerException e) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
     if (profile == null) {

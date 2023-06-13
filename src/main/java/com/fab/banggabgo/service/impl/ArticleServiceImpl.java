@@ -6,8 +6,10 @@ import com.fab.banggabgo.dto.ArticleEditDto;
 import com.fab.banggabgo.dto.ArticlePageDto;
 import com.fab.banggabgo.dto.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
+import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
+import com.fab.banggabgo.repository.LikeArticleRepository;
 import com.fab.banggabgo.service.ArticleService;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
@@ -27,6 +29,10 @@ import org.springframework.util.StringUtils;
 public class ArticleServiceImpl implements ArticleService {
 
   private final ArticleRepository articleRepository;
+  private final LikeArticleRepository likeArticleRepository;
+
+  private static final String ADD_LIKE_ARTICLE_SUCCESS = "찜 등록 완료";
+  private static final String DELETE_LIKE_ARTICLE_SUCCESS = "찜 삭제 완료";
 
   @Override
   public void postArticle(User user, ArticleRegisterDto dto) {
@@ -177,5 +183,33 @@ public class ArticleServiceImpl implements ArticleService {
   public Integer getArticleTotalCnt() {
 
     return articleRepository.getArticleTotalCnt();
+  }
+
+  @Override
+  public String postArticleFavorite(User user, Integer id) {
+    Article article = articleRepository.findById(id)
+        .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
+
+    if (likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id)) {
+      LikeArticle likeArticle = likeArticleRepository.findByUserIdAndArticleId(user.getId(), id);
+
+      likeArticleRepository.delete(likeArticle);
+
+      return DELETE_LIKE_ARTICLE_SUCCESS;
+    } else {
+      LikeArticle likeArticle = LikeArticle.builder()
+          .user(user)
+          .article(article)
+          .build();
+
+      likeArticleRepository.save(likeArticle);
+
+      return ADD_LIKE_ARTICLE_SUCCESS;
+    }
+  }
+
+  @Override
+  public boolean getArticleFavorite(User user, Integer id) {
+    return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
   }
 }

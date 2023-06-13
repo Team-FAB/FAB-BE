@@ -99,9 +99,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     var getMyArticleQuery=queryFactory.selectFrom(qArticle)
         .join(qArticle.user ,qUser)
         .fetchJoin()
-        .where(qUser.eq(user))
+        .where(qUser.eq(user).and(qArticle.isDeleted.eq(false)))
         .orderBy(qArticle.isDeleted.asc(),qArticle.createDate.desc());
-
     return getMyArticleQuery.fetch()
         .stream().map(MyArticleDto::toDto)
         .collect(Collectors.toList());
@@ -114,7 +113,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .from(qLikeArticle)
         .join(qLikeArticle.article,qArticle)
         .join(qLikeArticle.user,qUser)
-        .where(qUser.eq(user));
+        .where(qUser.eq(user).and(qArticle.isDeleted.eq(false)));
 
     return getMyFavoriteArticleQuery.fetch()
         .stream().map(FavoriteArticleDto::toDto)

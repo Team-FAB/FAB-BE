@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LikeArticleRepository extends JpaRepository<LikeArticle, Integer> {
 
+  boolean existsByUserIdAndArticleId(Integer userId, Integer articleId);
+  LikeArticle findByUserIdAndArticleId(Integer userId, Integer articleId);
 }

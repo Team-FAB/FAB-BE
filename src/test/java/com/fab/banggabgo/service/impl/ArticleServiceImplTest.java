@@ -1,6 +1,7 @@
 package com.fab.banggabgo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -11,13 +12,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.fab.banggabgo.common.exception.CustomException;
-import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.ArticleEditDto;
 import com.fab.banggabgo.dto.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
+import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
-import com.fab.banggabgo.repository.UserRepository;
+import com.fab.banggabgo.repository.LikeArticleRepository;
 import com.fab.banggabgo.repository.impl.ArticleRepositoryImpl;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
@@ -41,7 +42,7 @@ class ArticleServiceImplTest {
   private ArticleRepository articleRepository;
 
   @Mock
-  private ArticleRepositoryImpl articleRepositoryImpl;
+  private LikeArticleRepository likeArticleRepository;
 
   @InjectMocks
   private ArticleServiceImpl articleService;
@@ -526,5 +527,68 @@ class ArticleServiceImplTest {
 
     //then
     assertEquals(5, result);
+  }
+
+  @Test
+  @DisplayName("글 찜 등록 성공")
+  void postArticleFavoriteSuccess_POST() {
+    //given
+    User user = User.builder()
+        .id(1)
+        .build();
+
+    given(articleRepository.findById(anyInt()))
+        .willReturn(Optional.ofNullable(Article.builder().id(1).build()));
+
+    given(likeArticleRepository.existsByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(false);
+
+    //when
+    articleService.postArticleFavorite(user, 1);
+
+    //then
+    verify(likeArticleRepository, times(1)).save(any(LikeArticle.class));
+  }
+
+  @Test
+  @DisplayName("글 찜 삭제 성공")
+  void postArticleFavoriteSuccess_DELETE() {
+    //given
+    User user = User.builder()
+        .id(1)
+        .build();
+
+    given(articleRepository.findById(anyInt()))
+        .willReturn(Optional.ofNullable(Article.builder().id(1).build()));
+
+    given(likeArticleRepository.existsByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(true);
+
+    given(likeArticleRepository.findByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(LikeArticle.builder().id(1).build());
+
+    //when
+    articleService.postArticleFavorite(user, 1);
+
+    //then
+    verify(likeArticleRepository, times(1)).delete(any(LikeArticle.class));
+  }
+
+  @Test
+  @DisplayName("글 찜 여부 가져오기 성공")
+  void getArticleFavoriteSuccess() {
+    //given
+    User user = User.builder()
+        .id(1)
+        .build();
+
+    given(likeArticleRepository.existsByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(false);
+
+    //when
+    boolean result = articleService.getArticleFavorite(user, 1);
+
+    //then
+    assertFalse(result);
   }
 }

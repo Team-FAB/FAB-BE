@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.OAuth2SignInRequestDto;

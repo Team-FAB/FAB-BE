@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.article;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ArticleEditForm {
+public class ArticleRegisterForm {
 
   private String title;
   private String region;
@@ -20,8 +20,8 @@ public class ArticleEditForm {
   private String gender;
   private String content;
 
-  public static ArticleEditDto toDto(ArticleEditForm form) {
-    return ArticleEditDto.builder()
+  public static ArticleRegisterDto toDto(ArticleRegisterForm form) {
+    return ArticleRegisterDto.builder()
         .title(form.getTitle())
         .region(form.getRegion())
         .period(form.getPeriod())

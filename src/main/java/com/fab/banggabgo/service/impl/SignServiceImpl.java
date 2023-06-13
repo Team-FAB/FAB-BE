@@ -5,7 +5,7 @@ import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.EmailCheckResultDto;
 import com.fab.banggabgo.dto.LogOutResultDto;
-import com.fab.banggabgo.dto.NameCheckResultDto;
+import com.fab.banggabgo.dto.sign.NickNameCheckResultDto;
 import com.fab.banggabgo.dto.OAuth2ProfileDto;
 import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
 import com.fab.banggabgo.dto.SignInRequestDto;
@@ -95,7 +95,7 @@ public class SignServiceImpl implements SignService {
         .build();
 
     redisTemplate.opsForValue()
-        .set(REDIS_PREFIX + user.getUsername(), rtk, jwtTokenProvider.getExpiration(atk),
+        .set(REDIS_PREFIX + user.getUsername(), rtk, jwtTokenProvider.getExpiration(rtk),
             TimeUnit.MILLISECONDS);
 
     return result;
@@ -172,9 +172,9 @@ public class SignServiceImpl implements SignService {
   }
 
   @Override
-  public NameCheckResultDto nickNameCheck(String nickname) {
+  public NickNameCheckResultDto nickNameCheck(String nickname) {
     checkDuplicate(nickname, ErrorCode.NICKNAME_ALREADY_EXISTS);
-    return NameCheckResultDto.builder()
+    return NickNameCheckResultDto.builder()
         .msg("사용 가능한 별명 입니다.")
         .build();
   }

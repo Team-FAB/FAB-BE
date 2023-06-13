@@ -8,15 +8,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
 import com.fab.banggabgo.dto.OAuth2SignInRequestForm;
-import com.fab.banggabgo.dto.SignInRequestDto;
-import com.fab.banggabgo.dto.SignInRequestForm;
-import com.fab.banggabgo.dto.SignInResultDto;
-import com.fab.banggabgo.dto.SignUpRequestDto;
-import com.fab.banggabgo.dto.TokenDto;
+import com.fab.banggabgo.dto.sign.SignInRequestDto;
+import com.fab.banggabgo.dto.sign.SignInRequestForm;
+import com.fab.banggabgo.dto.sign.SignInResultDto;
+import com.fab.banggabgo.dto.sign.SignUpRequestDto;
+import com.fab.banggabgo.dto.sign.TokenDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.type.OAuth2RegistrationId;
@@ -268,6 +269,7 @@ class SignServiceImplTest {
       assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
       assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
     }
+
     @DisplayName(" 구글 로그인 - 회원 가입되어 있던케이스")
     @Test
     void signInWithoutSignUpGoogleSuccess() {
@@ -364,6 +366,7 @@ class SignServiceImplTest {
       assertThrows(CustomException.class, () -> signService.oauth2SignIn(
           dto, OAuth2RegistrationId.GOOGLE));
     }
+
     @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라져 email을 찾기힘든 경우")
     @Test
     void signIn_wrongAcceptGoogleJson() {

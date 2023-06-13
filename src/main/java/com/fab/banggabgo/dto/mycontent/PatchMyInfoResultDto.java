@@ -35,7 +35,7 @@ public class PatchMyInfoResultDto {
         .isSmoke(user.getIsSmoker())
         .mbti(user.getMbti().name())
         .region(user.getRegion().getValue())
-        .activityTime(user.getActivityTime().name())
+        .activityTime(user.getActivityTime().getValue())
         .tags(new ArrayList<>(user.getTag()))
         .detail(user.getDetail())
         .build();

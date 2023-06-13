@@ -287,7 +287,7 @@ class SignServiceImplTest {
           .build();
 
       //when
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(googleJson);
+      when(restTemplate.getForObject(anyString(), any())).thenReturn(googleJson);
       when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
       when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
       when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
@@ -303,7 +303,7 @@ class SignServiceImplTest {
       assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
     }
 
-    @DisplayName(" 카카오 로그인 - 회원 가입이 필요한 케이스")
+    @DisplayName(" 구글 로그인 - 회원 가입이 필요한 케이스")
     @Test
     void signInWithSignUpGoogleSuccess() {
       //given
@@ -321,7 +321,7 @@ class SignServiceImplTest {
           .build();
 
       //when
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(googleJson);
+      when(restTemplate.getForObject(anyString(), any())).thenReturn(googleJson);
       when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
       when(userRepository.save(any())).thenReturn(user);
       when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
@@ -352,21 +352,20 @@ class SignServiceImplTest {
               .build(), OAuth2RegistrationId.KAKAO));
     }
 
-    @DisplayName(" 구글 로그인 - 구글에서 받은 json의 형식이 달라진 경우")
+    @DisplayName(" 구글 로그인 - 구글에서 받은 json의 email이 없어진 경우")
     @Test
     void signIn_wrongAcceptJson() {
       var changeJson = "{ "
-          + " \"email\": \"test@email.com\","
           + " \"name\": \"테스터\","
           + " \"picture\": \"profile_image_url\""
           + " }";
 
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(changeJson);
+      when(restTemplate.getForObject(anyString(), any())).thenReturn(changeJson);
 
       assertThrows(CustomException.class, () -> signService.oauth2SignIn(
           dto, OAuth2RegistrationId.GOOGLE));
     }
-    @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라진 경우")
+    @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라져 email을 찾기힘든 경우")
     @Test
     void signIn_wrongAcceptGoogleJson() {
       var changeJson = "{\n"

@@ -181,15 +181,12 @@ public class SignServiceImpl implements SignService {
 
   private OAuth2ProfileDto getProfile(String accessToken, OAuth2RegistrationId oAuth2RegistrationId)
       throws ParseException {
-    System.out.println(accessToken);
     String response;
     if (oAuth2RegistrationId.equals(OAuth2RegistrationId.KAKAO)) {
       response = getKakaoProfile(accessToken);
     } else {
-      System.out.println(accessToken);
       response = getGoogleProfile(accessToken);
     }
-    System.out.println(response);
     return OAuth2ProfileDto.of(oAuth2RegistrationId,
         new JSONParser(response).parseObject());
   }

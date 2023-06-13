@@ -43,7 +43,6 @@ public class MyInfoDto {
         .activityTime(Optional.ofNullable(user.getActivityTime()).map(Enum::name).orElse("null"))
         .gender(Optional.ofNullable(user.getGender()).map(Gender::getValue).orElse("null"))
         .region(Optional.ofNullable(user.getRegion()).map(Seoul::getValue).orElse("null"))
-        .mbti(Optional.ofNullable(user.getMbti()).map(Enum::name).orElse("null"))
         .tags(user.getTag())
         .preferredAge(Optional.ofNullable(user.getMbti()).map(Enum::name).orElse("null"))
         .myAge(user.getMyAge())

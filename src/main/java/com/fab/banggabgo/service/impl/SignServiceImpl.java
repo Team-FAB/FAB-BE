@@ -84,8 +84,8 @@ public class SignServiceImpl implements SignService {
     if (!passwordEncoder.matches(dto.getPassword(), user.getPassword())) {
       throw new CustomException(ErrorCode.PASSWORD_NOT_MATCHED);
     }
-    var atk = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
-    var rtk = jwtTokenProvider.createRefreshToken();
+    var atk = getAccessToken(user);
+    var rtk = getRefreshToken();
 
     var result = SignInResultDto.builder()
         .token(TokenDto.builder()
@@ -123,8 +123,8 @@ public class SignServiceImpl implements SignService {
             .roles(List.of(UserRole.USER_ROLE))
             .build()));
 
-    var atk = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
-    var rtk = jwtTokenProvider.createRefreshToken();
+    var atk = getAccessToken(user);
+    var rtk = getRefreshToken();
 
     var result = SignInResultDto.builder()
         .token(TokenDto.builder()
@@ -139,6 +139,8 @@ public class SignServiceImpl implements SignService {
 
     return result;
   }
+
+
 
   @Override
   public LogOutResultDto logout(HttpServletRequest req) {
@@ -212,4 +214,13 @@ public class SignServiceImpl implements SignService {
         requestEntity, String.class
     );
   }
+
+  private String getRefreshToken() {
+    return jwtTokenProvider.createRefreshToken();
+  }
+
+  private String getAccessToken(User user) {
+    return jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
+  }
+
 }

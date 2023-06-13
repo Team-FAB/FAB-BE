@@ -15,7 +15,8 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     var query=queryFactory.selectFrom(qUser)
             .leftJoin(qUser.roles).fetchJoin()
             .leftJoin(qUser.tag).fetchJoin()
-            .where(qUser.email.eq(email));
+            .leftJoin(qUser.tag).fetchJoin()
+        .where(qUser.email.eq(email));
     return Optional.ofNullable(query.fetchOne());
   }
 

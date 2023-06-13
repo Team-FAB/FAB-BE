@@ -2,6 +2,7 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.service.MyContentService;
@@ -46,6 +47,12 @@ public class MyContentController {
   public ResponseEntity<?> PatchMyNickName(@AuthenticationPrincipal User user, @RequestBody
   PatchMyNicknameForm form) { //닉네임 변경
     var result = myContentService.patchNickname(user, PatchMyNicknameForm.toDto(form));
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+  @PatchMapping
+  public ResponseEntity<?> patchMyInfo(@AuthenticationPrincipal User user,
+      @RequestBody PatchMyInfoForm form){ //내정보 변경
+    var result = myContentService.patchMyInfo(user,PatchMyInfoForm.toDto(form));
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 

@@ -7,12 +7,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.service.MyContentService;
 import com.fab.banggabgo.service.impl.MyContentServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -77,6 +79,7 @@ class MyContentControllerTest {
       //when
       //then
   }
+
   @Test
   @DisplayName("닉네임 변경- 로그인 안되어있을경우")
   void patchMyNickname_notAuthenticated() throws Exception {
@@ -101,6 +104,33 @@ class MyContentControllerTest {
             .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is4xxClientError());
+    //when
+    //then
+  }
+  @Test
+  @DisplayName("내정보 변경- 폼이없는경우")
+  @WithMockUser
+  void patchMyInfo_without_form() throws Exception {
+      //given
+    mockMvc.perform(patch("/api/my")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError());
+      //when
+      //then
+  }
+  @Test
+  @DisplayName("내정보 변경 - 정상")
+  @WithMockUser
+  void patchMyInfo() throws Exception {
+    PatchMyInfoForm form=PatchMyInfoForm.builder()
+        .build();
+    //given
+    mockMvc.perform(patch("/api/my")
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+            .contentType(MediaType.APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(form)))
+        .andExpect(status().isOk());
     //when
     //then
   }

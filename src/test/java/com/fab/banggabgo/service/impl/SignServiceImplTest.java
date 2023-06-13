@@ -178,10 +178,10 @@ class SignServiceImplTest {
   }
 
   @Nested
-  @DisplayName(" OAuth2SignIn - 카카오로그인")
+  @DisplayName(" OAuth2SignIn - 소셜 로그인")
   class OAuth2SignIn {
 
-    String json = "{\n"
+    String kakaoJson = "{\n"
         + "    \"kakao_account\": {\n"
         + "        \"profile\": {\n"
         + "            \"nickname\": \"테스터\",\n"
@@ -190,6 +190,11 @@ class SignServiceImplTest {
         + "        \"email\": \"test@email.com\"\n"
         + "    }\n"
         + "}";
+    String googleJson = "{ "
+        + " \"email\": \"test@email.com\","
+        + " \"name\": \"테스터\","
+        + " \"picture\": \"profile_image_url\""
+        + " }";
     OAuth2SignInRequestForm form = OAuth2SignInRequestForm.builder()
         .accessToken("ThisIsAccessToken")
         .build();
@@ -213,7 +218,7 @@ class SignServiceImplTest {
           .build();
 
       //when
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(json);
+      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(kakaoJson);
       when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
       when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
       when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
@@ -247,7 +252,7 @@ class SignServiceImplTest {
           .build();
 
       //when
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(json);
+      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(kakaoJson);
       when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
       when(userRepository.save(any())).thenReturn(user);
       when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
@@ -264,12 +269,82 @@ class SignServiceImplTest {
       assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
       assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
     }
+    @DisplayName(" 구글 로그인 - 회원 가입되어 있던케이스")
+    @Test
+    void signInWithoutSignUpGoogleSuccess() {
+      //given
+      var user = User.builder()
+          .email("test@email.com")
+          .nickname("테스터")
+          .build();
+      var stub_result = SignInResultDto.builder()
+          .token(
+              TokenDto.builder()
+                  .atk("accesstoken")
+                  .rtk("rtktoken")
+                  .build()
+          )
+          .build();
+
+      //when
+      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(googleJson);
+      when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
+      when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
+      when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
+      when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+      var result = signService.oauth2SignIn(dto, OAuth2RegistrationId.GOOGLE);
+
+      //then
+      verify(userRepository, times(1)).findByEmail(user.getEmail());
+      verify(jwtTokenProvider, times(1)).createAccessToken(user.getEmail(), user.getRoles());
+      verify(jwtTokenProvider, times(1)).createRefreshToken();
+      verify(jwtTokenProvider, times(1)).getExpiration(anyString());
+      assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
+      assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
+    }
+
+    @DisplayName(" 카카오 로그인 - 회원 가입이 필요한 케이스")
+    @Test
+    void signInWithSignUpGoogleSuccess() {
+      //given
+      var user = User.builder()
+          .email("test@email.com")
+          .nickname("테스터")
+          .build();
+      var stub_result = SignInResultDto.builder()
+          .token(
+              TokenDto.builder()
+                  .atk("accesstoken")
+                  .rtk("rtktoken")
+                  .build()
+          )
+          .build();
+
+      //when
+      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(googleJson);
+      when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+      when(userRepository.save(any())).thenReturn(user);
+      when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
+      when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
+      when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+      var result = signService.oauth2SignIn(dto, OAuth2RegistrationId.GOOGLE);
+
+      //then
+      verify(userRepository, times(1)).findByEmail(user.getEmail());
+      verify(userRepository, times(1)).save(any());
+      verify(jwtTokenProvider, times(1)).createAccessToken(user.getEmail(), user.getRoles());
+      verify(jwtTokenProvider, times(1)).createRefreshToken();
+      verify(jwtTokenProvider, times(1)).getExpiration(anyString());
+      assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
+      assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
+    }
 
     @DisplayName(" 카카오 로그인 - accessToken이 올바르지 않은경우")
     @Test
     void signIn_wrongAccessToken() {
 
-      when(restTemplate.postForObject(anyString(), any(), any())).thenThrow(HttpClientErrorException.class);
+      when(restTemplate.postForObject(anyString(), any(), any())).thenThrow(
+          HttpClientErrorException.class);
 
       assertThrows(CustomException.class, () -> signService.oauth2SignIn(
           OAuth2SignInRequestDto.builder()
@@ -277,9 +352,23 @@ class SignServiceImplTest {
               .build(), OAuth2RegistrationId.KAKAO));
     }
 
-    @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라진 경우")
+    @DisplayName(" 구글 로그인 - 구글에서 받은 json의 형식이 달라진 경우")
     @Test
     void signIn_wrongAcceptJson() {
+      var changeJson = "{ "
+          + " \"email\": \"test@email.com\","
+          + " \"name\": \"테스터\","
+          + " \"picture\": \"profile_image_url\""
+          + " }";
+
+      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(changeJson);
+
+      assertThrows(CustomException.class, () -> signService.oauth2SignIn(
+          dto, OAuth2RegistrationId.GOOGLE));
+    }
+    @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라진 경우")
+    @Test
+    void signIn_wrongAcceptGoogleJson() {
       var changeJson = "{\n"
           + "    \"kakao_account\": {\n"
           + "        \"profile\": {\n"

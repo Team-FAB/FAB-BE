@@ -2,7 +2,7 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
-import com.fab.banggabgo.dto.OAuth2SignInRequestForm;
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestForm;
 import com.fab.banggabgo.dto.sign.SignInRequestForm;
 import com.fab.banggabgo.dto.sign.SignUpRequestForm;
 import com.fab.banggabgo.service.SignService;

@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.OAuth2;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,5 +13,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OAuth2SignInRequestDto {
 
-  String accessToken;
+  String code;
 }

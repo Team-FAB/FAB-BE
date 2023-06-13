@@ -80,7 +80,7 @@ public class SignServiceImpl implements SignService {
         .build();
 
     redisTemplate.opsForValue()
-        .set(REDIS_PREFIX + user.getUsername(), rtk, jwtTokenProvider.getExpiration(atk),
+        .set(REDIS_PREFIX + user.getUsername(), rtk, jwtTokenProvider.getExpiration(rtk),
             TimeUnit.MILLISECONDS);
 
     return result;

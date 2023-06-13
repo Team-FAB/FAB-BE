@@ -2,9 +2,11 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
-import com.fab.banggabgo.dto.sign.SignInRequestForm;
-import com.fab.banggabgo.dto.sign.SignUpRequestForm;
+import com.fab.banggabgo.dto.OAuth2SignInRequestForm;
+import com.fab.banggabgo.dto.SignInRequestForm;
+import com.fab.banggabgo.dto.SignUpRequestForm;
 import com.fab.banggabgo.service.SignService;
+import com.fab.banggabgo.type.OAuth2RegistrationId;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import javax.servlet.http.HttpServletRequest;
@@ -63,6 +65,28 @@ public class SignController {
   @PostMapping("/login")
   public ResponseEntity<?> signIn(@RequestBody SignInRequestForm form) {
     var result = signService.signIn(SignInRequestForm.toDto(form));
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
+  @ApiOperation(
+      value = "kakao로그인",
+      notes = "kakao에서 발급한 access_token을 받고 로그인에 대한 응답값 반환"
+  )
+  @PostMapping("/login/kakao")
+  public ResponseEntity<?> signInKakao(@RequestBody OAuth2SignInRequestForm form) {
+    var result = signService.oauth2SignIn(OAuth2SignInRequestForm.toDto(form),
+        OAuth2RegistrationId.KAKAO);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
+  @ApiOperation(
+      value = "google로그인",
+      notes = "google에서 발급한 access_token을 받고 로그인에 대한 응답값 반환"
+  )
+  @PostMapping("/login/google")
+  public ResponseEntity<?> signInGoogle(@RequestBody OAuth2SignInRequestForm form) {
+    var result = signService.oauth2SignIn(OAuth2SignInRequestForm.toDto(form),
+        OAuth2RegistrationId.GOOGLE);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 

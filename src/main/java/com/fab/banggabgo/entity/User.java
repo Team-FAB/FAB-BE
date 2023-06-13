@@ -5,7 +5,6 @@ import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.MatchStatus;
 import com.fab.banggabgo.type.Mbti;
-import com.fab.banggabgo.type.PreferredAge;
 import com.fab.banggabgo.type.Seoul;
 import com.fab.banggabgo.type.UserRole;
 import com.fab.banggabgo.type.UserType;
@@ -32,7 +31,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Fetch;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -79,8 +77,8 @@ public class User extends BaseEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Mbti mbti;
 
-  @Enumerated(EnumType.STRING)
-  private PreferredAge preferredAge;
+  private int minAge;
+  private int maxAge;
 
   private int myAge;
 
@@ -96,7 +94,7 @@ public class User extends BaseEntity implements UserDetails {
   @ElementCollection(fetch = FetchType.LAZY)
   @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
   @Enumerated(EnumType.STRING)
-  @Column(name = "roles" )
+  @Column(name = "roles")
   @Builder.Default
   private List<UserRole> roles = new ArrayList<>();
 

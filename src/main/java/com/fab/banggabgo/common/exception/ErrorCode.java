@@ -38,7 +38,7 @@ public enum ErrorCode implements Code {
   /**
   * MyContent 에러코드
   */
-  PATCH_MY_INFO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, "내정보 데이터 변환오류");
+  PATCH_MY_INFO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, "내정보 데이터 변환오류"),
   FAIL_INFO_LOADING(HttpStatus.BAD_REQUEST, "정보를 불러오지 못했습니다.");
 
   private final HttpStatus status;

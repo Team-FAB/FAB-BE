@@ -100,7 +100,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .join(qArticle.user ,qUser)
         .fetchJoin()
         .where(qUser.eq(user).and(qArticle.isDeleted.eq(false)))
-        .orderBy(qArticle.isDeleted.asc(),qArticle.createDate.desc());
+        .orderBy(qArticle.isRecruiting.desc() ,qArticle.createDate.desc());
     return getMyArticleQuery.fetch()
         .stream().map(MyArticleDto::toDto)
         .collect(Collectors.toList());

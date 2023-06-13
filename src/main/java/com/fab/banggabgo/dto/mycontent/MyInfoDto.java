@@ -1,7 +1,9 @@
 package com.fab.banggabgo.dto.mycontent;
 
 import com.fab.banggabgo.entity.User;
+import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.Mbti;
 import com.fab.banggabgo.type.Seoul;
 import java.util.HashSet;
 import java.util.Optional;
@@ -40,9 +42,10 @@ public class MyInfoDto {
         .nickname(user.getNickname())
         .image(user.getImage())
         .isSmoker(user.getIsSmoker())
-        .activityTime(Optional.ofNullable(user.getActivityTime()).map(Enum::name).orElse("null"))
+        .activityTime(Optional.ofNullable(user.getActivityTime()).map(ActivityTime::getValue).orElse("null"))
         .gender(Optional.ofNullable(user.getGender()).map(Gender::getValue).orElse("null"))
         .region(Optional.ofNullable(user.getRegion()).map(Seoul::getValue).orElse("null"))
+            .mbti(Optional.ofNullable(user.getMbti()).map(Mbti::name).orElse("null"))
         .tags(user.getTag())
         .preferredAge(Optional.ofNullable(user.getMbti()).map(Enum::name).orElse("null"))
         .myAge(user.getMyAge())

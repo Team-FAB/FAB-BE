@@ -75,7 +75,7 @@ public class MyContentServiceImpl implements MyContentService {
       changed_user.setIsSmoker(dto.isSmoke());
       changed_user.setMbti(Mbti.valueOf(dto.getMbti()));
       changed_user.setRegion(Seoul.fromValue(dto.getRegion()));
-      changed_user.setActivityTime(ActivityTime.valueOf(dto.getActivityTime()));
+      changed_user.setActivityTime(ActivityTime.fromValue(dto.getActivityTime()));
       changed_user.setTag(new HashSet<>(dto.getTags()));
       changed_user.setDetail(dto.getDetail());
     }catch (Exception e){

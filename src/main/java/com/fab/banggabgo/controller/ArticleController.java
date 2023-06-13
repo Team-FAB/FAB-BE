@@ -2,8 +2,8 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
-import com.fab.banggabgo.dto.ArticleEditForm;
-import com.fab.banggabgo.dto.ArticleRegisterForm;
+import com.fab.banggabgo.dto.article.ArticleEditForm;
+import com.fab.banggabgo.dto.article.ArticleRegisterForm;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.service.ArticleService;
 import lombok.RequiredArgsConstructor;

@@ -9,11 +9,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fab.banggabgo.config.security.JwtTokenProvider;
-import com.fab.banggabgo.dto.SignInRequestDto;
-import com.fab.banggabgo.dto.SignInRequestForm;
-import com.fab.banggabgo.dto.SignInResultDto;
-import com.fab.banggabgo.dto.SignUpRequestDto;
-import com.fab.banggabgo.dto.TokenDto;
+import com.fab.banggabgo.dto.sign.SignInRequestDto;
+import com.fab.banggabgo.dto.sign.SignInRequestForm;
+import com.fab.banggabgo.dto.sign.SignInResultDto;
+import com.fab.banggabgo.dto.sign.SignUpRequestDto;
+import com.fab.banggabgo.dto.sign.TokenDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
 import java.util.Optional;

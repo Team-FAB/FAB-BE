@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.article;
 
 import com.fab.banggabgo.entity.Article;
 import java.time.LocalDateTime;

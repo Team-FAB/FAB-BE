@@ -2,8 +2,8 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
-import com.fab.banggabgo.dto.SignInRequestForm;
-import com.fab.banggabgo.dto.SignUpRequestForm;
+import com.fab.banggabgo.dto.sign.SignInRequestForm;
+import com.fab.banggabgo.dto.sign.SignUpRequestForm;
 import com.fab.banggabgo.service.SignService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

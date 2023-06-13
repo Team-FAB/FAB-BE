@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.sign;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

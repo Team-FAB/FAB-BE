@@ -11,8 +11,8 @@ import static org.mockito.Mockito.when;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
-import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
-import com.fab.banggabgo.dto.OAuth2SignInRequestForm;
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestDto;
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestForm;
 import com.fab.banggabgo.dto.sign.SignInRequestDto;
 import com.fab.banggabgo.dto.sign.SignInRequestForm;
 import com.fab.banggabgo.dto.sign.SignInResultDto;
@@ -196,7 +196,7 @@ class SignServiceImplTest {
         + " \"picture\": \"profile_image_url\""
         + " }";
     OAuth2SignInRequestForm form = OAuth2SignInRequestForm.builder()
-        .accessToken("ThisIsAccessToken")
+        .code("ThisIsAccessToken")
         .build();
     OAuth2SignInRequestDto dto = OAuth2SignInRequestForm.toDto(form);
 
@@ -349,7 +349,7 @@ class SignServiceImplTest {
 
       assertThrows(CustomException.class, () -> signService.oauth2SignIn(
           OAuth2SignInRequestDto.builder()
-              .accessToken("asdkwekwlwekfwlekwl")
+              .code("asdkwekwlwekfwlekwl")
               .build(), OAuth2RegistrationId.KAKAO));
     }
 

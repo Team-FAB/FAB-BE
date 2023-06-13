@@ -4,7 +4,7 @@ package com.fab.banggabgo.service;
 import com.fab.banggabgo.dto.sign.EmailCheckResultDto;
 import com.fab.banggabgo.dto.sign.LogOutResultDto;
 import com.fab.banggabgo.dto.sign.NickNameCheckResultDto;
-import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestDto;
 import com.fab.banggabgo.dto.sign.SignInRequestDto;
 import com.fab.banggabgo.dto.sign.SignInResultDto;
 import com.fab.banggabgo.dto.sign.SignUpRequestDto;

@@ -3,11 +3,11 @@ package com.fab.banggabgo.service.impl;
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
+import com.fab.banggabgo.dto.OAuth2.OAuth2ProfileDto;
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestDto;
 import com.fab.banggabgo.dto.sign.EmailCheckResultDto;
 import com.fab.banggabgo.dto.sign.LogOutResultDto;
 import com.fab.banggabgo.dto.sign.NickNameCheckResultDto;
-import com.fab.banggabgo.dto.OAuth2ProfileDto;
-import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
 import com.fab.banggabgo.dto.sign.SignInRequestDto;
 import com.fab.banggabgo.dto.sign.SignInResultDto;
 import com.fab.banggabgo.dto.sign.SignUpRequestDto;
@@ -18,6 +18,7 @@ import com.fab.banggabgo.service.SignService;
 import com.fab.banggabgo.type.OAuth2RegistrationId;
 import com.fab.banggabgo.type.UserRole;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,10 @@ public class SignServiceImpl implements SignService {
   private final RedisTemplate<String, String> redisTemplate;
 
   private final RestTemplate restTemplate;
-
+  @Value("${spring.OAuth2.client_id}")
+  String clientId;
+  @Value("${spring.OAuth2.redirect_uri}")
+  String redirectUri;
   @Value("${jwt.rtk-prefix}")
   String REDIS_PREFIX;
 
@@ -107,8 +111,9 @@ public class SignServiceImpl implements SignService {
     OAuth2ProfileDto profile;
     //todo 로그인 메서드구현
     try {
-      profile = getProfile(dto.getAccessToken(), oAuth2RegistrationId);
+      profile = getProfile(dto.getCode(), oAuth2RegistrationId);
     } catch (ParseException | HttpClientErrorException e) {
+      System.out.println(e.getMessage());
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
     if (profile == null || profile.getEmail() == null) {
@@ -181,13 +186,13 @@ public class SignServiceImpl implements SignService {
         .build();
   }
 
-  private OAuth2ProfileDto getProfile(String accessToken, OAuth2RegistrationId oAuth2RegistrationId)
+  private OAuth2ProfileDto getProfile(String code, OAuth2RegistrationId oAuth2RegistrationId)
       throws ParseException {
     String response;
     if (oAuth2RegistrationId.equals(OAuth2RegistrationId.KAKAO)) {
-      response = getKakaoProfile(accessToken);
+      response = getKakaoProfile(code);
     } else {
-      response = getGoogleProfile(accessToken);
+      response = getGoogleProfile(code);
     }
     return OAuth2ProfileDto.of(oAuth2RegistrationId,
         new JSONParser(response).parseObject());
@@ -199,15 +204,30 @@ public class SignServiceImpl implements SignService {
     );
   }
 
-  private String getKakaoProfile(String accessToken) {
+  private String getKakaoProfile(String code) throws ParseException {
     HttpHeaders headers = new HttpHeaders();
-    headers.setBearerAuth(accessToken);
     headers.add("Context-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    map.add("property_keys", "[\"kakao_account.email\",\"kakao_account.profile\"]");
+    map.add("grant_type", "authorization_code");
+    map.add("client_id", clientId);
+    map.add("redirect_uri", redirectUri);
+    map.add("code", code);
 
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
+
+    String response = restTemplate.postForObject(
+        "https://kauth.kakao.com/oauth/token",
+        requestEntity, String.class
+    );
+    Map<String, Object> m = new JSONParser(response).parseObject();
+
+    headers.setBearerAuth((String) m.get("access_token"));
+
+    map = new LinkedMultiValueMap<>();
+    map.add("property_keys", "[\"kakao_account.email\",\"kakao_account.profile\"]");
+
+    requestEntity = new HttpEntity<>(map, headers);
 
     return restTemplate.postForObject(
         "https://kapi.kakao.com/v2/user/me",

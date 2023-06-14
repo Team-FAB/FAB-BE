@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -206,7 +207,7 @@ public class SignServiceImpl implements SignService {
 
   private String getKakaoProfile(String code) throws ParseException {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Context-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
     map.add("grant_type", "authorization_code");

@@ -22,5 +22,11 @@ spring:
     host: localhost
     port: 6379
     timeout: 3
+
+  OAuth2:
+    client_id:
+    redirect_uri:
+
+
 server:
   port: 8080

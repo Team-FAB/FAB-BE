@@ -47,4 +47,20 @@ public class ArticlePageDto {
             .build())
         .collect(Collectors.toList());
   }
+
+  public static ArticlePageDto toDto(Article article) {
+    return ArticlePageDto.builder()
+        .id(article.getId())
+        .title(article.getTitle())
+        .email(article.getUser().getEmail())
+        .nickname(article.getUser().getNickname())
+        .content(article.getContent())
+        .gender(article.getGender().getValue())
+        .createdDate(article.getCreateDate())
+        .region(article.getRegion().getValue())
+        .period(article.getPeriod().getValue())
+        .price(article.getPrice())
+        .isRecruiting(article.isRecruiting())
+        .build();
+  }
 }

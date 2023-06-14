@@ -31,6 +31,9 @@ public class MyInfoDto {
   private String region;
   private String mbti;
   private Set<String> tags = new HashSet<>();
+  private int minAge;
+  private int maxAge;
+
   private String preferredAge;
   private int myAge;
   private String detail;

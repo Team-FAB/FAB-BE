@@ -3,24 +3,37 @@ package com.fab.banggabgo.service.impl;
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
-import com.fab.banggabgo.dto.EmailCheckResultDto;
-import com.fab.banggabgo.dto.LogOutResultDto;
-import com.fab.banggabgo.dto.NameCheckResultDto;
-import com.fab.banggabgo.dto.SignInRequestDto;
-import com.fab.banggabgo.dto.SignInResultDto;
-import com.fab.banggabgo.dto.SignUpRequestDto;
-import com.fab.banggabgo.dto.TokenDto;
+import com.fab.banggabgo.dto.sign.EmailCheckResultDto;
+import com.fab.banggabgo.dto.sign.LogOutResultDto;
+import com.fab.banggabgo.dto.sign.NickNameCheckResultDto;
+import com.fab.banggabgo.dto.OAuth2ProfileDto;
+import com.fab.banggabgo.dto.OAuth2SignInRequestDto;
+import com.fab.banggabgo.dto.sign.SignInRequestDto;
+import com.fab.banggabgo.dto.sign.SignInResultDto;
+import com.fab.banggabgo.dto.sign.SignUpRequestDto;
+import com.fab.banggabgo.dto.sign.TokenDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.SignService;
+import com.fab.banggabgo.type.OAuth2RegistrationId;
+import com.fab.banggabgo.type.UserRole;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.json.JSONParser;
+import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +44,8 @@ public class SignServiceImpl implements SignService {
   private final JwtTokenProvider jwtTokenProvider;
   private final PasswordEncoder passwordEncoder;
   private final RedisTemplate<String, String> redisTemplate;
+
+  private final RestTemplate restTemplate;
 
   @Value("${jwt.rtk-prefix}")
   String REDIS_PREFIX;
@@ -80,6 +95,45 @@ public class SignServiceImpl implements SignService {
         .build();
 
     redisTemplate.opsForValue()
+        .set(REDIS_PREFIX + user.getUsername(), rtk, jwtTokenProvider.getExpiration(rtk),
+            TimeUnit.MILLISECONDS);
+
+    return result;
+  }
+
+  @Override
+  public SignInResultDto oauth2SignIn(OAuth2SignInRequestDto dto,
+      OAuth2RegistrationId oAuth2RegistrationId) {
+    OAuth2ProfileDto profile;
+    //todo 로그인 메서드구현
+    try {
+      profile = getProfile(dto.getAccessToken(), oAuth2RegistrationId);
+    } catch (ParseException | HttpClientErrorException e) {
+      throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
+    }
+    if (profile == null || profile.getEmail() == null) {
+      throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
+    }
+
+    User user = userRepository.findByEmail(profile.getEmail())
+        .orElseGet(() -> userRepository.save(User.builder()
+            .email(profile.getEmail())
+            .nickname(profile.getNickName())
+            .image(profile.getImageUrl())
+            .roles(List.of(UserRole.USER_ROLE))
+            .build()));
+
+    var atk = jwtTokenProvider.createAccessToken(user.getUsername(), user.getRoles());
+    var rtk = jwtTokenProvider.createRefreshToken();
+
+    var result = SignInResultDto.builder()
+        .token(TokenDto.builder()
+            .atk(atk)
+            .rtk(rtk)
+            .build())
+        .build();
+
+    redisTemplate.opsForValue()
         .set(REDIS_PREFIX + user.getUsername(), rtk, jwtTokenProvider.getExpiration(atk),
             TimeUnit.MILLISECONDS);
 
@@ -118,11 +172,44 @@ public class SignServiceImpl implements SignService {
   }
 
   @Override
-  public NameCheckResultDto nickNameCheck(String nickname) {
+  public NickNameCheckResultDto nickNameCheck(String nickname) {
     checkDuplicate(nickname, ErrorCode.NICKNAME_ALREADY_EXISTS);
-    return NameCheckResultDto.builder()
+    return NickNameCheckResultDto.builder()
         .msg("사용 가능한 별명 입니다.")
         .build();
   }
 
+  private OAuth2ProfileDto getProfile(String accessToken, OAuth2RegistrationId oAuth2RegistrationId)
+      throws ParseException {
+    String response;
+    if (oAuth2RegistrationId.equals(OAuth2RegistrationId.KAKAO)) {
+      response = getKakaoProfile(accessToken);
+    } else {
+      response = getGoogleProfile(accessToken);
+    }
+    return OAuth2ProfileDto.of(oAuth2RegistrationId,
+        new JSONParser(response).parseObject());
+  }
+
+  private String getGoogleProfile(String accessToken) {
+    return restTemplate.getForObject(
+        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken, String.class
+    );
+  }
+
+  private String getKakaoProfile(String accessToken) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(accessToken);
+    headers.add("Context-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    map.add("property_keys", "[\"kakao_account.email\",\"kakao_account.profile\"]");
+
+    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
+
+    return restTemplate.postForObject(
+        "https://kapi.kakao.com/v2/user/me",
+        requestEntity, String.class
+    );
+  }
 }

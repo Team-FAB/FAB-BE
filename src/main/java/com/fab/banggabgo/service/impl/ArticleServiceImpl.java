@@ -2,9 +2,9 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
-import com.fab.banggabgo.dto.ArticleEditDto;
-import com.fab.banggabgo.dto.ArticlePageDto;
-import com.fab.banggabgo.dto.ArticleRegisterDto;
+import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticlePageDto;
+import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;

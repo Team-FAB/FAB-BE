@@ -1,8 +1,8 @@
 package com.fab.banggabgo.service;
 
-import com.fab.banggabgo.dto.ArticleEditDto;
-import com.fab.banggabgo.dto.ArticlePageDto;
-import com.fab.banggabgo.dto.ArticleRegisterDto;
+import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticlePageDto;
+import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.User;
 import java.util.List;
 

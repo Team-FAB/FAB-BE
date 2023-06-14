@@ -1,5 +1,6 @@
 package com.fab.banggabgo.entity;
 
+import com.fab.banggabgo.type.ApproveStatus;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -26,18 +27,13 @@ public class Apply extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @Column(name = "is_approved")
-  private boolean isApproved;
+  @Column(name = "approve_status")
+  private ApproveStatus approveStatus;
 
   @ManyToOne
   @JoinColumn(name = "apply_user_id")
   @ToString.Exclude
   private User applyUser;
-
-  @ManyToOne
-  @JoinColumn(name = "applied_user_id")
-  @ToString.Exclude
-  private User appliedUser;
 
   @ManyToOne
   @JoinColumn(name = "article_id")

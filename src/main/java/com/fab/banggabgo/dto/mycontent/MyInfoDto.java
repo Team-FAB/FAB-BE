@@ -31,7 +31,10 @@ public class MyInfoDto {
   private String gender;
   private String region;
   private String mbti;
-  private Set<String> tags = new HashSet<>();
+  private Set<String> tags;
+  private int minAge;
+  private int maxAge;
+
   private String preferredAge;
   private int myAge;
   private String detail;
@@ -45,9 +48,10 @@ public class MyInfoDto {
         .activityTime(Optional.ofNullable(user.getActivityTime()).map(ActivityTime::getValue).orElse("null"))
         .gender(Optional.ofNullable(user.getGender()).map(Gender::getValue).orElse("null"))
         .region(Optional.ofNullable(user.getRegion()).map(Seoul::getValue).orElse("null"))
-            .mbti(Optional.ofNullable(user.getMbti()).map(Mbti::name).orElse("null"))
+        .mbti(Optional.ofNullable(user.getMbti()).map(Mbti::name).orElse("null"))
         .tags(user.getTag())
-        .preferredAge(Optional.ofNullable(user.getMbti()).map(Enum::name).orElse("null"))
+        .minAge(user.getMinAge())
+        .maxAge(user.getMaxAge())
         .myAge(user.getMyAge())
         .detail(user.getDetail())
         .build();

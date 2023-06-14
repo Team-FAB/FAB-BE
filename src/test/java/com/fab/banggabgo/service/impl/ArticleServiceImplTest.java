@@ -12,14 +12,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.fab.banggabgo.common.exception.CustomException;
-import com.fab.banggabgo.dto.ArticleEditDto;
-import com.fab.banggabgo.dto.ArticleRegisterDto;
+import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.LikeArticleRepository;
-import com.fab.banggabgo.repository.impl.ArticleRepositoryImpl;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;

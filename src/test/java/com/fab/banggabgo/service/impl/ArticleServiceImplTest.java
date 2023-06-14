@@ -165,8 +165,8 @@ class ArticleServiceImplTest {
     article.setRecruiting(false);
     article.setDeleted(false);
 
-    given(articleRepository.findById(anyInt()))
-        .willReturn(Optional.ofNullable(article));
+    given(articleRepository.findByIdAndIsDeletedFalse(anyInt()))
+        .willReturn(Optional.of(article));
 
     //when
     ArticlePageDto result = articleService.getArticle(1);

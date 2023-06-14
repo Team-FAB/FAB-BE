@@ -86,7 +86,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public ArticlePageDto getArticle(Integer id) {
-    Article article = articleRepository.findById(id)
+    Article article = articleRepository.findByIdAndIsDeletedFalse(id)
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
 
     return ArticlePageDto.toDto(article);

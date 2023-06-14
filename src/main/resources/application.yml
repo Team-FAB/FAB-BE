@@ -13,7 +13,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -22,5 +22,11 @@ spring:
     host: localhost
     port: 6379
     timeout: 3
+
+  OAuth2:
+    client_id:
+    redirect_uri:
+
+
 server:
   port: 8080

@@ -1,23 +1,25 @@
 package com.fab.banggabgo.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.fab.banggabgo.config.security.JwtTokenProvider;
-import com.fab.banggabgo.dto.ArticleEditDto;
-import com.fab.banggabgo.dto.ArticleRegisterDto;
+import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticlePageDto;
+import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
+import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
-import com.fab.banggabgo.repository.UserRepository;
-import com.fab.banggabgo.repository.impl.ArticleRepositoryImpl;
+import com.fab.banggabgo.repository.LikeArticleRepository;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
@@ -37,16 +39,10 @@ import org.springframework.data.domain.PageImpl;
 class ArticleServiceImplTest {
 
   @Mock
-  private JwtTokenProvider provider;
-
-  @Mock
-  private UserRepository userRepository;
-
-  @Mock
   private ArticleRepository articleRepository;
 
   @Mock
-  private ArticleRepositoryImpl articleRepositoryImpl;
+  private LikeArticleRepository likeArticleRepository;
 
   @InjectMocks
   private ArticleServiceImpl articleService;
@@ -64,14 +60,12 @@ class ArticleServiceImplTest {
         .content("글 내용")
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(User.builder().id(1L).build()));
+    User user = User.builder()
+        .id(1)
+        .build();
 
     //when
-    articleService.postArticle("JWT", dto);
+    articleService.postArticle(user, dto);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -90,12 +84,16 @@ class ArticleServiceImplTest {
         .content("")
         .build();
 
+    User user = User.builder()
+        .id(1)
+        .build();
+
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.postArticle("JWT", dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.postArticle(user, dto));
 
     //then
-    assertEquals(exception.getMessage(), "글 등록 양식이 잘못되었습니다.");
+    assertEquals(exception.getMessage(), "잘못된 글 양식입니다.");
   }
 
   @Test
@@ -111,12 +109,16 @@ class ArticleServiceImplTest {
         .content("글 내용")
         .build();
 
+    User user = User.builder()
+        .id(1)
+        .build();
+
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.postArticle("JWT", dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.postArticle(user, dto));
 
     //then
-    assertEquals(exception.getMessage(), "해당 지역이 존재하지 않습니다.");
+    assertEquals(exception.getMessage(), "존재하지 않는 지역 입니다.");
   }
 
   @Test
@@ -132,36 +134,57 @@ class ArticleServiceImplTest {
         .content("글 내용")
         .build();
 
+    User user = User.builder()
+        .id(1)
+        .build();
+
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.postArticle("JWT", dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.postArticle(user, dto));
 
     //then
-    assertEquals(exception.getMessage(), "해당 성별이 존재하지 않습니다.");
+    assertEquals(exception.getMessage(), "존재하지 않는 성별 입니다.");
   }
 
   @Test
-  @DisplayName("글 등록 실패 : 유저 오류")
-  void postArticleFail_INVALID_USER() {
+  @DisplayName("글 가져오기 성공")
+  void getArticleSuccess() {
     //given
-    ArticleRegisterDto dto = ArticleRegisterDto.builder()
-        .title("글 제목")
-        .region("강남구")
-        .period("1개월 ~ 3개월")
-        .price(3000000)
-        .gender("남성")
-        .content("글 내용")
-        .build();
+    Article article = Article.builder().build();
+    article.setId(1);
+    article.setTitle("글" + 1);
+    article.setUser(User.builder()
+        .nickname("유저" + 1)
+        .build());
+    article.setContent("글 내용" + 1);
+    article.setGender(Gender.MALE);
+    article.setCreateDate(LocalDateTime.now());
+    article.setRegion(Seoul.DONGJAK);
+    article.setPeriod(Period.ONETOTHREE);
+    article.setPrice(5000000 + 1);
+    article.setRecruiting(false);
+    article.setDeleted(false);
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
+    given(articleRepository.findByIdAndIsDeletedFalse(anyInt()))
+        .willReturn(Optional.of(article));
 
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.postArticle("JWT", dto));
+    ArticlePageDto result = articleService.getArticle(1);
 
     //then
-    assertEquals(exception.getMessage(), "존재하지않는 유저");
+    assertEquals("글1", result.getTitle());
+  }
+
+  @Test
+  @DisplayName("글 가져오기 실패 : 해당 게시글이 존재하지 않음")
+  void getArticleFail_ARTICLE_NOT_EXISTS() {
+    //given
+    //when
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.getArticle(1));
+
+    //then
+    assertEquals(exception.getMessage(), "존재하지 않는 게시글 입니다.");
   }
 
   @Test
@@ -178,23 +201,17 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(false)
             .build()));
 
     //when
-    articleService.putArticle("JWT", 1L, dto);
+    articleService.putArticle(user, 1, dto);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -213,12 +230,16 @@ class ArticleServiceImplTest {
         .content("글 내용")
         .build();
 
+    User user = User.builder()
+        .id(1)
+        .build();
+
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.putArticle(user, 1, dto));
 
     //then
-    assertEquals(exception.getMessage(), "글 수정 양식이 잘못되었습니다.");
+    assertEquals(exception.getMessage(), "잘못된 글 양식입니다.");
   }
 
   @Test
@@ -235,21 +256,15 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.putArticle(user, 1, dto));
 
     //then
-    assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
+    assertEquals(exception.getMessage(), "존재하지 않는 게시글 입니다.");
   }
 
   @Test
@@ -266,27 +281,21 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(true)
             .build()));
 
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.putArticle(user, 1, dto));
 
     //then
-    assertEquals(exception.getMessage(), "삭제된 게시글입니다.");
+    assertEquals(exception.getMessage(), "삭제된 게시글 입니다.");
   }
 
   @Test
@@ -303,28 +312,22 @@ class ArticleServiceImplTest {
         .build();
 
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     User user2 = User.builder()
-        .id(2L)
+        .id(2)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user2)
             .isDeleted(false)
             .build()));
 
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.putArticle("JWT", 1L, dto));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.putArticle(user, 1, dto));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");
@@ -335,23 +338,17 @@ class ArticleServiceImplTest {
   void deleteArticleSuccess() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(false)
             .build()));
 
     //when
-    articleService.deleteArticle("JWT", 1L);
+    articleService.deleteArticle(user, 1);
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
@@ -362,21 +359,15 @@ class ArticleServiceImplTest {
   void deleteArticleFail_NOT_FOUND_ARTICLE() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT", 1L));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.deleteArticle(user, 1));
 
     //then
-    assertEquals(exception.getMessage(), "해당 게시글을 찾을 수 없습니다.");
+    assertEquals(exception.getMessage(), "존재하지 않는 게시글 입니다.");
   }
 
   @Test
@@ -384,27 +375,21 @@ class ArticleServiceImplTest {
   void deleteArticleFail_DELETED_ARTICLE() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(true)
             .build()));
 
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT", 1L));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.deleteArticle(user, 1));
 
     //then
-    assertEquals(exception.getMessage(), "이미 삭제된 게시글입니다.");
+    assertEquals(exception.getMessage(), "삭제된 게시글 입니다.");
   }
 
   @Test
@@ -412,28 +397,22 @@ class ArticleServiceImplTest {
   void deleteArticleFail_INVALID_USER() {
     //given
     User user = User.builder()
-        .id(1L)
+        .id(1)
         .build();
 
     User user2 = User.builder()
-        .id(2L)
+        .id(2)
         .build();
 
-    given(provider.getUser(anyString()))
-        .willReturn("User Email");
-
-    given(userRepository.findByEmail(anyString()))
-        .willReturn(Optional.ofNullable(user));
-
-    given(articleRepository.findById(anyLong()))
+    given(articleRepository.findById(anyInt()))
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user2)
             .isDeleted(false)
             .build()));
 
     //when
-    RuntimeException exception = assertThrows(RuntimeException.class,
-        () -> articleService.deleteArticle("JWT", 1L));
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.deleteArticle(user, 1));
 
     //then
     assertEquals(exception.getMessage(), "해당 게시글의 작성자가 아닙니다.");
@@ -446,7 +425,7 @@ class ArticleServiceImplTest {
     List<Article> articleList = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       Article article = Article.builder().build();
-      article.setId((long) i);
+      article.setId(i);
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
@@ -480,7 +459,7 @@ class ArticleServiceImplTest {
     List<Article> articleList = new ArrayList<>();
     for (int i = 0; i < 5; i++) {
       Article article = Article.builder().build();
-      article.setId((long) i);
+      article.setId(i);
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
@@ -505,5 +484,152 @@ class ArticleServiceImplTest {
 
     //then
     assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("글 최신순 페이지 불러오기 성공 : 모집중인 글만")
+  void getArticleByFilterSuccess_ISRECRUITING_TRUE() {
+    //given
+    List<Article> articleList = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Article article = Article.builder().build();
+      article.setId(i);
+      article.setTitle("글" + i);
+      article.setUser(User.builder()
+          .nickname("유저" + i)
+          .build());
+      article.setContent("글 내용" + i);
+      article.setGender(Gender.MALE);
+      article.setCreateDate(LocalDateTime.now());
+      article.setRegion(Seoul.DONGJAK);
+      article.setPeriod(Period.ONETOTHREE);
+      article.setPrice(5000000 + i);
+      article.setRecruiting(true);
+      article.setDeleted(false);
+
+      articleList.add(article);
+    }
+
+    given(articleRepository.getArticleByFilter(any(), anyBoolean(), anyString(), anyString(),
+        anyString(), anyString()))
+        .willReturn(new PageImpl<>(articleList));
+
+    //when
+    var result = articleService.getArticleByFilter(1, 5, true, "서초구", "1개월 ~ 3개월", "1000000", "남성");
+
+    //then
+    assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("글 최신순 페이지 불러오기 성공 : 전체 글")
+  void getArticleByFilterSuccess_ALL_ARTICLES() {
+    //given
+    List<Article> articleList = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      Article article = Article.builder().build();
+      article.setId(i);
+      article.setTitle("글" + i);
+      article.setUser(User.builder()
+          .nickname("유저" + i)
+          .build());
+      article.setContent("글 내용" + i);
+      article.setGender(Gender.MALE);
+      article.setCreateDate(LocalDateTime.now());
+      article.setRegion(Seoul.DONGJAK);
+      article.setPeriod(Period.ONETOTHREE);
+      article.setPrice(5000000 + i);
+      article.setRecruiting(false);
+      article.setDeleted(false);
+
+      articleList.add(article);
+    }
+
+    given(articleRepository.getArticleByFilter(any(), anyBoolean(), anyString(), anyString(),
+        anyString(), anyString()))
+        .willReturn(new PageImpl<>(articleList));
+
+    //when
+    var result = articleService.getArticleByFilter(1, 5, false, "서초구", "1개월 ~ 3개월", "1000000", "남성");
+
+    //then
+    assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("글 삭제 성공")
+  void getArticleTotalCntSuccess() {
+    //given
+    given(articleRepository.getArticleTotalCnt())
+        .willReturn(5);
+
+    //when
+    Integer result = articleService.getArticleTotalCnt();
+
+    //then
+    assertEquals(5, result);
+  }
+
+  @Test
+  @DisplayName("글 찜 등록 성공")
+  void postArticleFavoriteSuccess_POST() {
+    //given
+    User user = User.builder()
+        .id(1)
+        .build();
+
+    given(articleRepository.findById(anyInt()))
+        .willReturn(Optional.ofNullable(Article.builder().id(1).build()));
+
+    given(likeArticleRepository.existsByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(false);
+
+    //when
+    articleService.postArticleFavorite(user, 1);
+
+    //then
+    verify(likeArticleRepository, times(1)).save(any(LikeArticle.class));
+  }
+
+  @Test
+  @DisplayName("글 찜 삭제 성공")
+  void postArticleFavoriteSuccess_DELETE() {
+    //given
+    User user = User.builder()
+        .id(1)
+        .build();
+
+    given(articleRepository.findById(anyInt()))
+        .willReturn(Optional.ofNullable(Article.builder().id(1).build()));
+
+    given(likeArticleRepository.existsByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(true);
+
+    given(likeArticleRepository.findByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(LikeArticle.builder().id(1).build());
+
+    //when
+    articleService.postArticleFavorite(user, 1);
+
+    //then
+    verify(likeArticleRepository, times(1)).delete(any(LikeArticle.class));
+  }
+
+  @Test
+  @DisplayName("글 찜 여부 가져오기 성공")
+  void getArticleFavoriteSuccess() {
+    //given
+    User user = User.builder()
+        .id(1)
+        .build();
+
+    given(likeArticleRepository.existsByUserIdAndArticleId(anyInt(), anyInt()))
+        .willReturn(false);
+
+    //when
+    boolean result = articleService.getArticleFavorite(user, 1);
+
+    //then
+    assertFalse(result);
   }
 }

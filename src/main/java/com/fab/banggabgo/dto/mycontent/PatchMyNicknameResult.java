@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.mycontent;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignUpRequestDto {
-  private String email;
-  private String password;
+public class PatchMyNicknameResult {
   private String nickname;
 }

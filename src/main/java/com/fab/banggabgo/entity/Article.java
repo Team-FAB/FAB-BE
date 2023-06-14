@@ -4,6 +4,7 @@ package com.fab.banggabgo.entity;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,7 +30,7 @@ public class Article extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Integer id;
 
   @ManyToOne
   @JoinColumn(name = "user_id")
@@ -50,6 +51,7 @@ public class Article extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Gender gender;
 
+  @Column(name = "is_recruit")
   private boolean isRecruiting;
   private boolean isDeleted;
 }

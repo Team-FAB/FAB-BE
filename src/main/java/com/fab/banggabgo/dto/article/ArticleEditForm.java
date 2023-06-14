@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.article;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,7 +19,8 @@ public class ArticleEditForm {
   private Integer price;
   private String gender;
   private String content;
-  public static ArticleEditDto toDto(ArticleEditForm form){
+
+  public static ArticleEditDto toDto(ArticleEditForm form) {
     return ArticleEditDto.builder()
         .title(form.getTitle())
         .region(form.getRegion())

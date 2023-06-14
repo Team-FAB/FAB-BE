@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.article;
 
 import com.fab.banggabgo.entity.Article;
 import java.time.LocalDateTime;
@@ -18,8 +18,9 @@ import org.springframework.data.domain.Page;
 @AllArgsConstructor
 public class ArticlePageDto {
 
-  private Long id;
+  private Integer id;
   private String title;
+  private String email;
   private String nickname;
   private String content;
   private String gender;
@@ -34,6 +35,7 @@ public class ArticlePageDto {
         .map(article -> ArticlePageDto.builder()
             .id(article.getId())
             .title(article.getTitle())
+            .email(article.getUser().getEmail())
             .nickname(article.getUser().getNickname())
             .content(article.getContent())
             .gender(article.getGender().getValue())
@@ -44,5 +46,21 @@ public class ArticlePageDto {
             .isRecruiting(article.isRecruiting())
             .build())
         .collect(Collectors.toList());
+  }
+
+  public static ArticlePageDto toDto(Article article) {
+    return ArticlePageDto.builder()
+        .id(article.getId())
+        .title(article.getTitle())
+        .email(article.getUser().getEmail())
+        .nickname(article.getUser().getNickname())
+        .content(article.getContent())
+        .gender(article.getGender().getValue())
+        .createdDate(article.getCreateDate())
+        .region(article.getRegion().getValue())
+        .period(article.getPeriod().getValue())
+        .price(article.getPrice())
+        .isRecruiting(article.isRecruiting())
+        .build();
   }
 }

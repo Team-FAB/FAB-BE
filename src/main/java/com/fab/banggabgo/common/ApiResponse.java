@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 @AllArgsConstructor
 @Getter
 public class ApiResponse<T> {
+
   private String code;
   private HttpStatus status;
   private String msg;
@@ -27,11 +28,11 @@ public class ApiResponse<T> {
    * @param code 응답 상태를 나타내는 코드입니다.
    * @param data 응답과 연관된 데이터입니다.
    */
-  public ApiResponse(Code code,T data){
-    this.code=code.getCode();
-    this.status=code.getStatus();
-    this.msg=code.getMsg();
-    this.data=data;
+  public ApiResponse(Code code, T data) {
+    this.code = code.getCode();
+    this.status = code.getStatus();
+    this.msg = code.getMsg();
+    this.data = data;
   }
 
   public static <T> ApiResponseBuilder<T> builder() {
@@ -60,8 +61,9 @@ public class ApiResponse<T> {
     public ApiResponse<T> build() {
       return new ApiResponse<T>(code, data);
     }
-    public ResponseEntity<?> toEntity(){
-      return ResponseEntity.status(this.code.getStatus()).body(new ApiResponse<T>(code,data));
+
+    public ResponseEntity<?> toEntity() {
+      return ResponseEntity.status(this.code.getStatus()).body(new ApiResponse<T>(code, data));
     }
 
     public String toString() {

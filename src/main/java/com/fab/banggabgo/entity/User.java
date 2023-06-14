@@ -1,18 +1,30 @@
 package com.fab.banggabgo.entity;
 
 
+import com.fab.banggabgo.type.ActivityTime;
+import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.MatchStatus;
+import com.fab.banggabgo.type.Mbti;
+import com.fab.banggabgo.type.Seoul;
+import com.fab.banggabgo.type.UserRole;
+import com.fab.banggabgo.type.UserType;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +45,7 @@ public class User extends BaseEntity implements UserDetails {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+  private Integer id;
 
   private String email;
 
@@ -41,19 +53,56 @@ public class User extends BaseEntity implements UserDetails {
   @Column(unique = true)
   private String nickname;
 
-  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-  @ToString.Exclude
-  @Builder.Default
-  private List<Article> articleList = new ArrayList<>();
+  @Enumerated(EnumType.STRING)
+  private UserType userType;
+
+  private String image;
+
+  @Enumerated(EnumType.STRING)
+  private MatchStatus matchStatus;
+
+  @Column(name = "is_smoke")
+  private Boolean isSmoker;
+
+  @Enumerated(EnumType.STRING)
+  private ActivityTime activityTime;
+
+  @Enumerated(EnumType.STRING)
+  private Gender gender;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "region")
+  private Seoul region;
+
+  @Enumerated(EnumType.STRING)
+  private Mbti mbti;
+
+  private Integer minAge;
+  private Integer maxAge;
+
+  private Integer myAge;
 
   @ElementCollection(fetch = FetchType.LAZY)
+  @ToString.Exclude
+  @Column(name = "tag")
   @Builder.Default
-  private List<String> roles = new ArrayList<>();
+  private Set<String> tag = new HashSet<>();
+
+  private String detail;
+
+
+  @ElementCollection(fetch = FetchType.LAZY)
+  @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @Enumerated(EnumType.STRING)
+  @Column(name = "roles")
+  @Builder.Default
+  private List<UserRole> roles = new ArrayList<>();
+
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return this.roles.stream()
-        .map(SimpleGrantedAuthority::new)
+        .map((r) -> new SimpleGrantedAuthority(r.name()))
         .collect(Collectors.toList());
   }
 
@@ -85,5 +134,11 @@ public class User extends BaseEntity implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public List<String> getRoles() {
+    return this.roles.stream()
+        .map(Enum::name)
+        .collect(Collectors.toList());
   }
 }

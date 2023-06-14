@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -20,11 +21,14 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @Configuration
 public class SwaggerConfig {
+
   @Value("${jwt.auth.atk}")
   String ATK;
+
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.OAS_30)
+        .ignoredParameterTypes(AuthenticationPrincipal.class)
         .useDefaultResponseMessages(false)
         .select()
         .apis(RequestHandlerSelectors.any())

@@ -16,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtTokenProvider jwtTokenProvider;
-  private final RedisTemplate<String,String> redisTemplate;
+  private final RedisTemplate<String, String> redisTemplate;
 
   @Bean
   public SecurityFilterChain defaultFilter(HttpSecurity http) throws Exception {
@@ -29,11 +29,12 @@ public class SecurityConfig {
         .authorizeHttpRequests()
         .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
         .antMatchers("/api/users/**").permitAll()
-        .antMatchers("/api/article/**").permitAll()
+        .antMatchers("/api/articles/**").permitAll()
+        .antMatchers("/login/oauth2/**").permitAll()
         .anyRequest().authenticated()
 
         .and()
-        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider,redisTemplate),
+        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate),
             UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

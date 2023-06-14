@@ -168,6 +168,41 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("글 가져오기 성공")
+  @WithMockUser
+  void getArticleSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/articles/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("글 가져오기 실패 : 해당 게시글이 존재하지 않음")
+  @WithMockUser
+  void getArticleFail_ARTICLE_NOT_EXISTS() throws Exception {
+    //given
+    doThrow(new CustomException(ErrorCode.ARTICLE_NOT_EXISTS))
+        .when(articleService)
+        .getArticle(anyInt());
+
+    //when
+    MvcResult result = mockMvc.perform(get("/api/articles/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isBadRequest())
+        .andReturn();
+
+    //then
+    String responseBody = result.getResponse().getContentAsString();
+    JsonNode responseJson = objectMapper.readTree(responseBody);
+    String errorCode = responseJson.get("code").asText();
+    assertThat(errorCode).isEqualTo("ARTICLE_NOT_EXISTS");
+  }
+
+  @Test
   @DisplayName("글 수정 성공")
   @WithMockUser
   void putArticleSuccess() throws Exception {

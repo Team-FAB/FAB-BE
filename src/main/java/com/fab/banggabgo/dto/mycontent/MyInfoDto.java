@@ -32,11 +32,11 @@ public class MyInfoDto {
   private String region;
   private String mbti;
   private Set<String> tags;
-  private int minAge;
-  private int maxAge;
+  private Integer minAge;
+  private Integer maxAge;
 
   private String preferredAge;
-  private int myAge;
+  private Integer myAge;
   private String detail;
 
   public static MyInfoDto toDto(User user) {

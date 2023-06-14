@@ -142,7 +142,7 @@ class MyContentServiceImplTest {
     PatchMyInfoForm form= PatchMyInfoForm.builder()
         .gender("남성")
         .region("강남구")
-        .activityTime("MIDNIGHT")
+        .activityTime("오후")
         .myAge(15)
         .favoriteTag(new ArrayList<>(List.of(new String[]{"tag1", "tag2"})))
         .myText("자세한정보")

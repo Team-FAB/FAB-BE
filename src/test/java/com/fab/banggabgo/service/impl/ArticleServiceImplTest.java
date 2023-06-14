@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.LikeArticle;
@@ -143,6 +144,47 @@ class ArticleServiceImplTest {
 
     //then
     assertEquals(exception.getMessage(), "존재하지 않는 성별 입니다.");
+  }
+
+  @Test
+  @DisplayName("글 가져오기 성공")
+  void getArticleSuccess() {
+    //given
+    Article article = Article.builder().build();
+    article.setId(1);
+    article.setTitle("글" + 1);
+    article.setUser(User.builder()
+        .nickname("유저" + 1)
+        .build());
+    article.setContent("글 내용" + 1);
+    article.setGender(Gender.MALE);
+    article.setCreateDate(LocalDateTime.now());
+    article.setRegion(Seoul.DONGJAK);
+    article.setPeriod(Period.ONETOTHREE);
+    article.setPrice(5000000 + 1);
+    article.setRecruiting(false);
+    article.setDeleted(false);
+
+    given(articleRepository.findByIdAndIsDeletedFalse(anyInt()))
+        .willReturn(Optional.of(article));
+
+    //when
+    ArticlePageDto result = articleService.getArticle(1);
+
+    //then
+    assertEquals("글1", result.getTitle());
+  }
+
+  @Test
+  @DisplayName("글 가져오기 실패 : 해당 게시글이 존재하지 않음")
+  void getArticleFail_ARTICLE_NOT_EXISTS() {
+    //given
+    //when
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.getArticle(1));
+
+    //then
+    assertEquals(exception.getMessage(), "존재하지 않는 게시글 입니다.");
   }
 
   @Test

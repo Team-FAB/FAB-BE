@@ -85,6 +85,14 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
+  public ArticlePageDto getArticle(Integer id) {
+    Article article = articleRepository.findByIdAndIsDeletedFalse(id)
+        .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
+
+    return ArticlePageDto.toDto(article);
+  }
+
+  @Override
   public void putArticle(User user, Integer id, ArticleEditDto dto) {
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()

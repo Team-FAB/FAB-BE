@@ -14,6 +14,11 @@ public interface ArticleService {
   void postArticle(User user, ArticleRegisterDto dto);
 
   /**
+   * 게시글 가져오기
+   */
+  ArticlePageDto getArticle(Integer id);
+
+  /**
    * 게시글 수정
    */
   void putArticle(User user, Integer id, ArticleEditDto dto);

@@ -2,6 +2,8 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
+import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.article.ArticleEditForm;
 import com.fab.banggabgo.dto.article.ArticleRegisterForm;
 import com.fab.banggabgo.entity.User;
@@ -31,6 +33,7 @@ public class ArticleController {
       @AuthenticationPrincipal User user,
       @RequestBody ArticleRegisterForm form
   ) {
+    checkUserNull(user);
     articleService.postArticle(user, ArticleRegisterForm.toDto(form));
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).toEntity();
   }
@@ -49,6 +52,7 @@ public class ArticleController {
       @PathVariable int id,
       @RequestBody ArticleEditForm form
   ) {
+    checkUserNull(user);
     articleService.putArticle(user, id, ArticleEditForm.toDto(form));
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).toEntity();
   }
@@ -58,6 +62,7 @@ public class ArticleController {
       @AuthenticationPrincipal User user,
       @PathVariable int id
   ) {
+    checkUserNull(user);
     articleService.deleteArticle(user, id);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).toEntity();
   }
@@ -98,6 +103,7 @@ public class ArticleController {
       @AuthenticationPrincipal User user,
       @PathVariable int id
   ) {
+    checkUserNull(user);
     var result = articleService.postArticleFavorite(user, id);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
   }
@@ -107,7 +113,14 @@ public class ArticleController {
       @AuthenticationPrincipal User user,
       @PathVariable int id
   ) {
+    checkUserNull(user);
     var result = articleService.getArticleFavorite(user, id);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
+  private void checkUserNull(User user) {
+    if (user == null) {
+      throw new CustomException(ErrorCode.USER_IS_NULL);
+    }
   }
 }

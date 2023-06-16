@@ -36,6 +36,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void postArticle(User user, ArticleRegisterDto dto) {
+
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
@@ -94,6 +95,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void putArticle(User user, Integer id, ArticleEditDto dto) {
+
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
         || dto.getPrice() > Price.MAXPRICE.getValue()) {
@@ -144,6 +146,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void deleteArticle(User user, Integer id) {
+
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
 
@@ -195,6 +198,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public String postArticleFavorite(User user, Integer id) {
+
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
 
@@ -218,6 +222,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public boolean getArticleFavorite(User user, Integer id) {
+
     return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
   }
 }

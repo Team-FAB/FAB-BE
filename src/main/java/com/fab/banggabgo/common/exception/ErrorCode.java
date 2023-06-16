@@ -11,6 +11,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode implements Code {
 
   /**
+   * 공통 에러코드
+   */
+  USER_IS_NULL(HttpStatus.BAD_REQUEST, "유저 정보를 불러오는데 실패했습니다."),
+
+  /**
    * 게시글 에러코드
    */
 

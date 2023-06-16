@@ -557,7 +557,7 @@ class ArticleServiceImplTest {
   }
 
   @Test
-  @DisplayName("글 삭제 성공")
+  @DisplayName("글 전체 개수 가져오기 성공")
   void getArticleTotalCntSuccess() {
     //given
     given(articleRepository.getArticleTotalCnt())

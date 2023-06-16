@@ -1,11 +1,11 @@
 package com.fab.banggabgo.service;
 
 import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.dto.apply.ApplyListResultDto;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
@@ -24,4 +24,6 @@ public interface MyContentService {
   PatchMyNicknameResult patchNickname(User user, PatchMyNicknameDto toDto) throws CustomException;
 
   PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto form);
+
+  List<ApplyListResultDto> getMyApplicant(User user, Integer page, Integer size);
 }

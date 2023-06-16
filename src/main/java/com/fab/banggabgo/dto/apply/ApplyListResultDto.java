@@ -38,4 +38,19 @@ public class ApplyListResultDto {
         .matchStatus(apply.getApproveStatus().getValue())
         .build();
   }
+  public static List<ApplyListResultDto> toToDtoList(List<Apply> applyPage) {
+    return applyPage.stream().map(ApplyListResultDto::toToDto)
+        .collect(Collectors.toList());
+  }
+
+  public static ApplyListResultDto toToDto(Apply apply) {
+    return ApplyListResultDto.builder()
+        .applyId(apply.getId())
+        .articleId(apply.getArticle().getId())
+        .articleTitle(apply.getArticle().getTitle())
+        .otherUserId(apply.getArticle().getUser().getId())
+        .otherUserName(apply.getArticle().getUser().getNickname())
+        .matchStatus(apply.getApproveStatus().getValue())
+        .build();
+  }
 }

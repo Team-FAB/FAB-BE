@@ -29,4 +29,17 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
 
     return pageQuery.fetch();
   }
+  @Override
+  public List<Apply> getMyToApplicant(Pageable pageable, Integer userId) {
+    var pageQuery = jpaQueryFactory.selectFrom(qApply)
+        .leftJoin(qApply.article)
+        .fetchJoin()
+        .leftJoin(qApply.article.user)
+        .where(qApply.applicantUser.id.eq(userId))
+        .orderBy(qApply.lastModifiedDate.desc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize());
+
+    return pageQuery.fetch();
+  }
 }

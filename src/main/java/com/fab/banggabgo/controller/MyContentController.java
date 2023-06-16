@@ -60,11 +60,18 @@ public class MyContentController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
-  @GetMapping("/applicants")
-  public ResponseEntity<?> getMyApplicant(@AuthenticationPrincipal User user,
+  @GetMapping("/from-applicants")
+  public ResponseEntity<?> getMyFromApplicant(@AuthenticationPrincipal User user,
       @RequestParam(defaultValue = "1") Integer page,
       @RequestParam(defaultValue = "10") Integer size) {
     var result = myContentService.getMyApplicant(user, page, size);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+  @GetMapping("/to-applicants")
+  public ResponseEntity<?> getMyToApplicant(@AuthenticationPrincipal User user,
+      @RequestParam(defaultValue = "1") Integer page,
+      @RequestParam(defaultValue = "10") Integer size) {
+    var result = myContentService.getMyToApplicant(user, page, size);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 }

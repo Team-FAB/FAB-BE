@@ -95,4 +95,10 @@ public class MyContentServiceImpl implements MyContentService {
     Pageable pageable = PageRequest.of(page, size);
     return ApplyListResultDto.toDtoList(applyRepository.getMyApplicant(pageable, user.getId()));
   }
+  public List<ApplyListResultDto> getMyToApplicant(User user, Integer page, Integer size) {
+    page = page > 0 ? page - 1 : 0;
+
+    Pageable pageable = PageRequest.of(page, size);
+    return ApplyListResultDto.toToDtoList(applyRepository.getMyToApplicant(pageable, user.getId()));
+  }
 }

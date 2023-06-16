@@ -3,6 +3,7 @@ package com.fab.banggabgo.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -13,12 +14,13 @@ import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
-import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
+import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.User;
+import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
-import io.jsonwebtoken.lang.Assert;
+import com.fab.banggabgo.type.ApproveStatus;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -31,9 +33,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 
 @ExtendWith(MockitoExtension.class)
 class MyContentServiceImplTest {
@@ -42,6 +47,8 @@ class MyContentServiceImplTest {
   private ArticleRepository articleRepository;
   @Mock
   private UserRepository userRepository;
+  @Mock
+  private ApplyRepository applyRepository;
   @InjectMocks
   private MyContentServiceImpl myContentService;
 
@@ -59,6 +66,7 @@ class MyContentServiceImplTest {
     lenient().when(securityContext.getAuthentication()).thenReturn(auth);
     SecurityContextHolder.setContext(securityContext);
   }
+
   @Test
   void getMyArticle() { // 내 아티클 가져오기
     //given
@@ -73,7 +81,7 @@ class MyContentServiceImplTest {
     //when
     when(articleRepository.getMyArticle(any(User.class))).thenReturn(stub_list);
     //then
-    assertEquals(myContentService.getMyArticle(stub_user),stub_list);
+    assertEquals(myContentService.getMyArticle(stub_user), stub_list);
   }
 
   @Test
@@ -89,28 +97,32 @@ class MyContentServiceImplTest {
     //when
     when(articleRepository.getFavoriteArticle(any(User.class))).thenReturn(stub_list);
     //then
-    assertEquals(myContentService.getMyFavoriteArticle(stub_user),stub_list);
+    assertEquals(myContentService.getMyFavoriteArticle(stub_user), stub_list);
 
   }
+
   @Nested
   @DisplayName("내정보 불러오기")
-  class MyInfo{
+  class MyInfo {
+
     @Test
     @DisplayName("특정 데이터가 null일경우")
-    void null_test(){
-        //given
-        //when
-      var result=myContentService.getMyInfo(stub_user);
-        //then
+    void null_test() {
+      //given
+      //when
+      var result = myContentService.getMyInfo(stub_user);
+      //then
       System.out.println(result.toString());
     }
   }
+
   @Nested
   @DisplayName("닉네임 변경")
-  class PatchNick{
+  class PatchNick {
+
     @Test
     @DisplayName("닉네임 변경 성공케이스")
-    void Patch_nick_success(){
+    void Patch_nick_success() {
 
       //given
       var form = PatchMyNicknameForm.builder()
@@ -119,13 +131,14 @@ class MyContentServiceImplTest {
 
       //when
       when(userRepository.save(stub_user)).thenReturn(stub_user);
-      var result=myContentService.patchNickname(stub_user,PatchMyNicknameForm.toDto(form));
+      var result = myContentService.patchNickname(stub_user, PatchMyNicknameForm.toDto(form));
       //then
-      assertEquals(result.getNickname(),"당당한무지");
+      assertEquals(result.getNickname(), "당당한무지");
     }
+
     @Test
     @DisplayName("닉네임 변경 실패(이미 존재하는 닉네임일경우)")
-    void Patch_nick_duplicate(){
+    void Patch_nick_duplicate() {
       //given
       var form = PatchMyNicknameForm.builder()
           .nickname("당당한무지")
@@ -133,13 +146,16 @@ class MyContentServiceImplTest {
       //when
       when(userRepository.save(stub_user)).thenThrow(DataIntegrityViolationException.class);
       //then
-      Assertions.assertThrows(CustomException.class,() -> myContentService.patchNickname(stub_user,PatchMyNicknameForm.toDto(form)));
+      Assertions.assertThrows(CustomException.class,
+          () -> myContentService.patchNickname(stub_user, PatchMyNicknameForm.toDto(form)));
     }
   }
+
   @Nested
   @DisplayName("내정보 변경")
-  class patchMyInfo{
-    PatchMyInfoForm form= PatchMyInfoForm.builder()
+  class patchMyInfo {
+
+    PatchMyInfoForm form = PatchMyInfoForm.builder()
         .gender("남성")
         .region("강남구")
         .activityTime("오후")
@@ -151,28 +167,48 @@ class MyContentServiceImplTest {
         .maxAge(25)
         .minAge(21)
         .build();
+
     @Test
     @DisplayName("- 성공케이스")
-    void patch_my_info_success(){
+    void patch_my_info_success() {
       //given
       //when
       when(userRepository.save(stub_user)).thenReturn(stub_user);
       //then
-      var result=myContentService.patchMyInfo(stub_user,PatchMyInfoForm.toDto(form));
+      var result = myContentService.patchMyInfo(stub_user, PatchMyInfoForm.toDto(form));
 
-      verify(userRepository,times(1)).save(any(User.class));
-      assertEquals(result.getMbti(),"INFP");
+      verify(userRepository, times(1)).save(any(User.class));
+      assertEquals(result.getMbti(), "INFP");
     }
+
     @Test
     @DisplayName("- form 값이 잘못된경우")
-    void patch_my_info_missedValue_form(){
+    void patch_my_info_missedValue_form() {
       //given
       form.setActivityTime(null);
       //when
       //then
-      assertThrows(CustomException.class,() -> myContentService.patchMyInfo(stub_user,PatchMyInfoForm.toDto(form)));
+      assertThrows(CustomException.class,
+          () -> myContentService.patchMyInfo(stub_user, PatchMyInfoForm.toDto(form)));
     }
 
   }
 
+  @Test
+  @DisplayName("getApplicants - 성공")
+  @WithMockUser
+  void getApplicantsSuccess() {
+    when(applyRepository.getMyApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .build(),
+        Apply.builder()
+            .approveStatus(ApproveStatus.APPROVAL)
+            .build()));
+
+    var result = applyRepository.getMyApplicant(PageRequest.of(1, 4), 1);
+
+    verify(applyRepository, times(1)).getMyApplicant(any(Pageable.class), any(Integer.class));
+    assertEquals(result.get(0).getApproveStatus(), ApproveStatus.WAIT);
+    assertEquals(result.get(1).getApproveStatus(), ApproveStatus.APPROVAL);
+  }
 }

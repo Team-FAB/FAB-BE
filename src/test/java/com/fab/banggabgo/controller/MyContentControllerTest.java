@@ -1,24 +1,17 @@
 package com.fab.banggabgo.controller;
 
-import static com.querydsl.core.types.ExpressionUtils.any;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
-import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.service.MyContentService;
-import com.fab.banggabgo.service.impl.MyContentServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -63,27 +56,28 @@ class MyContentControllerTest {
     mockMvc.perform(get("/api/my"))
         .andExpect(status().isOk());
   }
+
   @Test
   @WithMockUser
   @DisplayName("닉네임 변경")
   void patchMyNickname() throws Exception {
-    PatchMyNicknameForm form=PatchMyNicknameForm.builder()
+    PatchMyNicknameForm form = PatchMyNicknameForm.builder()
         .nickname("test")
         .build();
-      //given
+    //given
     mockMvc.perform(patch("/api/my/nickname")
             .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(form)))
         .andExpect(status().isOk());
-      //when
-      //then
+    //when
+    //then
   }
 
   @Test
   @DisplayName("닉네임 변경- 로그인 안되어있을경우")
   void patchMyNickname_notAuthenticated() throws Exception {
-    PatchMyNicknameForm form=PatchMyNicknameForm.builder()
+    PatchMyNicknameForm form = PatchMyNicknameForm.builder()
         .nickname("test")
         .build();
     //given
@@ -95,6 +89,7 @@ class MyContentControllerTest {
     //when
     //then
   }
+
   @Test
   @DisplayName("닉네임 변경- 입력폼이없을경우")
   @WithMockUser
@@ -107,31 +102,70 @@ class MyContentControllerTest {
     //when
     //then
   }
+
   @Test
   @DisplayName("내정보 변경- 폼이없는경우")
   @WithMockUser
   void patchMyInfo_without_form() throws Exception {
-      //given
+    //given
     mockMvc.perform(patch("/api/my")
             .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is4xxClientError());
-      //when
-      //then
+    //when
+    //then
   }
+
   @Test
   @DisplayName("내정보 변경 - 정상")
   @WithMockUser
   void patchMyInfo() throws Exception {
-    PatchMyInfoForm form=PatchMyInfoForm.builder()
+    PatchMyInfoForm form = PatchMyInfoForm.builder()
         .build();
     //given
     mockMvc.perform(patch("/api/my")
             .with(SecurityMockMvcRequestPostProcessors.csrf())
             .contentType(MediaType.APPLICATION_JSON)
-        .content(objectMapper.writeValueAsString(form)))
+            .content(objectMapper.writeValueAsString(form)))
         .andExpect(status().isOk());
     //when
     //then
+  }
+
+  @Nested
+  @DisplayName("내가받은 신청자리스트")
+  class applicantList {
+
+    @Test
+    @DisplayName("신청자리스트 - 성공")
+    @WithMockUser
+    void successGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/applicants?page=1&size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청자리스트 - 성공 페이지 누락")
+    @WithMockUser
+    void successLostPageGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/applicants?size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청자리스트 - 성공 사이즈 누락")
+    @WithMockUser
+    void successLostSizeGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/applicants?page=1")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청자리스트 - 실패 계정 누락")
+    void FailNonAuthGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/applicants?page=1&size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized());
+    }
   }
 }

@@ -69,6 +69,28 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("글 등록 실패 : 존재하지 않는 유저")
+  void postArticleFail_USER_IS_NULL() throws Exception {
+    //given
+    ArticleRegisterForm form = ArticleRegisterForm.builder()
+        .title("글 제목")
+        .region("강남")
+        .period("1개월 ~ 3개월")
+        .price(3000000)
+        .gender("남성")
+        .content("글 내용")
+        .build();
+
+    //when
+    //then
+    mockMvc.perform(post("/api/articles")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(form)))
+        .andExpect(status().isForbidden())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("글 등록 실패 : 글 양식 오류")
   @WithMockUser
   void postArticleFail_INVALID_REGISTER() throws Exception {
@@ -228,6 +250,29 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("글 수정 실패 : 존재하지 않는 유저")
+  void putArticleFail_USER_IS_NULL() throws Exception {
+    //given
+    ArticleEditForm form = ArticleEditForm.builder()
+        .title("글 제목")
+        .region("강남")
+        .period("1개월 ~ 3개월")
+        .price(3000000)
+        .gender("남성")
+        .content("글 내용")
+        .build();
+
+    //when
+    //then
+    mockMvc.perform(put("/api/articles/1")
+            .header("Authorization", "JWT")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(form)))
+        .andExpect(status().isForbidden())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("글 수정 실패 : 글 양식 오류")
   @WithMockUser
   void putArticleFail_INVALID_EDIT() throws Exception {
@@ -374,6 +419,18 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("글 삭제 실패 : 존재하지 않는 유저")
+  void deleteArticleFail_USER_IS_NULL() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(delete("/api/articles/1")
+            .header("Authorization", "JWT"))
+        .andExpect(status().isForbidden())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("글 삭제 실패 : 게시글 찾을 수 없음")
   @WithMockUser
   void deleteArticleFail_NOT_FOUND_ARTICLE() throws Exception {
@@ -491,6 +548,18 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("글 찜 등록 및 삭제 실패 : 존재하지 않는 유저")
+  void postArticleFavoriteFail_USER_IS_NULL() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(post("/api/articles/favorites/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isUnauthorized())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("글 찜 등록 및 삭제 실패 : 게시글이 존재하지 않음")
   @WithMockUser
   void postArticleFavoriteFail_ARTICLE_NOT_EXISTS() throws Exception {
@@ -522,6 +591,17 @@ class ArticleControllerTest {
     mockMvc.perform(get("/api/articles/favorites/1")
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("글 찜 했는지 여부 가져오기 실패 : 존재하지 않는 유저")
+  void getArticleFavoriteFail_USER_IS_NULL() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/articles/favorites/1"))
+        .andExpect(status().isUnauthorized())
         .andDo(print());
   }
 }

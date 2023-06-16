@@ -72,18 +72,6 @@ class ArticleServiceImplTest {
   }
 
   @Test
-  @DisplayName("글 등록 실패 : 존재하지 않는 유저")
-  void postArticleFail_USER_IS_NULL() {
-    //given
-    //when
-    CustomException exception = assertThrows(CustomException.class,
-        () -> articleService.postArticle(null, null));
-
-    //then
-    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
-  }
-
-  @Test
   @DisplayName("글 등록 실패 : 글 양식 오류")
   void postArticleFail_INVALID_REGISTER() {
     //given
@@ -230,18 +218,6 @@ class ArticleServiceImplTest {
   }
 
   @Test
-  @DisplayName("글 수정 실패 : 존재하지 않는 유저")
-  void putArticleFail_USER_IS_NULL() {
-    //given
-    //when
-    CustomException exception = assertThrows(CustomException.class,
-        () -> articleService.putArticle(null, 1, null));
-
-    //then
-    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
-  }
-
-  @Test
   @DisplayName("글 수정 실패 : 글 양식 오류")
   void putArticleFail_INVALID_EDIT() {
     //given
@@ -376,18 +352,6 @@ class ArticleServiceImplTest {
 
     //then
     verify(articleRepository, times(1)).save(any(Article.class));
-  }
-
-  @Test
-  @DisplayName("글 삭제 실패 : 존재하지 않는 유저")
-  void deleteArticleFail_USER_IS_NULL() {
-    //given
-    //when
-    CustomException exception = assertThrows(CustomException.class,
-        () -> articleService.deleteArticle(null, 1));
-
-    //then
-    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
   }
 
   @Test
@@ -628,18 +592,6 @@ class ArticleServiceImplTest {
   }
 
   @Test
-  @DisplayName("글 찜 등록 실패 : 존재하지 않는 유저")
-  void postArticleFavoriteSuccessFail_USER_IS_NULL() {
-    //given
-    //when
-    CustomException exception = assertThrows(CustomException.class,
-        () -> articleService.postArticleFavorite(null, 1));
-
-    //then
-    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
-  }
-
-  @Test
   @DisplayName("글 찜 삭제 성공")
   void postArticleFavoriteSuccess_DELETE() {
     //given
@@ -679,17 +631,5 @@ class ArticleServiceImplTest {
 
     //then
     assertFalse(result);
-  }
-
-  @Test
-  @DisplayName("글 찜 여부 가져오기 실패 : 존재하지 않는 유저")
-  void getArticleFavoriteSuccessFail_USER_IS_NULL() {
-    //given
-    //when
-    CustomException exception = assertThrows(CustomException.class,
-        () -> articleService.getArticleFavorite(null, 1));
-
-    //then
-    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
   }
 }

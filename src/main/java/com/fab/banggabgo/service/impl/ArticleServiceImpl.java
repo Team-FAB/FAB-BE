@@ -36,7 +36,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void postArticle(User user, ArticleRegisterDto dto) {
-    checkUserNull(user);
 
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
@@ -96,7 +95,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void putArticle(User user, Integer id, ArticleEditDto dto) {
-    checkUserNull(user);
 
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
         || dto.getPrice() < Price.MINPRICE.getValue()
@@ -148,7 +146,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public void deleteArticle(User user, Integer id) {
-    checkUserNull(user);
 
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
@@ -201,7 +198,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public String postArticleFavorite(User user, Integer id) {
-    checkUserNull(user);
 
     Article article = articleRepository.findById(id)
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
@@ -226,14 +222,7 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public boolean getArticleFavorite(User user, Integer id) {
-    checkUserNull(user);
 
     return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
-  }
-
-  private void checkUserNull(User user) {
-    if (user == null) {
-      throw new CustomException(ErrorCode.USER_IS_NULL);
-    }
   }
 }

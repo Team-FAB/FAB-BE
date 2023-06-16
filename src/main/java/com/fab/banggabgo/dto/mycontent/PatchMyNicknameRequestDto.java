@@ -11,6 +11,6 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PatchMyNicknameDto {
+public class PatchMyNicknameRequestDto {
   private String nickname;
 }

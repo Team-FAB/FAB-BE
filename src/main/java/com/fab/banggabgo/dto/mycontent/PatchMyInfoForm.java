@@ -27,8 +27,8 @@ public class PatchMyInfoForm {
   private List<String> favoriteTag;
   private String myText;
 
-  public static PatchMyInfoDto toDto(PatchMyInfoForm form){
-      return PatchMyInfoDto.builder()
+  public static PatchMyInfoRequestDto toDto(PatchMyInfoForm form){
+      return PatchMyInfoRequestDto.builder()
           .gender(form.getGender())
           .myAge(form.getMyAge())
           .minAge(form.getMinAge())

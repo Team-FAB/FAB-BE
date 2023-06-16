@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PatchMyInfoDto {
+public class PatchMyInfoRequestDto {
   private String gender;
   private int myAge;
   private int minAge;

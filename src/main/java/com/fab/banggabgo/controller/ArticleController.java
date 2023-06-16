@@ -2,7 +2,6 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
-import com.fab.banggabgo.dto.apply.ApplyUserForm;
 import com.fab.banggabgo.dto.article.ArticleEditForm;
 import com.fab.banggabgo.dto.article.ArticleRegisterForm;
 import com.fab.banggabgo.entity.User;
@@ -114,8 +113,8 @@ public class ArticleController {
 
   @PostMapping("/apply")
   public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
-      @RequestBody ApplyUserForm form) {
-    var result = articleService.applyUser(user, ApplyUserForm.toDto(form));
+      @RequestParam Integer articleId) {
+    var result = articleService.applyUser(user, articleId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
   }
 }

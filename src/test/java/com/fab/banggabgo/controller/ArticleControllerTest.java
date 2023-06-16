@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
-import com.fab.banggabgo.dto.apply.ApplyUserForm;
 import com.fab.banggabgo.dto.article.ArticleEditForm;
 import com.fab.banggabgo.dto.article.ArticleRegisterForm;
 import com.fab.banggabgo.service.ArticleService;
@@ -616,14 +615,9 @@ class ArticleControllerTest {
     @DisplayName("apply - 성공")
     @WithMockUser
     void getSuccessApply() throws Exception {
-      ApplyUserForm form = ApplyUserForm.builder()
-          .articleId(1)
-          .build();
 
-      mockMvc.perform(post("/api/articles/apply")
-              .with(SecurityMockMvcRequestPostProcessors.csrf())
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(form)))
+      mockMvc.perform(post("/api/articles/apply?articleId=1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isCreated())
           .andDo(print());
     }

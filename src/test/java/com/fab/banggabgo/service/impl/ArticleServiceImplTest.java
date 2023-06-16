@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
-import com.fab.banggabgo.dto.apply.ApplyUserDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
@@ -563,7 +562,8 @@ class ArticleServiceImplTest {
         .willReturn(new PageImpl<>(articleList));
 
     //when
-    var result = articleService.getArticleByFilter(1, 5, false, "서초구", "1개월 ~ 3개월", "1000000", "남성");
+    var result = articleService.getArticleByFilter(1, 5, false, "서초구", "1개월 ~ 3개월", "1000000",
+        "남성");
 
     //then
     assertEquals(5, result.size());
@@ -649,6 +649,7 @@ class ArticleServiceImplTest {
   @Nested
   @DisplayName("apply - 유저 매칭")
   class Apply {
+
     private final User loginUser = User.builder()
         .id(1)
         .email("test@email.com")
@@ -703,9 +704,7 @@ class ArticleServiceImplTest {
         .isRecruiting(true)
         .isDeleted(false)
         .build();
-    private ApplyUserDto applyUserDto = ApplyUserDto.builder()
-        .articleId(1)
-        .build();
+    private Integer articleId = 1;
 
     @Test
     @DisplayName("apply - 성공")
@@ -715,27 +714,15 @@ class ArticleServiceImplTest {
       given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
           anyInt())).willReturn(false);
 
-      var result = articleService.applyUser(loginUser, applyUserDto);
+      var result = articleService.applyUser(loginUser, articleId);
 
-      verify(articleRepository, times(1)).findById(applyUserDto.getArticleId());
+      verify(articleRepository, times(1)).findById(articleId);
       verify(applyRepository, times(1)).existsByApplicantUserIdAndArticleId(
-          loginUser.getId(), applyUserDto.getArticleId());
+          loginUser.getId(), articleId);
 
-      assertEquals(result.getArticleId(), applyUserDto.getArticleId());
+      assertEquals(result.getArticleId(), articleId);
       assertEquals(result.getArticleName(), article.getTitle());
       assertEquals(result.getApproveStatus(), ApproveStatus.WAIT.getValue());
-    }
-
-    @Test
-    @DisplayName("apply - articleId의 값을 불러오지 못할때")
-    void applyInvalidArticleUserId() {
-      applyUserDto = ApplyUserDto.builder()
-          .build();
-
-      CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, applyUserDto));
-
-      assertEquals(customException.getErrorCode(), ErrorCode.INVALID_ARTICLE);
     }
 
     @Test
@@ -746,7 +733,7 @@ class ArticleServiceImplTest {
           anyInt())).willReturn(true);
 
       CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, applyUserDto));
+          () -> articleService.applyUser(loginUser, articleId));
 
       assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_APPLY);
     }
@@ -772,7 +759,7 @@ class ArticleServiceImplTest {
           anyInt())).willReturn(false);
 
       CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, applyUserDto));
+          () -> articleService.applyUser(loginUser, articleId));
 
       assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
     }
@@ -798,7 +785,7 @@ class ArticleServiceImplTest {
           anyInt())).willReturn(false);
 
       CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, applyUserDto));
+          () -> articleService.applyUser(loginUser, articleId));
 
       assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
     }

@@ -2,7 +2,6 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
-import com.fab.banggabgo.dto.apply.ApplyUserDto;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
@@ -232,17 +231,14 @@ public class ArticleServiceImpl implements ArticleService {
     return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
   }
 
-  public ApplyUserResultDto applyUser(User user, ApplyUserDto applyUserDto) {
-    if (applyUserDto.getArticleId() == null) {
-      throw new CustomException(ErrorCode.INVALID_ARTICLE);
-    }
+  public ApplyUserResultDto applyUser(User user, Integer articleId) {
 
     if (applyRepository.existsByApplicantUserIdAndArticleId(user.getId(),
-        applyUserDto.getArticleId())) {
+        articleId)) {
       throw new CustomException(ErrorCode.ALREADY_APPLY);
     }
 
-    Article article = articleRepository.findById(applyUserDto.getArticleId())
+    Article article = articleRepository.findById(articleId)
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
 
     validApplyUser(article);

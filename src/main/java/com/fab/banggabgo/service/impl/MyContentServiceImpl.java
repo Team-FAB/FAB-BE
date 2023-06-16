@@ -72,6 +72,8 @@ public class MyContentServiceImpl implements MyContentService {
     try {
       changed_user.setGender(Gender.fromValue(dto.getGender()));
       changed_user.setMyAge(dto.getMyAge());
+      changed_user.setMinAge(dto.getMinAge());
+      changed_user.setMaxAge(dto.getMaxAge());
       changed_user.setIsSmoker(dto.isSmoke());
       changed_user.setMbti(Mbti.valueOf(dto.getMbti()));
       changed_user.setRegion(Seoul.fromValue(dto.getRegion()));

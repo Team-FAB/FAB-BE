@@ -160,6 +160,13 @@ class MyContentServiceImplTest {
 
       verify(userRepository,times(1)).save(any(User.class));
       assertEquals(result.getMbti(),"INFP");
+      assertEquals(result.getMaxAge(),form.getMaxAge());
+      assertEquals(result.getMinAge(),form.getMinAge());
+      assertEquals(result.getMyAge(),form.getMyAge());
+      assertEquals(result.getGender(),form.getGender());
+      assertEquals(result.getMbti(),form.getMbti());
+      assertEquals(result.isSmoke(),form.isSmoke());
+      assertEquals(result.getActivityTime(),form.getActivityTime());
     }
     @Test
     @DisplayName("- form 값이 잘못된경우")

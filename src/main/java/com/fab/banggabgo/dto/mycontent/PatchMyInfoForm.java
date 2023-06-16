@@ -17,9 +17,9 @@ import lombok.ToString;
 public class PatchMyInfoForm {
 
   private String gender;
-  private int myAge;
-  private int minAge;
-  private int maxAge;
+  private Integer myAge;
+  private Integer minAge;
+  private Integer maxAge;
   private boolean isSmoke;
   private String mbti;
   private String region;

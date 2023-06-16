@@ -14,15 +14,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApplyUserForm {
 
-  @ApiModelProperty(value = "상대 유저 id", example = "1")
-  private Integer applicantUserId;
-
   @ApiModelProperty(value = "게시판 id", example = "1")
   private Integer articleId;
 
-  public static ApplyUserDto toDto(ApplyUserForm form){
+  public static ApplyUserDto toDto(ApplyUserForm form) {
     return ApplyUserDto.builder()
-        .applicantUserId(form.getApplicantUserId())
         .articleId(form.getArticleId())
         .build();
   }

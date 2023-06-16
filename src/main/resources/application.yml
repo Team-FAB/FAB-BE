@@ -3,7 +3,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   config:
-    import: jwt.yml
+    import: jwt.yml,oauth2.yml
   datasource:
     username: root
     password: root

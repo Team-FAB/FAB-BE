@@ -15,10 +15,13 @@ import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
+import com.fab.banggabgo.service.S3Service;
 import io.jsonwebtoken.lang.Assert;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -31,6 +34,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,7 +48,8 @@ class MyContentServiceImplTest {
   private UserRepository userRepository;
   @InjectMocks
   private MyContentServiceImpl myContentService;
-
+  @Mock
+  private S3Service s3Service;
   User stub_user = User.builder()
       .id(1)
       .nickname("원래이름")
@@ -171,6 +176,36 @@ class MyContentServiceImplTest {
       //when
       //then
       assertThrows(CustomException.class,() -> myContentService.patchMyInfo(stub_user,PatchMyInfoForm.toDto(form)));
+    }
+    @Test
+    @DisplayName("이미지 업로드하기")
+    void postImage() throws IOException {
+
+      //given
+      var mockFile = new MockMultipartFile(
+          "file",
+          "test.jpg",
+          "image/jpeg",
+          "test file content".getBytes()
+      );
+      var stubUrl="s3:image.newImage.png";
+      var dto=PostMyInfoImageRequestDto.builder()
+          .image(mockFile)
+          .build();
+
+
+      //when
+      when(s3Service.fileUpload(any())).thenReturn(stubUrl);
+      when(userRepository.save(stub_user)).thenReturn(stub_user);
+
+
+      //then
+      var result=myContentService.postMyInfoImage(stub_user, dto);
+
+      assertEquals(stubUrl,stub_user.getImage());
+      assertEquals(result.getImage(),stubUrl);
+
+
     }
 
   }

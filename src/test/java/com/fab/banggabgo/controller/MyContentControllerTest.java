@@ -13,6 +13,10 @@ import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.service.MyContentService;
 import com.fab.banggabgo.service.impl.MyContentServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,9 +28,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 @WebMvcTest(MyContentController.class)
 @ExtendWith(MockitoExtension.class)
@@ -133,5 +139,18 @@ class MyContentControllerTest {
         .andExpect(status().isOk());
     //when
     //then
+  }
+  @Test
+  @DisplayName("이미지 변경 테스트")
+  @WithMockUser
+  void postMyImg() throws Exception {
+    Path imagePath = Paths.get("src/test/resources/wierd.png");
+    byte[] imageBytes = Files.readAllBytes(imagePath);
+    var image = new MockMultipartFile("image","wierd.png",MediaType.IMAGE_PNG_VALUE,imageBytes);
+    mockMvc.perform(MockMvcRequestBuilders.multipart("/api/my/image")
+            .file(image)
+            .with(SecurityMockMvcRequestPostProcessors.csrf())
+        )
+        .andExpect(status().isOk());
   }
 }

@@ -13,6 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApplyUserDto {
 
-  private Integer appliedUserId;
+  private Integer applicantUserId;
   private Integer articleId;
 }

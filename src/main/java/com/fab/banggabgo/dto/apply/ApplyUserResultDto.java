@@ -1,6 +1,6 @@
 package com.fab.banggabgo.dto.apply;
 
-import io.swagger.annotations.ApiModelProperty;
+import com.fab.banggabgo.entity.Apply;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +13,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApplyUserResultDto {
-  @ApiModelProperty(value = "이메일", example = "test@test.com")
-  private String email;
-  @ApiModelProperty(value = "비밀번호", example = "MyPassword@123")
-  private String password;
+
+  String approveStatus;
+  String articleName;
+  Integer articleId;
+
+  public static ApplyUserResultDto toDto(Apply apply) {
+    return ApplyUserResultDto.builder()
+        .approveStatus(apply.getApproveStatus().getValue())
+        .articleName(apply.getArticle().getTitle())
+        .articleId(apply.getArticle().getId())
+        .build();
+  }
 }

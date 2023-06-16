@@ -194,21 +194,50 @@ class MyContentServiceImplTest {
 
   }
 
-  @Test
-  @DisplayName("getApplicants - 성공")
-  @WithMockUser
-  void getApplicantsSuccess() {
-    when(applyRepository.getMyApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
-            .approveStatus(ApproveStatus.WAIT)
-            .build(),
-        Apply.builder()
-            .approveStatus(ApproveStatus.APPROVAL)
-            .build()));
+  @Nested
+  @DisplayName("신청자 목록 불러오기")
+  class fromApplicant {
 
-    var result = applyRepository.getMyApplicant(PageRequest.of(1, 4), 1);
+    @Test
+    @DisplayName("신청자 목록 - 성공")
+    @WithMockUser
+    void getApplicantsSuccess() {
+      when(applyRepository.getMyApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
+              .approveStatus(ApproveStatus.WAIT)
+              .build(),
+          Apply.builder()
+              .approveStatus(ApproveStatus.APPROVAL)
+              .build()));
 
-    verify(applyRepository, times(1)).getMyApplicant(any(Pageable.class), any(Integer.class));
-    assertEquals(result.get(0).getApproveStatus(), ApproveStatus.WAIT);
-    assertEquals(result.get(1).getApproveStatus(), ApproveStatus.APPROVAL);
+      var result = applyRepository.getMyApplicant(PageRequest.of(1, 4), 1);
+
+      verify(applyRepository, times(1)).getMyApplicant(any(Pageable.class), any(Integer.class));
+      assertEquals(result.get(0).getApproveStatus(), ApproveStatus.WAIT);
+      assertEquals(result.get(1).getApproveStatus(), ApproveStatus.APPROVAL);
+    }
   }
+
+  @Nested
+  @DisplayName("신청한 목록 불러오기")
+  class toApplicant {
+
+    @Test
+    @DisplayName("신청한 - 성공")
+    @WithMockUser
+    void getApplicantsSuccess() {
+      when(applyRepository.getMyToApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
+              .approveStatus(ApproveStatus.WAIT)
+              .build(),
+          Apply.builder()
+              .approveStatus(ApproveStatus.APPROVAL)
+              .build()));
+
+      var result = applyRepository.getMyToApplicant(PageRequest.of(1, 4), 1);
+
+      verify(applyRepository, times(1)).getMyToApplicant(any(Pageable.class), any(Integer.class));
+      assertEquals(result.get(0).getApproveStatus(), ApproveStatus.WAIT);
+      assertEquals(result.get(1).getApproveStatus(), ApproveStatus.APPROVAL);
+    }
+  }
+
 }

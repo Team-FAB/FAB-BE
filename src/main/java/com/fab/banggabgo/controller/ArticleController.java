@@ -2,8 +2,7 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
-import com.fab.banggabgo.common.exception.CustomException;
-import com.fab.banggabgo.common.exception.ErrorCode;
+import com.fab.banggabgo.dto.apply.ApplyUserForm;
 import com.fab.banggabgo.dto.article.ArticleEditForm;
 import com.fab.banggabgo.dto.article.ArticleRegisterForm;
 import com.fab.banggabgo.entity.User;
@@ -111,5 +110,12 @@ public class ArticleController {
   ) {
     var result = articleService.getArticleFavorite(user, id);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
+  @PostMapping("/apply")
+  public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
+      @RequestBody ApplyUserForm form) {
+    var result = articleService.applyUser(user, ApplyUserForm.toDto(form));
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
   }
 }

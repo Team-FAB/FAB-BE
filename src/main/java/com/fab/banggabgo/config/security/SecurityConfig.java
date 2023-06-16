@@ -29,6 +29,7 @@ public class SecurityConfig {
         .and()
         .authorizeHttpRequests()
         .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+        .antMatchers("/api/users/recommend").authenticated()
         .antMatchers("/api/users/**").permitAll()
         .antMatchers(HttpMethod.GET ,"/api/articles/**").permitAll()
         .antMatchers("/login/oauth2/**").permitAll()

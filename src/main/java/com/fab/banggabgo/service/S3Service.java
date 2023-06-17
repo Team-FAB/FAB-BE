@@ -22,7 +22,7 @@ public class S3Service {
 
   public String fileUpload(MultipartFile file) throws CustomException {
     var newFileName = MultipartFileUtil.createNewFileName(file.getOriginalFilename());
-    var objMeta = getObjMeta(file);
+    var objMeta = MultipartFileUtil.getObjMeta(file);
     try {
       amazonS3Client.putObject(
           new PutObjectRequest(bucket, newFileName, file.getInputStream(), objMeta));
@@ -32,13 +32,7 @@ public class S3Service {
     return amazonS3Client.getUrl(bucket, newFileName).toString();
   }
 
-  private ObjectMetadata getObjMeta(MultipartFile file) {
-    var objectMeta = new ObjectMetadata();
-    objectMeta.setContentLength(file.getSize());
-    objectMeta.setContentType(file.getContentType());
 
-    return objectMeta;
-  }
 
 
 }

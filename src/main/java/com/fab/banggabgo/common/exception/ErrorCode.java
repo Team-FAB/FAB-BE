@@ -50,7 +50,7 @@ public enum ErrorCode implements Code {
   */
   PATCH_MY_INFO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, "내정보 데이터 변환오류"),
   FAIL_INFO_LOADING(HttpStatus.BAD_REQUEST, "정보를 불러오지 못했습니다."),
-  AMAZON_S3_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"S3 이미지 업로드 중 문제가 발생했습니다." );
+  AMAZON_S3_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"S3 이미지 업로드 중 문제가 발생했습니다." ),
 
 
   /**

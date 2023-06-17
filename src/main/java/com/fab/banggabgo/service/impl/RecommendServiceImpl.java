@@ -19,6 +19,11 @@ public class RecommendServiceImpl implements RecommendService {
 
   @Override
   public RecommendResponseDto getRecommendUsers(User user, Integer size) {
+    if (user.getIsSmoker() == null || user.getGender() == null || user.getActivityTime() == null
+        || user.getRegion() == null || user.getMinAge() == null || user.getMaxAge() == null) {
+
+      throw new CustomException(ErrorCode.INVALID_PROFILE);
+    }
 
     List<User> userList = userRepository.getRecommend(user, size);
 

@@ -39,12 +39,22 @@ public enum ErrorCode implements Code {
   VALUES_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이메일 혹은 닉네임 검증에 실패하였습니다."),
   PASSWORD_NOT_MATCHED(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
   ACCESS_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "만료된 로그인 토큰입니다.( 로그인 만료 )"),
-  
+
   /**
   * MyContent 에러코드
   */
   PATCH_MY_INFO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, "내정보 데이터 변환오류"),
-  FAIL_INFO_LOADING(HttpStatus.BAD_REQUEST, "정보를 불러오지 못했습니다.");
+  FAIL_INFO_LOADING(HttpStatus.BAD_REQUEST, "정보를 불러오지 못했습니다."),
+
+  /**
+   * Apply 에러코드
+   */
+  ALREADY_END_RECRUITING(HttpStatus.BAD_REQUEST, "이미 모집이 완료된 글입니다."),
+  NOT_FOUND_APPLIED(HttpStatus.BAD_REQUEST, "매칭된 유저를 찾을수 없습니다"),
+  ALREADY_REFUSE(HttpStatus.BAD_REQUEST, "이미 거절된 상태입니다."),
+  ALREADY_APPROVE(HttpStatus.BAD_REQUEST, "승인된 상대를 거절할수 없습니다."),
+  ALREADY_APPLY(HttpStatus.BAD_REQUEST, "이미 요청하였습니다."),
+  NOT_YOUR_ARTICLE(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다.");
 
   private final HttpStatus status;
   private final String msg;

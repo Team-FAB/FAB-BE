@@ -12,22 +12,32 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;
+import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.LikeArticleRepository;
+import com.fab.banggabgo.type.ActivityTime;
+import com.fab.banggabgo.type.ApproveStatus;
 import com.fab.banggabgo.type.Gender;
+import com.fab.banggabgo.type.MatchStatus;
+import com.fab.banggabgo.type.Mbti;
 import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
+import com.fab.banggabgo.type.UserRole;
+import com.fab.banggabgo.type.UserType;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -44,6 +54,8 @@ class ArticleServiceImplTest {
   @Mock
   private LikeArticleRepository likeArticleRepository;
 
+  @Mock
+  private ApplyRepository applyRepository;
   @InjectMocks
   private ArticleServiceImpl articleService;
 
@@ -550,7 +562,8 @@ class ArticleServiceImplTest {
         .willReturn(new PageImpl<>(articleList));
 
     //when
-    var result = articleService.getArticleByFilter(1, 5, false, "서초구", "1개월 ~ 3개월", "1000000", "남성");
+    var result = articleService.getArticleByFilter(1, 5, false, "서초구", "1개월 ~ 3개월", "1000000",
+        "남성");
 
     //then
     assertEquals(5, result.size());
@@ -631,5 +644,150 @@ class ArticleServiceImplTest {
 
     //then
     assertFalse(result);
+  }
+
+  @Nested
+  @DisplayName("apply - 유저 매칭")
+  class Apply {
+
+    private final User loginUser = User.builder()
+        .id(1)
+        .email("test@email.com")
+        .password("abcd1234")
+        .nickname("테스트")
+        .userType(UserType.NORMAL)
+        .image("http://image_uri")
+        .matchStatus(MatchStatus.ACTIVITY)
+        .isSmoker(true)
+        .activityTime(ActivityTime.MORNING)
+        .gender(Gender.MALE)
+        .region(Seoul.DOBONG)
+        .mbti(Mbti.ENFP)
+        .minAge(20)
+        .maxAge(30)
+        .myAge(25)
+        .tag(new HashSet<>())
+        .detail("abcdef")
+        .roles(List.of(UserRole.USER_ROLE))
+        .build();
+
+    private final User appliedUser = User.builder()
+        .id(2)
+        .email("test2@email.com")
+        .password("abcdf12345")
+        .nickname("테스트2")
+        .userType(UserType.NORMAL)
+        .image("http://image_uri2")
+        .matchStatus(MatchStatus.ACTIVITY)
+        .isSmoker(true)
+        .activityTime(ActivityTime.MORNING)
+        .gender(Gender.MALE)
+        .region(Seoul.DOBONG)
+        .mbti(Mbti.ENFP)
+        .minAge(22)
+        .maxAge(28)
+        .myAge(26)
+        .tag(new HashSet<>())
+        .detail("abcdeffdaa")
+        .roles(List.of(UserRole.USER_ROLE))
+        .build();
+
+    private Article article = Article.builder()
+        .id(1)
+        .user(appliedUser)
+        .title("테스트 게시글")
+        .content("test test test")
+        .region(Seoul.DOBONG)
+        .period(Period.ONETOTHREE)
+        .price(10000000)
+        .gender(Gender.MALE)
+        .isRecruiting(true)
+        .isDeleted(false)
+        .build();
+    private Integer articleId = 1;
+
+    @Test
+    @DisplayName("apply - 성공")
+    void applySuccess() {
+
+      given(articleRepository.findById(any())).willReturn(Optional.of(article));
+      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(false);
+
+      var result = articleService.applyUser(loginUser, articleId);
+
+      verify(articleRepository, times(1)).findById(articleId);
+      verify(applyRepository, times(1)).existsByApplicantUserIdAndArticleId(
+          loginUser.getId(), articleId);
+
+      assertEquals(result.getArticleId(), articleId);
+      assertEquals(result.getArticleName(), article.getTitle());
+      assertEquals(result.getApproveStatus(), ApproveStatus.WAIT.getValue());
+    }
+
+    @Test
+    @DisplayName("apply - 이미 신청이 되어있는경우")
+    void applyAlreadyApply() {
+
+      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(true);
+
+      CustomException customException = assertThrows(CustomException.class,
+          () -> articleService.applyUser(loginUser, articleId));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_APPLY);
+    }
+
+    @Test
+    @DisplayName("apply - 모집 완료된 글에 신청한 경우")
+    void applyIsNotRecruiting() {
+      article = Article.builder()
+          .id(1)
+          .user(appliedUser)
+          .title("테스트 게시글")
+          .content("test test test")
+          .region(Seoul.DOBONG)
+          .period(Period.ONETOTHREE)
+          .price(10000000)
+          .gender(Gender.MALE)
+          .isRecruiting(false)
+          .isDeleted(false)
+          .build();
+
+      given(articleRepository.findById(any())).willReturn(Optional.of(article));
+      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(false);
+
+      CustomException customException = assertThrows(CustomException.class,
+          () -> articleService.applyUser(loginUser, articleId));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
+    }
+
+    @Test
+    @DisplayName("apply - 삭제된 글에 신청한 경우")
+    void applyIsDeleted() {
+      article = Article.builder()
+          .id(1)
+          .user(appliedUser)
+          .title("테스트 게시글")
+          .content("test test test")
+          .region(Seoul.DOBONG)
+          .period(Period.ONETOTHREE)
+          .price(10000000)
+          .gender(Gender.MALE)
+          .isRecruiting(false)
+          .isDeleted(true)
+          .build();
+
+      given(articleRepository.findById(any())).willReturn(Optional.of(article));
+      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(false);
+
+      CustomException customException = assertThrows(CustomException.class,
+          () -> articleService.applyUser(loginUser, articleId));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
+    }
   }
 }

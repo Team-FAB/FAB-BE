@@ -19,6 +19,7 @@ import com.fab.banggabgo.service.ArticleService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -514,8 +515,9 @@ class ArticleControllerTest {
     //given
     //when
     //then
-    mockMvc.perform(get("/api/articles/filter?page=1&size=10&isRecruiting=true&region=서초구&period=1개월~3개월&price=1000000&gender=남성")
-            .with(SecurityMockMvcRequestPostProcessors.csrf())
+    mockMvc.perform(
+            get("/api/articles/filter?page=1&size=10&isRecruiting=true&region=서초구&period=1개월~3개월&price=1000000&gender=남성")
+                .with(SecurityMockMvcRequestPostProcessors.csrf())
         )
         .andExpect(status().isOk())
         .andDo(print());
@@ -603,5 +605,30 @@ class ArticleControllerTest {
     mockMvc.perform(get("/api/articles/favorites/1"))
         .andExpect(status().isUnauthorized())
         .andDo(print());
+  }
+
+  @Nested
+  @DisplayName("apply - 룸메이트 신청")
+  class Apply {
+
+    @Test
+    @DisplayName("apply - 성공")
+    @WithMockUser
+    void getSuccessApply() throws Exception {
+
+      mockMvc.perform(post("/api/articles/apply?articleId=1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isCreated())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 로그인 정보가 없을때")
+    void getFailAuthApply() throws Exception {
+      mockMvc.perform(post("/api/articles/apply")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
   }
 }

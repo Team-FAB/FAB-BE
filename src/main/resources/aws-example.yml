@@ -1,0 +1,19 @@
+cloud:
+  sws:
+    s3:
+      bucket: your-bucket!
+    credentials:
+      access-key: your-accessKey!
+      secret-key: your-secretKey!
+    region:
+      static: ap-northeast-2
+      auto: false
+    stack:
+      auto: false
+
+logging:
+  level:
+    com:
+      amazonaws:
+        util:
+          EC2MetadataUtils: error

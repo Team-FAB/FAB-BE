@@ -8,7 +8,10 @@ import com.fab.banggabgo.dto.mycontent.PatchMyInfoRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageResultDto;
 import com.fab.banggabgo.entity.User;
+import java.io.IOException;
 import java.util.List;
 
 public interface MyContentService {
@@ -22,5 +25,8 @@ public interface MyContentService {
 
   PatchMyNicknameResult patchNickname(User user, PatchMyNicknameRequestDto toDto) throws CustomException;
 
+  PostMyInfoImageResultDto postMyInfoImage(User user, PostMyInfoImageRequestDto dto)
+      throws IOException;
   PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto form);
+
 }

@@ -8,7 +8,10 @@ import static org.mockito.BDDMockito.given;
 import com.fab.banggabgo.dto.recommend.RecommendResponseDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
+import com.fab.banggabgo.type.ActivityTime;
+import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Mbti;
+import com.fab.banggabgo.type.Seoul;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +40,12 @@ class RecommendServiceImplTest {
     for (int i = 0; i < 9; i++) {
       User user = User.builder()
           .id(i + 1)
+          .isSmoker(true)
+          .gender(Gender.MALE)
+          .region(Seoul.DONGJAK)
+          .minAge(20)
+          .maxAge(25)
+          .activityTime(ActivityTime.MIDNIGHT)
           .nickname("유저" + i)
           .mbti(Mbti.ENTJ)
           .build();
@@ -48,6 +57,12 @@ class RecommendServiceImplTest {
         .willReturn(userList);
 
     User user1 = User.builder()
+        .isSmoker(true)
+        .gender(Gender.MALE)
+        .region(Seoul.DONGJAK)
+        .minAge(20)
+        .maxAge(25)
+        .activityTime(ActivityTime.MIDNIGHT)
         .mbti(Mbti.ENFJ)
         .build();
     //when

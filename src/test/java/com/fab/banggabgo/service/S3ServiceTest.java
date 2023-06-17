@@ -3,13 +3,11 @@ package com.fab.banggabgo.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.fab.banggabgo.util.MultipartFileUtil;
 import java.net.URL;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -23,11 +21,12 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class S3ServiceTest {
+
   @Mock
   AmazonS3Client amazonS3ClientMock;
 
   @InjectMocks
-  S3Service s3Service ;
+  S3Service s3Service;
 
   @Test
   @DisplayName("S3 - 이미지 업로드테스트 (이미지 url 반환)")
@@ -52,8 +51,8 @@ class S3ServiceTest {
     var result = s3Service.fileUpload(mockFile);
 
     //then
-    verify(amazonS3ClientMock,times(1)).putObject(any());
-    Assertions.assertEquals(result,stub_url);
+    verify(amazonS3ClientMock, times(1)).putObject(any());
+    Assertions.assertEquals(result, stub_url);
 
   }
 }

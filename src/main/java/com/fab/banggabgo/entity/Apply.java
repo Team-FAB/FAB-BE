@@ -3,6 +3,8 @@ package com.fab.banggabgo.entity;
 import com.fab.banggabgo.type.ApproveStatus;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,12 +30,13 @@ public class Apply extends BaseEntity {
   private Integer id;
 
   @Column(name = "approve_status")
+  @Enumerated(value = EnumType.STRING)
   private ApproveStatus approveStatus;
 
   @ManyToOne
-  @JoinColumn(name = "apply_user_id")
+  @JoinColumn(name = "applicant_user_id")
   @ToString.Exclude
-  private User applyUser;
+  private User applicantUser;
 
   @ManyToOne
   @JoinColumn(name = "article_id")

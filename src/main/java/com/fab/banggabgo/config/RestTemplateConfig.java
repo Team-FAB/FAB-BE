@@ -21,6 +21,7 @@ public class RestTemplateConfig {
         .setConnectTimeout(Duration.ofMillis(5000))
         .setReadTimeout(Duration.ofMillis(5000))
         .additionalMessageConverters(new StringHttpMessageConverter(StandardCharsets.UTF_8))
+            .errorHandler(new CustomErrorHandler())
         .build();
   }
 }

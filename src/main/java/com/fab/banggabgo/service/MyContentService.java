@@ -4,9 +4,9 @@ import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyInfoDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyNicknameRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
 import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.dto.mycontent.PostMyInfoImageResultDto;
@@ -23,10 +23,10 @@ public interface MyContentService {
 
   MyInfoDto getMyInfo(User user);
 
-  PatchMyNicknameResult patchNickname(User user, PatchMyNicknameDto toDto) throws CustomException;
-
-  PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto form);
+  PatchMyNicknameResult patchNickname(User user, PatchMyNicknameRequestDto toDto) throws CustomException;
 
   PostMyInfoImageResultDto postMyInfoImage(User user, PostMyInfoImageRequestDto dto)
       throws IOException;
+  PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto form);
+
 }

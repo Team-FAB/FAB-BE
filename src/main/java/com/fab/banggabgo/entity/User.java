@@ -79,10 +79,10 @@ public class User extends BaseEntity implements UserDetails {
   @Enumerated(EnumType.STRING)
   private Mbti mbti;
 
-  private int minAge;
-  private int maxAge;
+  private Integer minAge;
+  private Integer maxAge;
 
-  private int myAge;
+  private Integer myAge;
 
   @ElementCollection(fetch = FetchType.LAZY)
   @ToString.Exclude

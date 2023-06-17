@@ -14,8 +14,8 @@ import lombok.Setter;
 public class PatchMyNicknameForm {
   private String nickname;
 
-  public static PatchMyNicknameDto toDto(PatchMyNicknameForm form){
-    return PatchMyNicknameDto.builder()
+  public static PatchMyNicknameRequestDto toDto(PatchMyNicknameForm form){
+    return PatchMyNicknameRequestDto.builder()
         .nickname(form.getNickname())
         .build();
   }

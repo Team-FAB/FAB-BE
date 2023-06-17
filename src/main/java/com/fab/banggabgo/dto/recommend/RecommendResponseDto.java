@@ -1,5 +1,6 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.recommend;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +12,8 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OAuth2SignInRequestDto {
+public class RecommendResponseDto {
 
-  String accessToken;
+  private String mbti;
+  private List<RecommendDto> recommendDtoList;
 }

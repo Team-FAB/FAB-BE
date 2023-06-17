@@ -1,6 +1,7 @@
 package com.fab.banggabgo.dto.mycontent;
 
 import com.fab.banggabgo.entity.User;
+import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Mbti;
 import com.fab.banggabgo.type.Seoul;
@@ -31,11 +32,11 @@ public class MyInfoDto {
   private String region;
   private String mbti;
   private Set<String> tags;
-  private int minAge;
-  private int maxAge;
+  private Integer minAge;
+  private Integer maxAge;
 
   private String preferredAge;
-  private int myAge;
+  private Integer myAge;
   private String detail;
 
   public static MyInfoDto toDto(User user) {
@@ -44,7 +45,7 @@ public class MyInfoDto {
         .nickname(user.getNickname())
         .image(user.getImage())
         .isSmoker(user.getIsSmoker())
-        .activityTime(Optional.ofNullable(user.getActivityTime()).map(Enum::name).orElse("null"))
+        .activityTime(Optional.ofNullable(user.getActivityTime()).map(ActivityTime::getValue).orElse("null"))
         .gender(Optional.ofNullable(user.getGender()).map(Gender::getValue).orElse("null"))
         .region(Optional.ofNullable(user.getRegion()).map(Seoul::getValue).orElse("null"))
         .mbti(Optional.ofNullable(user.getMbti()).map(Mbti::name).orElse("null"))

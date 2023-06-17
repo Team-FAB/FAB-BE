@@ -1,5 +1,6 @@
 package com.fab.banggabgo.service;
 
+import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
@@ -12,6 +13,11 @@ public interface ArticleService {
    * 게시글 등록
    */
   void postArticle(User user, ArticleRegisterDto dto);
+
+  /**
+   * 게시글 가져오기
+   */
+  ArticlePageDto getArticle(Integer id);
 
   /**
    * 게시글 수정
@@ -48,4 +54,6 @@ public interface ArticleService {
    * 게시글 찜했는지
    */
   boolean getArticleFavorite(User user, Integer id);
+
+  ApplyUserResultDto applyUser(User user, Integer articleId);
 }

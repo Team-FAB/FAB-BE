@@ -14,11 +14,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PatchMyInfoDto {
+public class PatchMyInfoRequestDto {
   private String gender;
-  private int myAge;
-  private int minAge;
-  private int maxAge;
+  private Integer myAge;
+  private Integer minAge;
+  private Integer maxAge;
   private boolean isSmoke;
   private String mbti;
   private String region;

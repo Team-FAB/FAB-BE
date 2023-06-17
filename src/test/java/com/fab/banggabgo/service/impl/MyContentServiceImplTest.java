@@ -13,7 +13,6 @@ import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
-import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
 import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.entity.User;
@@ -147,7 +146,7 @@ class MyContentServiceImplTest {
     PatchMyInfoForm form= PatchMyInfoForm.builder()
         .gender("남성")
         .region("강남구")
-        .activityTime("MIDNIGHT")
+        .activityTime("오후")
         .myAge(15)
         .favoriteTag(new ArrayList<>(List.of(new String[]{"tag1", "tag2"})))
         .myText("자세한정보")
@@ -167,6 +166,13 @@ class MyContentServiceImplTest {
 
       verify(userRepository,times(1)).save(any(User.class));
       assertEquals(result.getMbti(),"INFP");
+      assertEquals(result.getMaxAge(),form.getMaxAge());
+      assertEquals(result.getMinAge(),form.getMinAge());
+      assertEquals(result.getMyAge(),form.getMyAge());
+      assertEquals(result.getGender(),form.getGender());
+      assertEquals(result.getMbti(),form.getMbti());
+      assertEquals(result.isSmoke(),form.isSmoke());
+      assertEquals(result.getActivityTime(),form.getActivityTime());
     }
     @Test
     @DisplayName("- form 값이 잘못된경우")

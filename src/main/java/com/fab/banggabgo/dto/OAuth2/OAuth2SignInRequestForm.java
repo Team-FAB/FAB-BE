@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.OAuth2;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
@@ -14,10 +14,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OAuth2SignInRequestForm {
 
-  @ApiModelProperty(value = "access_token", example = "access_token_value")
-  String accessToken;
+  @ApiModelProperty(value = "code", example = "google은 access_token, kakao는 code")
+  String code;
 
   public static OAuth2SignInRequestDto toDto(OAuth2SignInRequestForm form) {
-    return new OAuth2SignInRequestDto(form.accessToken);
+    return new OAuth2SignInRequestDto(form.code);
   }
 }

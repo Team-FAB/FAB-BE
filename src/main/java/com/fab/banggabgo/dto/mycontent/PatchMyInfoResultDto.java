@@ -18,9 +18,9 @@ import lombok.ToString;
 @ToString
 public class PatchMyInfoResultDto {
   private String gender;
-  private int myAge;
-  private int minAge;
-  private int maxAge;
+  private Integer myAge;
+  private Integer minAge;
+  private Integer maxAge;
   private boolean isSmoke;
   private String mbti;
   private String region;
@@ -32,10 +32,12 @@ public class PatchMyInfoResultDto {
     return PatchMyInfoResultDto.builder()
         .gender(user.getGender().getValue())
         .myAge(user.getMyAge())
+        .minAge(user.getMinAge())
+        .maxAge(user.getMaxAge())
         .isSmoke(user.getIsSmoker())
         .mbti(user.getMbti().name())
         .region(user.getRegion().getValue())
-        .activityTime(user.getActivityTime().name())
+        .activityTime(user.getActivityTime().getValue())
         .tags(new ArrayList<>(user.getTag()))
         .detail(user.getDetail())
         .build();

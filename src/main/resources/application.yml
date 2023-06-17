@@ -3,7 +3,7 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   config:
-    import: jwt.yml,aws.yml
+    import: jwt.yml,oauth2.yml, aws.yml
   datasource:
     username: root
     password: root
@@ -17,8 +17,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-
   redis:
     host: localhost
     port: 6379
@@ -27,5 +25,6 @@ spring:
     multipart:
       max-file-size: 10MB
       enabled: true
+
 server:
   port: 8080

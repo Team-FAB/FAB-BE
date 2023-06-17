@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto;
+package com.fab.banggabgo.dto.OAuth2;
 
 
 import com.fab.banggabgo.type.OAuth2RegistrationId;

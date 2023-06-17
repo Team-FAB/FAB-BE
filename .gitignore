@@ -36,3 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 /src/main/resources/aws.yml
+/src/main/resources/oauth2.yml
+

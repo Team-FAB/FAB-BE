@@ -5,9 +5,9 @@ import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyInfoDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyNicknameRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
@@ -46,7 +46,7 @@ public class MyContentServiceImpl implements MyContentService {
   }
 
   @Override
-  public PatchMyNicknameResult patchNickname(User user, PatchMyNicknameDto dto)
+  public PatchMyNicknameResult patchNickname(User user, PatchMyNicknameRequestDto dto)
       throws CustomException {
 
     user.setNickname(dto.getNickname());
@@ -62,16 +62,18 @@ public class MyContentServiceImpl implements MyContentService {
   }
 
   @Override
-  public PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto dto) {
+  public PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto dto) {
     var converted_user=convertUserData(user,dto);
     return PatchMyInfoResultDto.from(userRepository.save(converted_user));
   }
 
-  public User convertUserData(User user, PatchMyInfoDto dto) {
+  public User convertUserData(User user, PatchMyInfoRequestDto dto) {
     var changed_user = user;
     try {
       changed_user.setGender(Gender.fromValue(dto.getGender()));
       changed_user.setMyAge(dto.getMyAge());
+      changed_user.setMinAge(dto.getMinAge());
+      changed_user.setMaxAge(dto.getMaxAge());
       changed_user.setIsSmoker(dto.isSmoke());
       changed_user.setMbti(Mbti.valueOf(dto.getMbti()));
       changed_user.setRegion(Seoul.fromValue(dto.getRegion()));

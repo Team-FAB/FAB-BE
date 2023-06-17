@@ -17,9 +17,9 @@ import lombok.ToString;
 public class PatchMyInfoForm {
 
   private String gender;
-  private int myAge;
-  private int minAge;
-  private int maxAge;
+  private Integer myAge;
+  private Integer minAge;
+  private Integer maxAge;
   private boolean isSmoke;
   private String mbti;
   private String region;
@@ -27,8 +27,8 @@ public class PatchMyInfoForm {
   private List<String> favoriteTag;
   private String myText;
 
-  public static PatchMyInfoDto toDto(PatchMyInfoForm form){
-      return PatchMyInfoDto.builder()
+  public static PatchMyInfoRequestDto toDto(PatchMyInfoForm form){
+      return PatchMyInfoRequestDto.builder()
           .gender(form.getGender())
           .myAge(form.getMyAge())
           .minAge(form.getMinAge())

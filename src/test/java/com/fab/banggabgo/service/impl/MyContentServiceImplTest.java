@@ -13,12 +13,10 @@ import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
-import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
-import io.jsonwebtoken.lang.Assert;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
@@ -162,6 +160,13 @@ class MyContentServiceImplTest {
 
       verify(userRepository,times(1)).save(any(User.class));
       assertEquals(result.getMbti(),"INFP");
+      assertEquals(result.getMaxAge(),form.getMaxAge());
+      assertEquals(result.getMinAge(),form.getMinAge());
+      assertEquals(result.getMyAge(),form.getMyAge());
+      assertEquals(result.getGender(),form.getGender());
+      assertEquals(result.getMbti(),form.getMbti());
+      assertEquals(result.isSmoke(),form.isSmoke());
+      assertEquals(result.getActivityTime(),form.getActivityTime());
     }
     @Test
     @DisplayName("- form 값이 잘못된경우")

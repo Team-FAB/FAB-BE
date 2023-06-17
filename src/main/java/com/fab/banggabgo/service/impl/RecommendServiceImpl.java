@@ -19,9 +19,7 @@ public class RecommendServiceImpl implements RecommendService {
 
   @Override
   public RecommendResponseDto getRecommendUsers(User user, Integer size) {
-    if (user.getIsSmoker() == null || user.getGender() == null || user.getActivityTime() == null
-        || user.getRegion() == null || user.getMinAge() == null || user.getMaxAge() == null) {
-
+    if (checkUserProfile(user)) {
       throw new CustomException(ErrorCode.INVALID_PROFILE);
     }
 
@@ -31,5 +29,10 @@ public class RecommendServiceImpl implements RecommendService {
         .mbti(user.getMbti().toString())
         .recommendDtoList(RecommendDto.toDtoList(userList))
         .build();
+  }
+
+  private boolean checkUserProfile(User user) {
+    return user.getIsSmoker() == null || user.getGender() == null || user.getActivityTime() == null
+        || user.getRegion() == null || user.getMinAge() == null || user.getMaxAge() == null;
   }
 }

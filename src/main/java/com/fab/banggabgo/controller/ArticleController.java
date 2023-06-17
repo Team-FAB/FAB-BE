@@ -110,4 +110,11 @@ public class ArticleController {
     var result = articleService.getArticleFavorite(user, id);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
+
+  @PostMapping("/apply")
+  public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
+      @RequestParam Integer articleId) {
+    var result = articleService.applyUser(user, articleId);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
+  }
 }

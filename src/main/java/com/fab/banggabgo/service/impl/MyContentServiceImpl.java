@@ -5,18 +5,22 @@ import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyInfoDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
-import com.fab.banggabgo.dto.mycontent.PatchMyNicknameDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyNicknameRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageResultDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.MyContentService;
+import com.fab.banggabgo.service.S3Service;
 import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Mbti;
 import com.fab.banggabgo.type.Seoul;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +33,7 @@ public class MyContentServiceImpl implements MyContentService {
 
   private final ArticleRepository articleRepository;
   private final UserRepository userRepository;
+  private final S3Service s3Service;
 
   @Override
   public List<MyArticleDto> getMyArticle(User user) {
@@ -46,13 +51,12 @@ public class MyContentServiceImpl implements MyContentService {
   }
 
   @Override
-  public PatchMyNicknameResult patchNickname(User user, PatchMyNicknameDto dto)
+  public PatchMyNicknameResult patchNickname(User user, PatchMyNicknameRequestDto dto)
       throws CustomException {
 
     user.setNickname(dto.getNickname());
     try {
       var result = userRepository.save(user);
-
       return PatchMyNicknameResult.builder()
           .nickname(result.getNickname())
           .build();
@@ -62,16 +66,32 @@ public class MyContentServiceImpl implements MyContentService {
   }
 
   @Override
-  public PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto dto) {
+  public PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto dto) {
     var converted_user=convertUserData(user,dto);
     return PatchMyInfoResultDto.from(userRepository.save(converted_user));
   }
 
-  public User convertUserData(User user, PatchMyInfoDto dto) {
+
+  @Override
+  public PostMyInfoImageResultDto postMyInfoImage(User user, PostMyInfoImageRequestDto dto)
+      throws IOException {
+
+    var img_url=s3Service.fileUpload(dto.getImage());
+
+    user.setImage(img_url);
+    userRepository.save(user);
+
+    return PostMyInfoImageResultDto.builder()
+        .image(img_url)
+        .build();
+  }
+  public User convertUserData(User user, PatchMyInfoRequestDto dto) {
     var changed_user = user;
     try {
       changed_user.setGender(Gender.fromValue(dto.getGender()));
       changed_user.setMyAge(dto.getMyAge());
+      changed_user.setMinAge(dto.getMinAge());
+      changed_user.setMaxAge(dto.getMaxAge());
       changed_user.setIsSmoker(dto.isSmoke());
       changed_user.setMbti(Mbti.valueOf(dto.getMbti()));
       changed_user.setRegion(Seoul.fromValue(dto.getRegion()));

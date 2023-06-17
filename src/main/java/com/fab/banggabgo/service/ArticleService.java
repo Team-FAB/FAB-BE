@@ -1,5 +1,6 @@
 package com.fab.banggabgo.service;
 
+import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
@@ -53,4 +54,6 @@ public interface ArticleService {
    * 게시글 찜했는지
    */
   boolean getArticleFavorite(User user, Integer id);
+
+  ApplyUserResultDto applyUser(User user, Integer articleId);
 }

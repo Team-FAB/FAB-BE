@@ -33,7 +33,7 @@ public class Article extends BaseEntity {
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "user_id")
+  @JoinColumn(name = "user_id", nullable = false)
   @ToString.Exclude
   private User user;
 

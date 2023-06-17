@@ -54,7 +54,7 @@ class UserDetailsServiceImplTest {
     when(userRepository.findByEmail(email)).thenThrow(new RuntimeException());
 
     //when
-    assertThrows(RuntimeException.class,() -> userRepository.findByEmail(email));
+    assertThrows(RuntimeException.class, () -> userRepository.findByEmail(email));
     //then
   }
 }

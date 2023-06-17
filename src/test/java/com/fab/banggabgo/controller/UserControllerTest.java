@@ -4,7 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fab.banggabgo.service.RecommendService;
+import com.fab.banggabgo.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,12 +16,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(RecommendController.class)
+@WebMvcTest(UserController.class)
 @ExtendWith(MockitoExtension.class)
-class RecommendControllerTest {
+class UserControllerTest {
 
   @MockBean
-  private RecommendService recommendService;
+  private UserService userService;
 
   @Autowired
   private MockMvc mockMvc;
@@ -33,7 +33,7 @@ class RecommendControllerTest {
     //given
     //when
     //then
-    mockMvc.perform(get("/api/users/recommend?size=9")
+    mockMvc.perform(get("/api/users/recommendation?size=9")
             .with(SecurityMockMvcRequestPostProcessors.csrf()))
         .andExpect(status().isOk())
         .andDo(print());

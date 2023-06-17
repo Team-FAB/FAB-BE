@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 
-import com.fab.banggabgo.dto.recommend.RecommendResponseDto;
+import com.fab.banggabgo.dto.user.RecommendResponseDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.type.ActivityTime;
@@ -22,13 +22,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class RecommendServiceImplTest {
+class UserServiceImplTest {
 
   @Mock
   private UserRepository userRepository;
 
   @InjectMocks
-  private RecommendServiceImpl recommendService;
+  private UserServiceImpl recommendService;
 
   @Test
   @DisplayName("프로필 추천 불러오기 성공")

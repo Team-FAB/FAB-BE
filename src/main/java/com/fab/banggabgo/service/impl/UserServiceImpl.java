@@ -2,18 +2,18 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
-import com.fab.banggabgo.dto.recommend.RecommendDto;
-import com.fab.banggabgo.dto.recommend.RecommendResponseDto;
+import com.fab.banggabgo.dto.user.RecommendDto;
+import com.fab.banggabgo.dto.user.RecommendResponseDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
-import com.fab.banggabgo.service.RecommendService;
+import com.fab.banggabgo.service.UserService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RecommendServiceImpl implements RecommendService {
+public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
 

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Article;
@@ -22,6 +23,7 @@ import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.LikeArticleRepository;
+import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.ApproveStatus;
 import com.fab.banggabgo.type.Gender;
@@ -56,6 +58,10 @@ class ArticleServiceImplTest {
 
   @Mock
   private ApplyRepository applyRepository;
+
+  @Mock
+  private UserRepository userRepository;
+
   @InjectMocks
   private ArticleServiceImpl articleService;
 
@@ -197,6 +203,46 @@ class ArticleServiceImplTest {
 
     //then
     assertEquals(exception.getMessage(), "존재하지 않는 게시글 입니다.");
+  }
+
+  @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 성공")
+  void getUserArticlesSuccess() {
+    //given
+    List<ArticleInfoDto> articleList = new ArrayList<>();
+
+    for (int i = 0; i < 5; i++) {
+      ArticleInfoDto articleInfoDto = ArticleInfoDto.builder()
+          .id(i + 1)
+          .title("글 제목" + i)
+          .build();
+
+      articleList.add(articleInfoDto);
+    }
+
+    given(articleRepository.getUserArticle(any()))
+        .willReturn(articleList);
+
+    given(userRepository.findById(anyInt()))
+        .willReturn(Optional.ofNullable(User.builder().build()));
+
+    //when
+    List<ArticleInfoDto> result = articleService.getUserArticles(1);
+
+    //then
+    assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 실패 : 유저가 존재하지 않음")
+  void getUserArticlesFail_USER_IS_NULL() {
+    //given
+    //when
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.getUserArticles(1));
+
+    //then
+    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
   }
 
   @Test

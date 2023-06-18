@@ -28,4 +28,12 @@ public class UserController {
     var result = userService.getRecommendUsers(user, size);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
+
+  @GetMapping("/profile/{id}")
+  public ResponseEntity<?> getUserProfile(
+      @PathVariable int id
+  ) {
+    var result = userService.getUserProfile(id);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
 }

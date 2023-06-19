@@ -273,7 +273,7 @@ class MyContentServiceImplTest {
                   .approveStatus(ApproveStatus.WAIT)
               .build()));
 
-      var result = myContentService.getMyApplicant(loginUser, 4, 1);
+      var result = myContentService.getMyFromApplicantList(loginUser, 4, 1);
 
       verify(applyRepository, times(1)).getMyApplicant(any(Pageable.class), any(Integer.class));
       assertEquals(result.get(0).getMatchStatus(), ApproveStatus.WAIT.getValue());
@@ -352,7 +352,7 @@ class MyContentServiceImplTest {
           .approveStatus(ApproveStatus.WAIT)
           .build()));
 
-      var result = myContentService.getMyToApplicant(loginUser, 4, 1);
+      var result = myContentService.getMyToApplicantList(loginUser, 4, 1);
 
       verify(applyRepository, times(1)).getMyToApplicant(any(Pageable.class), any(Integer.class));
       assertEquals(result.get(0).getMatchStatus(), ApproveStatus.WAIT.getValue());

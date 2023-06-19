@@ -89,16 +89,19 @@ public class MyContentServiceImpl implements MyContentService {
     return changed_user;
   }
 
-  public List<ApplyListResultDto> getMyApplicant(User user, Integer page, Integer size) {
+  public List<ApplyListResultDto> getMyFromApplicantList(User user, Integer page, Integer size) {
     page = page > 0 ? page - 1 : 0;
 
     Pageable pageable = PageRequest.of(page, size);
-    return ApplyListResultDto.toDtoList(applyRepository.getMyApplicant(pageable, user.getId()));
+    return ApplyListResultDto.toFromApplicantDtoList(
+        applyRepository.getMyApplicant(pageable, user.getId()));
   }
-  public List<ApplyListResultDto> getMyToApplicant(User user, Integer page, Integer size) {
+
+  public List<ApplyListResultDto> getMyToApplicantList(User user, Integer page, Integer size) {
     page = page > 0 ? page - 1 : 0;
 
     Pageable pageable = PageRequest.of(page, size);
-    return ApplyListResultDto.toToDtoList(applyRepository.getMyToApplicant(pageable, user.getId()));
+    return ApplyListResultDto.toToApplicantDtoList(
+        applyRepository.getMyToApplicant(pageable, user.getId()));
   }
 }

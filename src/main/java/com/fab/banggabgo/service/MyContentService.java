@@ -25,7 +25,7 @@ public interface MyContentService {
 
   PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto form);
 
-  List<ApplyListResultDto> getMyApplicant(User user, Integer page, Integer size);
+  List<ApplyListResultDto> getMyFromApplicantList(User user, Integer page, Integer size);
 
-  List<ApplyListResultDto> getMyToApplicant(User user, Integer page, Integer size);
+  List<ApplyListResultDto> getMyToApplicantList(User user, Integer page, Integer size);
 }

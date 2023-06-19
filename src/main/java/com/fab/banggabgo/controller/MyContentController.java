@@ -64,14 +64,14 @@ public class MyContentController {
   public ResponseEntity<?> getMyFromApplicant(@AuthenticationPrincipal User user,
       @RequestParam(defaultValue = "1") Integer page,
       @RequestParam(defaultValue = "10") Integer size) {
-    var result = myContentService.getMyApplicant(user, page, size);
+    var result = myContentService.getMyFromApplicantList(user, page, size);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
   @GetMapping("/to-applicants")
-  public ResponseEntity<?> getMyToApplicant(@AuthenticationPrincipal User user,
+  public ResponseEntity<?> getMyToApplicantList(@AuthenticationPrincipal User user,
       @RequestParam(defaultValue = "1") Integer page,
       @RequestParam(defaultValue = "10") Integer size) {
-    var result = myContentService.getMyToApplicant(user, page, size);
+    var result = myContentService.getMyToApplicantList(user, page, size);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 }

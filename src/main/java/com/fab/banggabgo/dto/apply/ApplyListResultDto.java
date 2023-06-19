@@ -23,12 +23,12 @@ public class ApplyListResultDto {
   String otherUserName;
   String matchStatus;
 
-  public static List<ApplyListResultDto> toDtoList(List<Apply> applyPage) {
-    return applyPage.stream().map(ApplyListResultDto::toDto)
+  public static List<ApplyListResultDto> toFromApplicantDtoList(List<Apply> applyPage) {
+    return applyPage.stream().map(ApplyListResultDto::toFromApplicantDto)
         .collect(Collectors.toList());
   }
 
-  public static ApplyListResultDto toDto(Apply apply) {
+  public static ApplyListResultDto toFromApplicantDto(Apply apply) {
     return ApplyListResultDto.builder()
         .applyId(apply.getId())
         .articleId(apply.getArticle().getId())
@@ -38,12 +38,12 @@ public class ApplyListResultDto {
         .matchStatus(apply.getApproveStatus().getValue())
         .build();
   }
-  public static List<ApplyListResultDto> toToDtoList(List<Apply> applyPage) {
-    return applyPage.stream().map(ApplyListResultDto::toToDto)
+  public static List<ApplyListResultDto> toToApplicantDtoList(List<Apply> applyPage) {
+    return applyPage.stream().map(ApplyListResultDto::toToApplicantDto)
         .collect(Collectors.toList());
   }
 
-  public static ApplyListResultDto toToDto(Apply apply) {
+  public static ApplyListResultDto toToApplicantDto(Apply apply) {
     return ApplyListResultDto.builder()
         .applyId(apply.getId())
         .articleId(apply.getArticle().getId())

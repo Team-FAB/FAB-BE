@@ -23,7 +23,8 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         .fetchJoin()
         .leftJoin(qApply.article)
         .fetchJoin()
-        .where(qApply.article.user.id.eq(userId))
+        .where(qApply.article.user.id.eq(userId)
+            .and(qApply.isArticleUserDelete.eq(false)))
         .orderBy(qApply.lastModifiedDate.desc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());
@@ -37,7 +38,8 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         .leftJoin(qApply.article)
         .fetchJoin()
         .leftJoin(qApply.article.user)
-        .where(qApply.applicantUser.id.eq(userId))
+        .where(qApply.applicantUser.id.eq(userId)
+            .and(qApply.isApplicantDelete.eq(false)))
         .orderBy(qApply.lastModifiedDate.desc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());

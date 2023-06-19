@@ -239,34 +239,37 @@ public class ArticleServiceImpl implements ArticleService {
 
   public ApplyUserResultDto applyUser(User user, Integer articleId) {
 
-    if (applyRepository.existsByApplicantUserIdAndArticleId(user.getId(),
-        articleId)) {
-      throw new CustomException(ErrorCode.ALREADY_APPLY);
-    }
+    Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(),
+        articleId).orElseGet(() ->
+        Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .applicantUser(user)
+            .article(articleRepository.findById(articleId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS)))
+            .isApplicantDelete(true)
+            .build());
 
-    Article article = articleRepository.findById(articleId)
-        .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
+    validApplyUser(apply);
 
-    validApplyUser(article);
-
-    Apply apply = Apply.builder()
-        .approveStatus(ApproveStatus.WAIT)
-        .applicantUser(user)
-        .article(article)
-        .build();
+    apply.setApplicantDelete(!apply.isApplicantDelete());
 
     applyRepository.save(apply);
 
     return ApplyUserResultDto.toDto(apply);
   }
 
-  private void validApplyUser(Article article) {
+  private void validApplyUser(Apply apply) {
+    Article article = apply.getArticle();
     if (!article.isRecruiting()) {
       throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
     }
 
     if (article.isDeleted()) {
       throw new CustomException(ErrorCode.ARTICLE_DELETED);
+    }
+
+    if (!apply.getApproveStatus().equals(ApproveStatus.WAIT)) {
+      throw new CustomException(ErrorCode.ALREADY_DONE_APPLY);
     }
   }
 }

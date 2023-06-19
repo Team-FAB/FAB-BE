@@ -6,6 +6,7 @@ import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
+import com.fab.banggabgo.dto.article.ArticlePageResultDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.Article;
@@ -180,7 +181,7 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public List<ArticlePageDto> getArticleByPageable(Integer page, Integer size,
+  public ArticlePageResultDto getArticleByPageable(Integer page, Integer size,
       boolean isRecruiting) {
 
     page = page < 1 ? 1 : page;
@@ -189,11 +190,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     Page<Article> articleList = articleRepository.getArticle(pageable, isRecruiting);
 
-    return ArticlePageDto.toDtoList(articleList);
+    return ArticlePageResultDto.toDto(articleList);
   }
 
   @Override
-  public List<ArticlePageDto> getArticleByFilter(Integer page, Integer size, boolean isRecruiting,
+  public ArticlePageResultDto getArticleByFilter(Integer page, Integer size, boolean isRecruiting,
       String region, String period, String price, String gender) {
 
     page = page < 1 ? 1 : page;
@@ -203,13 +204,7 @@ public class ArticleServiceImpl implements ArticleService {
     Page<Article> articleList = articleRepository.getArticleByFilter(pageable, isRecruiting, region,
         period, price, gender);
 
-    return ArticlePageDto.toDtoList(articleList);
-  }
-
-  @Override
-  public Integer getArticleTotalCnt() {
-
-    return articleRepository.getArticleTotalCnt();
+    return ArticlePageResultDto.toDto(articleList);
   }
 
   @Override

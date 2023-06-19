@@ -80,12 +80,6 @@ public class ArticleController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
-  @GetMapping("/total")
-  public ResponseEntity<?> getArticleTotalCnt() {
-    var result = articleService.getArticleTotalCnt();
-    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
-  }
-
   @GetMapping("/filter")
   public ResponseEntity<?> getArticleByFilter(
       @RequestParam("page") Integer page,

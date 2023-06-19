@@ -39,13 +39,20 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .limit(pageable.getPageSize())
         .distinct();
 
+    var articleCountQuery = queryFactory.select(qArticle.count())
+        .from(qArticle)
+        .join(qArticle.user, qUser)
+        .where(qArticle.isDeleted.eq(false))
+        .distinct();
+
     if (isRecruiting) {
       articleQuery = articleQuery.where(qArticle.isRecruiting.eq(true));
+      articleCountQuery = articleCountQuery.where(qArticle.isRecruiting.eq(true));
     }
 
     List<Article> articleList = articleQuery.fetch();
 
-    return new PageImpl<>(articleList);
+    return new PageImpl<>(articleList, pageable, articleCountQuery.fetchOne());
   }
 
   public Page<Article> getArticleByFilter(Pageable pageable, boolean isRecruiting, String region,
@@ -62,29 +69,40 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .limit(pageable.getPageSize())
         .distinct();
 
+    var articleCountQuery = queryFactory.select(qArticle.count())
+        .from(qArticle)
+        .join(qArticle.user, qUser)
+        .where(qArticle.isDeleted.eq(false))
+        .distinct();
+
     if (isRecruiting) {
       articleQuery = articleQuery.where(qArticle.isRecruiting.eq(true));
+      articleCountQuery = articleCountQuery.where(qArticle.isRecruiting.eq(true));
     }
 
     if (!"상관 없음".equals(region)) {
       articleQuery = articleQuery.where(qArticle.region.eq(Seoul.fromValue(region)));
+      articleCountQuery = articleCountQuery.where(qArticle.region.eq(Seoul.fromValue(region)));
     }
 
     if (!"상관 없음".equals(period)) {
       articleQuery = articleQuery.where(qArticle.period.eq(Period.fromValue(period)));
+      articleCountQuery = articleCountQuery.where(qArticle.period.eq(Period.fromValue(period)));
     }
 
     if (!"상관 없음".equals(price)) {
       articleQuery = articleQuery.where(qArticle.price.loe(Integer.parseInt(price)));
+      articleCountQuery = articleCountQuery.where(qArticle.price.loe(Integer.parseInt(price)));
     }
 
     if (!"상관 없음".equals(gender)) {
       articleQuery = articleQuery.where(qArticle.gender.eq(Gender.fromValue(gender)));
+      articleCountQuery = articleCountQuery.where(qArticle.gender.eq(Gender.fromValue(gender)));
     }
 
     List<Article> articleList = articleQuery.fetch();
 
-    return new PageImpl<>(articleList);
+    return new PageImpl<>(articleList, pageable, articleCountQuery.fetchOne());
   }
 
   @Override

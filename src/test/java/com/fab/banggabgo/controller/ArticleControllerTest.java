@@ -559,19 +559,6 @@ class ArticleControllerTest {
   }
 
   @Test
-  @DisplayName("게시글 총 개수 가져오기")
-  @WithMockUser
-  void getArticleTotalCntSuccess() throws Exception {
-    //given
-    //when
-    //then
-    mockMvc.perform(get("/api/articles/total")
-            .with(SecurityMockMvcRequestPostProcessors.csrf()))
-        .andExpect(status().isOk())
-        .andDo(print());
-  }
-
-  @Test
   @DisplayName("글 찜 등록 및 삭제 성공")
   @WithMockUser
   void postArticleFavoriteSuccess() throws Exception {

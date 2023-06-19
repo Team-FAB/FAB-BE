@@ -1,9 +1,11 @@
 package com.fab.banggabgo.service;
 
 import com.fab.banggabgo.common.exception.CustomException;
+import com.fab.banggabgo.dto.apply.ApplyListResultDto;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
+import com.fab.banggabgo.dto.mycontent.PatchMyInfoDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoRequestDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoResultDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameRequestDto;
@@ -29,4 +31,9 @@ public interface MyContentService {
       throws IOException;
   PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto form);
 
+  PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoDto form);
+
+  List<ApplyListResultDto> getMyFromApplicantList(User user, Integer page, Integer size);
+
+  List<ApplyListResultDto> getMyToApplicantList(User user, Integer page, Integer size);
 }

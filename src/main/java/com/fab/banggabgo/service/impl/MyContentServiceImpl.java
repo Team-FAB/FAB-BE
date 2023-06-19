@@ -2,6 +2,7 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
+import com.fab.banggabgo.dto.apply.ApplyListResultDto;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyInfoDto;
@@ -12,6 +13,7 @@ import com.fab.banggabgo.dto.mycontent.PatchMyNicknameResult;
 import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.dto.mycontent.PostMyInfoImageResultDto;
 import com.fab.banggabgo.entity.User;
+import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.MyContentService;
@@ -25,6 +27,8 @@ import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,6 +37,7 @@ public class MyContentServiceImpl implements MyContentService {
 
   private final ArticleRepository articleRepository;
   private final UserRepository userRepository;
+  private final ApplyRepository applyRepository;
   private final S3Service s3Service;
 
   @Override
@@ -98,9 +103,25 @@ public class MyContentServiceImpl implements MyContentService {
       changed_user.setActivityTime(ActivityTime.fromValue(dto.getActivityTime()));
       changed_user.setTag(new HashSet<>(dto.getTags()));
       changed_user.setDetail(dto.getDetail());
-    }catch (Exception e){
+    } catch (Exception e) {
       throw new CustomException(ErrorCode.PATCH_MY_INFO_CONVERT_FAIL);
     }
     return changed_user;
+  }
+
+  public List<ApplyListResultDto> getMyFromApplicantList(User user, Integer page, Integer size) {
+    page = page > 0 ? page - 1 : 0;
+
+    Pageable pageable = PageRequest.of(page, size);
+    return ApplyListResultDto.toFromApplicantDtoList(
+        applyRepository.getMyApplicant(pageable, user.getId()));
+  }
+
+  public List<ApplyListResultDto> getMyToApplicantList(User user, Integer page, Integer size) {
+    page = page > 0 ? page - 1 : 0;
+
+    Pageable pageable = PageRequest.of(page, size);
+    return ApplyListResultDto.toToApplicantDtoList(
+        applyRepository.getMyToApplicant(pageable, user.getId()));
   }
 }

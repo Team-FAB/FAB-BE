@@ -136,6 +136,78 @@ class MyContentControllerTest {
     //then
   }
 
+  @Nested
+  @DisplayName("내가받은 신청자리스트")
+  class applicantList {
+
+    @Test
+    @DisplayName("신청자리스트 - 성공")
+    @WithMockUser
+    void successGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/from-applicants?page=1&size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청자리스트 - 성공 페이지 누락")
+    @WithMockUser
+    void successLostPageGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/from-applicants?size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청자리스트 - 성공 사이즈 누락")
+    @WithMockUser
+    void successLostSizeGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/from-applicants?page=1")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청자리스트 - 실패 계정 누락")
+    void FailNonAuthGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/from-applicants?page=1&size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized());
+    }
+  }
+  @Nested
+  @DisplayName("내가신청한 신청자리스트")
+  class toApplicantList {
+
+    @Test
+    @DisplayName("신청한리스트 - 성공")
+    @WithMockUser
+    void successGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/to-applicants?page=1&size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청한리스트 - 성공 페이지 누락")
+    @WithMockUser
+    void successLostPageGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/to-applicants?size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청한리스트 - 성공 사이즈 누락")
+    @WithMockUser
+    void successLostSizeGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/to-applicants?page=1")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk());
+    }
+    @Test
+    @DisplayName("신청한리스트 - 실패 계정 누락")
+    void FailNonAuthGetApplicantList() throws Exception{
+      mockMvc.perform(get("/api/my/to-applicants?page=1&size=4")
+          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized());
+    }
+    
   @Test
   @DisplayName("이미지 변경 테스트")
   @WithMockUser

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ApplyRepository extends JpaRepository<Apply, Integer> {
+public interface ApplyRepository extends JpaRepository<Apply, Integer>, ApplyRepositoryCustom {
 
   boolean existsByApplicantUserIdAndArticleId(Integer applicantUserId, Integer articleId);
 }

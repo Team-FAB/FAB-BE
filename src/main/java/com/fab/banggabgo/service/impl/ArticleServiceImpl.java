@@ -239,7 +239,6 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public ApplyUserResultDto applyUser(User user, Integer articleId) {
-
     Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(),
         articleId).orElseGet(() ->
         Apply.builder()
@@ -254,7 +253,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     apply.setApplicantDelete(!apply.isApplicantDelete());
 
-    applyRepository.save(apply);
+    apply = applyRepository.save(apply);
 
     return ApplyUserResultDto.toDto(apply);
   }

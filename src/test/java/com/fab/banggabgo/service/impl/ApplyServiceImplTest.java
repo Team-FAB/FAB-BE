@@ -23,6 +23,7 @@ import com.fab.banggabgo.type.UserRole;
 import com.fab.banggabgo.type.UserType;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -158,7 +159,7 @@ class ApplyServiceImplTest {
       assertEquals(customException.getErrorCode(), ErrorCode.INVALID_ARTICLE);
     }
     @Test
-    @DisplayName("룸메이트 승인 - 입력값이 올바르지 않은경우")
+    @DisplayName("룸메이트 승인 - article id 입력값이 올바르지 않은경우")
     void patchApproveFailBadRequestArticleId() {
       approveUserDto.setArticleId(null);
 
@@ -217,6 +218,93 @@ class ApplyServiceImplTest {
           () -> applyService.patchApprove(loginUser, approveUserDto));
 
       assertEquals(customException.getErrorCode(), ErrorCode.INVALID_APPLY_USER_ID);
+    }
+  }
+  @Nested
+  @DisplayName("룸메이트 거절")
+  class Refuse {
+
+    Apply apply = Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .article(article)
+            .applicantUser(appliedUser)
+            .build();
+    @Test
+    @DisplayName("룸메이트 거절 - 성공")
+    void patchRefuseSuccess() {
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+
+      var result = applyService.patchRefuse(loginUser, 1);
+
+      assertEquals(result.getApproveStatus(), ApproveStatus.REFUSE.getValue());
+      assertEquals(result.getApproveUserId(), appliedUser.getId());
+      assertEquals(result.getApproveUserName(), appliedUser.getNickname());
+      assertEquals(result.getArticleId(), article.getId());
+      assertEquals(result.getArticleTitle(), article.getTitle());
+    }
+    @Test
+    @DisplayName("룸메이트 거절 - 유저 id 입력값이 올바르지 않은경우")
+    void patchRefuseFailBadRequestUserId() {
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.patchRefuse(loginUser, null));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.INVALID_ARTICLE);
+    }
+    @Test
+    @DisplayName("룸메이트 거절 - apply가 없는경우")
+    void patchRefuseFailNonArticles() {
+
+
+      given(applyRepository.findById(any())).willReturn(Optional.empty());
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.patchRefuse(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.NOT_FOUND_APPLY_ID);
+    }
+
+    @Test
+    @DisplayName("룸메이트 거절 - 본인이 작성한 게시글의 apply가 아닐때")
+    void patchRefuseFailRecruiting() {
+      article.setUser(appliedUser);
+
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.patchRefuse(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.USER_NOT_MATCHED);
+    }
+    @Test
+    @DisplayName("룸메이트 거절 - 입력받은 게시글이 삭제된 경우")
+    void patchRefuseFailDeleted() {
+      article.setDeleted(true);
+
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.patchRefuse(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.ARTICLE_DELETED);
+    }
+    @Test
+    @DisplayName("룸메이트 거절 - 입력받은 게시글이 모집종료된 경우")
+    void patchRefuseFailNotRecruiting() {
+      article.setRecruiting(false);
+
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.patchRefuse(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
+    }
+    @Test
+    @DisplayName("룸메이트 거절 - 이미 거절한 상태인 경우")
+    void patchRefuseFailNotMatchUserId() {
+      apply.setApproveStatus(ApproveStatus.REFUSE);
+
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.patchRefuse(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_REFUSE);
     }
   }
 

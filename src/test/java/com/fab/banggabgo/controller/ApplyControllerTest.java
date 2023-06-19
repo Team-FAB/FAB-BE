@@ -54,5 +54,39 @@ class ApplyControllerTest {
           .andExpect(status().isOk())
           .andDo(print());
     }
+    @Test
+    @DisplayName("룸메이트 신청 허가 - 비 로그인유저")
+    void patchApproveFailNonUser() throws Exception {
+
+      mockMvc.perform(patch("/api/applicant/approve")
+              .with(SecurityMockMvcRequestPostProcessors.csrf())
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(objectMapper.writeValueAsString(form)))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+  }
+  @Nested
+  @DisplayName("룸메이트 신청 거절")
+  class patchRefuse {
+    @Test
+    @DisplayName("룸메이트 신청 거절 - 성공")
+    @WithMockUser
+    void patchRefuseSuccess() throws Exception {
+
+      mockMvc.perform(patch("/api/applicant/refuse?applyId=1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk())
+          .andDo(print());
+    }
+    @Test
+    @DisplayName("룸메이트 신청 거절 - 비 로그인 유저")
+    void patchRefuseFailNonUser() throws Exception {
+
+      mockMvc.perform(patch("/api/applicant/refuse?applyId=1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
   }
 }

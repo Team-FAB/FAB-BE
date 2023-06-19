@@ -1,5 +1,5 @@
 cloud:
-  sws:
+  aws:
     s3:
       bucket: your-bucket!
     credentials:

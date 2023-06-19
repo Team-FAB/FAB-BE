@@ -4,8 +4,10 @@ import com.fab.banggabgo.entity.QArticle;
 import com.fab.banggabgo.entity.QUser;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepositoryCustom;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
@@ -18,11 +20,12 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
   QUser qUser = QUser.user;
   QArticle qArticle = QArticle.article;
 
+  @Override
   public Optional<User> findByEmail(String email) {
     var query = queryFactory.selectFrom(qUser)
         .leftJoin(qUser.roles).fetchJoin()
         .leftJoin(qUser.tag).fetchJoin()
-        .where(qUser.email.eq(email));
+        .where(eqEmail(email));
     return Optional.ofNullable(query.fetchOne());
   }
 
@@ -35,18 +38,49 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
             .and(qArticle.isRecruiting.eq(true)));
 
     var userQuery = queryFactory.selectFrom(qUser)
-        .where(qUser.gender.eq(user.getGender())
-            .and(qUser.isSmoker.eq(user.getIsSmoker()))
-            .and(qUser.region.eq(user.getRegion()))
-            .and(qUser.activityTime.eq(user.getActivityTime()))
-            .and(qUser.minAge.eq(user.getMinAge()))
-            .and(qUser.maxAge.eq(user.getMaxAge()))
-            .and(qUser.id.ne(user.getId()))
-            .and(qUser.in(subQuery)))
+        .where(eqGender(user),
+            eqSmoker(user),
+            preferAge(user),
+            eqRegion(user),
+            neSelf(user),
+            eqActivityTime(user),
+            userInSubQuery(subQuery)
+        )
         .orderBy(Expressions.numberTemplate(Double.class, "function('rand')").asc())
         .limit(size);
 
     return userQuery.fetch();
   }
 
+  BooleanExpression eqEmail(String email){
+    return qUser.email.eq(email);
+  }
+
+  BooleanExpression eqGender(User user) {
+    return qUser.gender.eq(user.getGender());
+  }
+
+  BooleanExpression eqSmoker(User user) {
+    return qUser.isSmoker.eq(user.getIsSmoker());
+  }
+
+  BooleanExpression preferAge(User user) {
+    return qUser.myAge.between(user.getMinAge(), user.getMaxAge());
+  }
+
+  BooleanExpression eqRegion(User user) {
+    return qUser.region.eq(user.getRegion());
+  }
+
+  BooleanExpression userInSubQuery(JPQLQuery<User> sub_query) {
+    return qUser.in(sub_query);
+  }
+
+  BooleanExpression neSelf(User user) {
+    return qUser.id.ne(user.getId());
+  }
+
+  BooleanExpression eqActivityTime(User user) {
+    return qUser.activityTime.eq(user.getActivityTime());
+  }
 }

@@ -4,6 +4,7 @@ import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Apply;
@@ -13,6 +14,7 @@ import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.LikeArticleRepository;
+import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.ArticleService;
 import com.fab.banggabgo.type.ApproveStatus;
 import com.fab.banggabgo.type.Gender;
@@ -35,6 +37,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleRepository articleRepository;
   private final LikeArticleRepository likeArticleRepository;
   private final ApplyRepository applyRepository;
+  private final UserRepository userRepository;
 
   private static final String ADD_LIKE_ARTICLE_SUCCESS = "찜 등록 완료";
   private static final String DELETE_LIKE_ARTICLE_SUCCESS = "찜 삭제 완료";
@@ -96,6 +99,14 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
 
     return ArticlePageDto.toDto(article);
+  }
+
+  @Override
+  public List<ArticleInfoDto> getUserArticles(Integer userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_IS_NULL));
+
+    return articleRepository.getUserArticle(user);
   }
 
   @Override

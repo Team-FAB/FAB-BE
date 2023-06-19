@@ -1,5 +1,6 @@
 package com.fab.banggabgo.repository.impl;
 
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.entity.Article;
@@ -105,7 +106,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .stream().map(MyArticleDto::toDto)
         .collect(Collectors.toList());
   }
-  
+
   public List<FavoriteArticleDto> getFavoriteArticle(User user){
 
     var getMyFavoriteArticleQuery=queryFactory
@@ -117,6 +118,21 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
     return getMyFavoriteArticleQuery.fetch()
         .stream().map(FavoriteArticleDto::toDto)
+        .collect(Collectors.toList());
+  }
+
+  public List<ArticleInfoDto> getUserArticle(User user) {
+
+    var getUserArticleQuery = queryFactory.selectFrom(qArticle)
+        .join(qArticle.user, qUser)
+        .fetchJoin()
+        .where(qUser.eq(user)
+            .and(qArticle.isDeleted.eq(false))
+            .and(qArticle.isRecruiting.eq(true)))
+        .orderBy(qArticle.createDate.desc());
+
+    return getUserArticleQuery.fetch()
+        .stream().map(ArticleInfoDto::toDto)
         .collect(Collectors.toList());
   }
 }

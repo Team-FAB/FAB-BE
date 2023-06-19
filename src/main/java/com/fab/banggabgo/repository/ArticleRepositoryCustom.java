@@ -1,5 +1,6 @@
 package com.fab.banggabgo.repository;
 
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.entity.Article;
@@ -20,4 +21,6 @@ public interface ArticleRepositoryCustom {
   List<MyArticleDto> getMyArticle(User user);
 
   List<FavoriteArticleDto> getFavoriteArticle(User user);
+
+  List<ArticleInfoDto> getUserArticle(User user);
 }

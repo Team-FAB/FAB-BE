@@ -17,6 +17,7 @@ import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
 import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.Article;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
@@ -30,6 +31,8 @@ import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
 import com.fab.banggabgo.type.UserRole;
 import com.fab.banggabgo.type.UserType;
+import com.fab.banggabgo.service.S3Service;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +47,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -60,7 +64,8 @@ class MyContentServiceImplTest {
   private ApplyRepository applyRepository;
   @InjectMocks
   private MyContentServiceImpl myContentService;
-
+  @Mock
+  private S3Service s3Service;
   User stub_user = User.builder()
       .id(1)
       .nickname("원래이름")
@@ -188,6 +193,13 @@ class MyContentServiceImplTest {
 
       verify(userRepository, times(1)).save(any(User.class));
       assertEquals(result.getMbti(), "INFP");
+      assertEquals(result.getMaxAge(), form.getMaxAge());
+      assertEquals(result.getMinAge(), form.getMinAge());
+      assertEquals(result.getMyAge(), form.getMyAge());
+      assertEquals(result.getGender(), form.getGender());
+      assertEquals(result.getMbti(), form.getMbti());
+      assertEquals(result.isSmoke(), form.isSmoke());
+      assertEquals(result.getActivityTime(), form.getActivityTime());
     }
 
     @Test
@@ -200,7 +212,6 @@ class MyContentServiceImplTest {
       assertThrows(CustomException.class,
           () -> myContentService.patchMyInfo(stub_user, PatchMyInfoForm.toDto(form)));
     }
-
   }
 
   @Nested
@@ -281,6 +292,34 @@ class MyContentServiceImplTest {
       assertEquals(result.get(0).getArticleId(), article.getId());
       assertEquals(result.get(0).getOtherUserName(), appliedUser.getNickname());
       assertEquals(result.get(0).getOtherUserId(), appliedUser.getId());
+      
+    @Test
+    @DisplayName("이미지 업로드하기")
+    void postImage() throws IOException {
+
+      //given
+      var mockFile = new MockMultipartFile(
+          "file",
+          "test.jpg",
+          "image/jpeg",
+          "test file content".getBytes()
+      );
+      var stubUrl = "s3:image.newImage.png";
+      var dto = PostMyInfoImageRequestDto.builder()
+          .image(mockFile)
+          .build();
+
+      //when
+      when(s3Service.fileUpload(any())).thenReturn(stubUrl);
+      when(userRepository.save(stub_user)).thenReturn(stub_user);
+
+      //then
+      var result = myContentService.postMyInfoImage(stub_user, dto);
+
+      assertEquals(stubUrl, stub_user.getImage());
+      assertEquals(result.getImage(), stubUrl);
+
+
     }
   }
 

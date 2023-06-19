@@ -16,6 +16,11 @@ public enum ErrorCode implements Code {
   USER_IS_NULL(HttpStatus.BAD_REQUEST, "유저 정보를 불러오는데 실패했습니다."),
 
   /**
+   * 프로필 에러코드
+   */
+  INVALID_PROFILE(HttpStatus.BAD_REQUEST, "프로필이 존재하지 않습니다."),
+
+  /**
    * 게시글 에러코드
    */
 
@@ -45,6 +50,8 @@ public enum ErrorCode implements Code {
   */
   PATCH_MY_INFO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, "내정보 데이터 변환오류"),
   FAIL_INFO_LOADING(HttpStatus.BAD_REQUEST, "정보를 불러오지 못했습니다."),
+  AMAZON_S3_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"S3 이미지 업로드 중 문제가 발생했습니다." ),
+
 
   /**
    * Apply 에러코드

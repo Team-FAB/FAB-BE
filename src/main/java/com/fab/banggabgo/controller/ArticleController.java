@@ -43,6 +43,14 @@ public class ArticleController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
+  @GetMapping("/users/{userId}")
+  public ResponseEntity<?> getUserArticles(
+      @PathVariable int userId
+  ) {
+    var result = articleService.getUserArticles(userId);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
   @PutMapping("/{id}")
   public ResponseEntity<?> putArticle(
       @AuthenticationPrincipal User user,

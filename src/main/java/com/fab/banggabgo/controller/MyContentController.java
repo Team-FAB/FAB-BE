@@ -4,8 +4,10 @@ import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.service.MyContentService;
+import java.io.IOException;
 import javax.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,13 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,6 +65,14 @@ public class MyContentController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
+  @PostMapping(value = "/image", consumes = "multipart/form-data")
+  public ResponseEntity<?> postMyInfoImage(@AuthenticationPrincipal User user,
+      @RequestPart MultipartFile image) throws IOException {
+    var dto=  PostMyInfoImageRequestDto.builder().image(image).build();
+    var result = myContentService.postMyInfoImage(user,dto);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
   @GetMapping("/from-applicants")
   public ResponseEntity<?> getMyFromApplicant(@AuthenticationPrincipal User user,
       @RequestParam(defaultValue = "1") Integer page,
@@ -67,6 +80,7 @@ public class MyContentController {
     var result = myContentService.getMyFromApplicantList(user, page, size);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
+  
   @GetMapping("/to-applicants")
   public ResponseEntity<?> getMyToApplicantList(@AuthenticationPrincipal User user,
       @RequestParam(defaultValue = "1") Integer page,

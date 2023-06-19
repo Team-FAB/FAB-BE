@@ -1,5 +1,6 @@
 package com.fab.banggabgo.config.security;
 
+import com.fab.banggabgo.common.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,11 +30,15 @@ public class SecurityConfig {
         .and()
         .authorizeHttpRequests()
         .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+        .antMatchers(HttpMethod.GET ,"/api/exception").permitAll()
         .antMatchers("/api/users/recommend").authenticated()
         .antMatchers("/api/users/**").permitAll()
         .antMatchers(HttpMethod.GET ,"/api/articles/**").permitAll()
         .antMatchers("/login/oauth2/**").permitAll()
         .anyRequest().authenticated()
+
+        .and()
+        .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
 
         .and()
         .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, redisTemplate),

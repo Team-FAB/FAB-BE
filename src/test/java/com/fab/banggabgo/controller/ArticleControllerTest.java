@@ -226,6 +226,41 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 성공")
+  @WithMockUser
+  void getUserArticlesSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/articles/users/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 실패 : 유저가 존재하지 않음")
+  @WithMockUser
+  void getUserArticlesFail_USER_IS_NULL() throws Exception {
+    //given
+    doThrow(new CustomException(ErrorCode.USER_IS_NULL))
+        .when(articleService)
+        .getUserArticles(anyInt());
+
+    //when
+    MvcResult result = mockMvc.perform(get("/api/articles/users/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isBadRequest())
+        .andReturn();
+
+    //then
+    String responseBody = result.getResponse().getContentAsString();
+    JsonNode responseJson = objectMapper.readTree(responseBody);
+    String errorCode = responseJson.get("code").asText();
+    assertThat(errorCode).isEqualTo("USER_IS_NULL");
+  }
+
+  @Test
   @DisplayName("글 수정 성공")
   @WithMockUser
   void putArticleSuccess() throws Exception {

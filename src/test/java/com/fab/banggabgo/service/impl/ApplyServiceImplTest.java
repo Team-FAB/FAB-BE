@@ -3,6 +3,8 @@ package com.fab.banggabgo.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 
 import com.fab.banggabgo.common.exception.CustomException;
@@ -305,6 +307,47 @@ class ApplyServiceImplTest {
           () -> applyService.patchRefuse(loginUser, 1));
 
       assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_REFUSE);
+    }
+  }
+  @Nested
+  @DisplayName("룸메이트 목록 제거")
+  class DeleteApply {
+
+    Apply apply = Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .article(article)
+            .applicantUser(appliedUser)
+            .build();
+    @Test
+    @DisplayName("룸메이트 목록 제거 - 성공")
+    void deleteApplySuccess() {
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      given(applyRepository.setApplyDelete(anyInt(), anyInt(), anyBoolean())).willReturn(1L);
+      var result = applyService.deleteApply(loginUser, 1);
+
+      assertEquals(result.getApplyId(), 1);
+    }
+    @Test
+    @DisplayName("룸메이트 목록 제거 - apply가 없는경우")
+    void deleteApplyFailNonArticles() {
+      given(applyRepository.findById(any())).willReturn(Optional.empty());
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.deleteApply(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.INVALID_APPLY_ID);
+    }
+
+    @Test
+    @DisplayName("룸메이트 목록 제거 - 본인이 작성한 게시글의 apply가 아닐때")
+    void deleteApplyFailRecruiting() {
+      article.setUser(appliedUser);
+      apply.setApplicantUser(appliedUser2);
+
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.deleteApply(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.USER_NOT_MATCHED);
     }
   }
 

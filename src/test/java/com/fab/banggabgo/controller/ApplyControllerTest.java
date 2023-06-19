@@ -1,5 +1,6 @@
 package com.fab.banggabgo.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -84,6 +85,29 @@ class ApplyControllerTest {
     void patchRefuseFailNonUser() throws Exception {
 
       mockMvc.perform(patch("/api/applicant/refuse?applyId=1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+  }
+  @Nested
+  @DisplayName("룸메이트 신청 목록 제거")
+  class deleteApply {
+    @Test
+    @DisplayName("룸메이트 신청 목록 제거 - 성공")
+    @WithMockUser
+    void deleteApplySuccess() throws Exception {
+
+      mockMvc.perform(delete("/api/applicant/1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk())
+          .andDo(print());
+    }
+    @Test
+    @DisplayName("룸메이트 신청 목록 제거 - 비 로그인 유저")
+    void deleteApplyFailNonUser() throws Exception {
+
+      mockMvc.perform(delete("/api/applicant/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized())
           .andDo(print());

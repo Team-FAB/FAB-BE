@@ -130,15 +130,15 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     return qArticle.isRecruiting.eq(isRecruiting);
   }
   private BooleanExpression eqPeriod(String period){
-    return StringUtils.hasText(period)? qArticle.period.eq(Period.fromValue(period)):null;
+    return StringUtils.hasText(period)&&!period.equals(default_option)? qArticle.period.eq(Period.fromValue(period)):null;
   }
   private BooleanExpression eqGender(String gender){
-    return StringUtils.hasText(gender)? qArticle.gender.eq(Gender.fromValue(gender)):null;
+    return StringUtils.hasText(gender)&&!gender.equals(default_option)? qArticle.gender.eq(Gender.fromValue(gender)):null;
   }
   private BooleanExpression eqRegion(String region){
-    return StringUtils.hasText(region)? qArticle.region.eq(Seoul.fromValue(region)):null;
+    return StringUtils.hasText(region)&&!region.equals(default_option)? qArticle.region.eq(Seoul.fromValue(region)):null;
   }
   private BooleanExpression loePrice(String price){
-    return StringUtils.hasText(price)? qArticle.price.loe(Integer.parseInt(price)):null;
+    return StringUtils.hasText(price)&&!price.equals(default_option)? qArticle.price.loe(Integer.parseInt(price)):null;
   }
 }

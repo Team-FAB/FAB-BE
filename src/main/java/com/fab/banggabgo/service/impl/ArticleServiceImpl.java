@@ -237,6 +237,7 @@ public class ArticleServiceImpl implements ArticleService {
     return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
   }
 
+  @Override
   public ApplyUserResultDto applyUser(User user, Integer articleId) {
 
     Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(),
@@ -256,6 +257,11 @@ public class ArticleServiceImpl implements ArticleService {
     applyRepository.save(apply);
 
     return ApplyUserResultDto.toDto(apply);
+  }
+
+  @Override
+  public boolean isApply(User user, Integer articleId) {
+    return applyRepository.existsByApplicantUserIdAndArticleId(user.getId(), articleId);
   }
 
   private void validApplyUser(Apply apply) {

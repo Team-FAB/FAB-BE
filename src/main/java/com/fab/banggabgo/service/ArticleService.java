@@ -58,4 +58,6 @@ public interface ArticleService {
   boolean getArticleFavorite(User user, Integer id);
 
   ApplyUserResultDto applyUser(User user, Integer articleId);
+
+  boolean isApply(User user, Integer articleId);
 }

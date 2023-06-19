@@ -45,9 +45,20 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .limit(pageable.getPageSize())
         .distinct();
 
+    var articleCountQuery = queryFactory.select(qArticle.count())
+        .from(qArticle)
+        .join(qArticle.user, qUser)
+        .where(qArticle.isDeleted.eq(false))
+        .distinct();
+
+    if (isRecruiting) {
+      articleQuery = articleQuery.where(qArticle.isRecruiting.eq(true));
+      articleCountQuery = articleCountQuery.where(qArticle.isRecruiting.eq(true));
+    }
+
     List<Article> articleList = articleQuery.fetch();
 
-    return new PageImpl<>(articleList);
+    return new PageImpl<>(articleList, pageable, articleCountQuery.fetchOne());
   }
 
   public Page<Article> getArticleByFilter(Pageable pageable, boolean isRecruiting, String region,
@@ -70,10 +81,15 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .distinct();
 
 
+    var articleCountQuery = queryFactory.select(qArticle.count())
+        .from(qArticle)
+        .join(qArticle.user, qUser)
+        .where(qArticle.isDeleted.eq(false))
+        .distinct();
 
     List<Article> articleList = articleQuery.fetch();
 
-    return new PageImpl<>(articleList);
+    return new PageImpl<>(articleList, pageable, articleCountQuery.fetchOne());
   }
 
   @Override
@@ -89,7 +105,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     var getMyArticleQuery=queryFactory.selectFrom(qArticle)
         .join(qArticle.user ,qUser)
         .fetchJoin()
-        .where(qUser.eq(user).and(eqDelete(false)))
+        .where(qUser.eq(user),eqDelete(false))
         .orderBy(qArticle.isRecruiting.desc() ,qArticle.createDate.desc());
     return getMyArticleQuery.fetch()
         .stream().map(MyArticleDto::toDto)
@@ -103,7 +119,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .from(qLikeArticle)
         .join(qLikeArticle.article,qArticle)
         .join(qLikeArticle.user,qUser)
-        .where(qUser.eq(user),eqDelete(false));
+        .where(qUser.eq(user),
+               eqDelete(false));
 
     return getMyFavoriteArticleQuery.fetch()
         .stream().map(FavoriteArticleDto::toDto)
@@ -115,7 +132,9 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     var getUserArticleQuery = queryFactory.selectFrom(qArticle)
         .join(qArticle.user, qUser)
         .fetchJoin()
-        .where(qUser.eq(user),eqDelete(false),eqRecruiting(true))
+        .where(qUser.eq(user),
+               eqDelete(false),
+               eqRecruiting(true))
         .orderBy(qArticle.createDate.desc());
 
     return getUserArticleQuery.fetch()

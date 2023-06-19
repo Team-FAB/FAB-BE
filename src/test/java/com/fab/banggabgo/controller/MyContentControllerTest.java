@@ -215,7 +215,7 @@ class MyContentControllerTest {
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized());
     }
-
+    
     @Test
     @DisplayName("이미지 변경 테스트")
     @WithMockUser

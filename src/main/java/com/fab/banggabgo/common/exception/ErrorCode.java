@@ -61,7 +61,7 @@ public enum ErrorCode implements Code {
   ALREADY_REFUSE(HttpStatus.BAD_REQUEST, "이미 거절된 상태입니다."),
   ALREADY_APPROVE(HttpStatus.BAD_REQUEST, "승인된 상대를 거절할수 없습니다."),
   ALREADY_APPLY(HttpStatus.BAD_REQUEST, "이미 요청하였습니다."),
-  NOT_YOUR_ARTICLE(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다.");
+  INVALID_APPLY_USER_ID(HttpStatus.BAD_REQUEST, "신청자의 id가 존재하지않습니다.");
 
   private final HttpStatus status;
   private final String msg;

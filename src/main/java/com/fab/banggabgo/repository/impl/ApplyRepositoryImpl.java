@@ -29,6 +29,7 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
 
     return pageQuery.fetch();
   }
+
   @Override
   public List<Apply> getMyToApplicant(Pageable pageable, Integer userId) {
     var pageQuery = jpaQueryFactory.selectFrom(qApply)
@@ -39,6 +40,19 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         .orderBy(qApply.lastModifiedDate.desc())
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());
+
+    return pageQuery.fetch();
+  }
+
+  @Override
+  public List<Apply> getAllMyApplicantByArticleId(Integer userId, Integer articleId) {
+    var pageQuery = jpaQueryFactory.selectFrom(qApply)
+        .leftJoin(qApply.applicantUser)
+        .fetchJoin()
+        .leftJoin(qApply.article)
+        .fetchJoin()
+        .where(qApply.article.user.id.eq(userId).and(qApply.article.id.eq(articleId)))
+        .orderBy(qApply.lastModifiedDate.desc());
 
     return pageQuery.fetch();
   }

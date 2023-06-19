@@ -57,7 +57,7 @@ public enum ErrorCode implements Code {
    * Apply 에러코드
    */
   ALREADY_END_RECRUITING(HttpStatus.BAD_REQUEST, "이미 모집이 완료된 글입니다."),
-  NOT_FOUND_APPLIED(HttpStatus.BAD_REQUEST, "매칭된 유저를 찾을수 없습니다"),
+  NOT_FOUND_APPLY_ID(HttpStatus.BAD_REQUEST, "요청 목록을 찾을수 없습니다."),
   ALREADY_REFUSE(HttpStatus.BAD_REQUEST, "이미 거절된 상태입니다."),
   ALREADY_APPROVE(HttpStatus.BAD_REQUEST, "승인된 상대를 거절할수 없습니다."),
   ALREADY_APPLY(HttpStatus.BAD_REQUEST, "이미 요청하였습니다."),

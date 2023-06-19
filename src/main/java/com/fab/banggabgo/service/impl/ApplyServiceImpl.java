@@ -4,6 +4,7 @@ import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.apply.ApproveUserDto;
 import com.fab.banggabgo.dto.apply.ApproveUserResultDto;
+import com.fab.banggabgo.dto.apply.RefuseUserResultDto;
 import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.User;
@@ -62,8 +63,46 @@ public class ApplyServiceImpl {
         .build();
   }
 
-  private void validPatchApprove(Article article) {
+  public RefuseUserResultDto patchRefuse(User user, Integer applyId) {
+    if (applyId == null) {
+      throw new CustomException(ErrorCode.INVALID_ARTICLE);
+    }
 
+    Apply apply = applyRepository.findById(applyId)
+        .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_APPLY_ID));
+
+    Article article = apply.getArticle();
+    if (!article.getUser().getId().equals(user.getId())){
+      throw new CustomException(ErrorCode.USER_NOT_MATCHED);
+    }
+
+    validPatchRefuse(apply, article);
+
+    apply.setApproveStatus(ApproveStatus.REFUSE);
+
+    applyRepository.save(apply);
+    return RefuseUserResultDto.builder()
+        .approveStatus(apply.getApproveStatus().getValue())
+        .approveUserId(apply.getApplicantUser().getId())
+        .approveUserName(apply.getApplicantUser().getNickname())
+        .articleId(article.getId())
+        .articleTitle(article.getTitle())
+        .build();
+  }
+
+  private void validPatchRefuse(Apply apply, Article article){
+    validRecruitingArticle(article);
+
+    if (apply.getApproveStatus().equals(ApproveStatus.REFUSE)){
+      throw new CustomException(ErrorCode.ALREADY_REFUSE);
+    }
+  }
+
+  private void validPatchApprove(Article article) {
+    validRecruitingArticle(article);
+  }
+
+  private void validRecruitingArticle(Article article){
     if (!article.isRecruiting()) {
       throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
     }

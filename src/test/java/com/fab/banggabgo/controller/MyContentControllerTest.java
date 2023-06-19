@@ -215,19 +215,20 @@ class MyContentControllerTest {
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized());
     }
-  }
-
-  @Test
-  @DisplayName("이미지 변경 테스트")
-  @WithMockUser
-  void postMyImg() throws Exception {
-    Path imagePath = Paths.get("src/test/resources/wierd.png");
-    byte[] imageBytes = Files.readAllBytes(imagePath);
-    var image = new MockMultipartFile("image", "wierd.png", MediaType.IMAGE_PNG_VALUE, imageBytes);
-    mockMvc.perform(MockMvcRequestBuilders.multipart("/api/my/image")
-            .file(image)
-            .with(SecurityMockMvcRequestPostProcessors.csrf())
-        )
-        .andExpect(status().isOk());
+    
+    @Test
+    @DisplayName("이미지 변경 테스트")
+    @WithMockUser
+    void postMyImg() throws Exception {
+      Path imagePath = Paths.get("src/test/resources/wierd.png");
+      byte[] imageBytes = Files.readAllBytes(imagePath);
+      var image = new MockMultipartFile("image", "wierd.png", MediaType.IMAGE_PNG_VALUE,
+          imageBytes);
+      mockMvc.perform(MockMvcRequestBuilders.multipart("/api/my/image")
+              .file(image)
+              .with(SecurityMockMvcRequestPostProcessors.csrf())
+          )
+          .andExpect(status().isOk());
+    }
   }
 }

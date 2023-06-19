@@ -35,7 +35,6 @@ public class MyInfoDto {
   private Integer minAge;
   private Integer maxAge;
 
-  private String preferredAge;
   private Integer myAge;
   private String detail;
 

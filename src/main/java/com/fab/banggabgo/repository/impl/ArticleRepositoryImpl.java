@@ -12,18 +12,24 @@ import com.fab.banggabgo.repository.ArticleRepositoryCustom;
 import com.fab.banggabgo.type.Gender;
 import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 
 @RequiredArgsConstructor
 public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
 
   private final JPAQueryFactory queryFactory;
+
+  @Value("${query.default.static}")
+  private String default_option;
   QArticle qArticle = QArticle.article;
   QUser qUser = QUser.user;
   QLikeArticle qLikeArticle= QLikeArticle.likeArticle;
@@ -34,7 +40,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .join(qArticle.user, qUser)
         .fetchJoin()
         .orderBy(qArticle.createDate.desc())
-        .where(qArticle.isDeleted.eq(false))
+        .where(eqDelete(false),eqRecruiting(true))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .distinct();
@@ -64,41 +70,22 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .join(qArticle.user, qUser)
         .fetchJoin()
         .orderBy(qArticle.createDate.desc())
-        .where(qArticle.isDeleted.eq(false))
+        .where(eqDelete(false)
+            ,eqRecruiting(true)
+            ,eqGender(gender)
+            ,eqPeriod(period)
+            ,eqRegion(region)
+          ,loePrice(price))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .distinct();
+
 
     var articleCountQuery = queryFactory.select(qArticle.count())
         .from(qArticle)
         .join(qArticle.user, qUser)
         .where(qArticle.isDeleted.eq(false))
         .distinct();
-
-    if (isRecruiting) {
-      articleQuery = articleQuery.where(qArticle.isRecruiting.eq(true));
-      articleCountQuery = articleCountQuery.where(qArticle.isRecruiting.eq(true));
-    }
-
-    if (!"상관 없음".equals(region)) {
-      articleQuery = articleQuery.where(qArticle.region.eq(Seoul.fromValue(region)));
-      articleCountQuery = articleCountQuery.where(qArticle.region.eq(Seoul.fromValue(region)));
-    }
-
-    if (!"상관 없음".equals(period)) {
-      articleQuery = articleQuery.where(qArticle.period.eq(Period.fromValue(period)));
-      articleCountQuery = articleCountQuery.where(qArticle.period.eq(Period.fromValue(period)));
-    }
-
-    if (!"상관 없음".equals(price)) {
-      articleQuery = articleQuery.where(qArticle.price.loe(Integer.parseInt(price)));
-      articleCountQuery = articleCountQuery.where(qArticle.price.loe(Integer.parseInt(price)));
-    }
-
-    if (!"상관 없음".equals(gender)) {
-      articleQuery = articleQuery.where(qArticle.gender.eq(Gender.fromValue(gender)));
-      articleCountQuery = articleCountQuery.where(qArticle.gender.eq(Gender.fromValue(gender)));
-    }
 
     List<Article> articleList = articleQuery.fetch();
 
@@ -109,7 +96,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
   public Integer getArticleTotalCnt() {
     return Math.toIntExact(queryFactory.select(qArticle.count())
         .from(qArticle)
-        .where(qArticle.isDeleted.eq(false))
+        .where(eqDelete(false))
         .fetchFirst());
   }
 
@@ -118,7 +105,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     var getMyArticleQuery=queryFactory.selectFrom(qArticle)
         .join(qArticle.user ,qUser)
         .fetchJoin()
-        .where(qUser.eq(user).and(qArticle.isDeleted.eq(false)))
+        .where(qUser.eq(user),eqDelete(false))
         .orderBy(qArticle.isRecruiting.desc() ,qArticle.createDate.desc());
     return getMyArticleQuery.fetch()
         .stream().map(MyArticleDto::toDto)
@@ -132,7 +119,8 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .from(qLikeArticle)
         .join(qLikeArticle.article,qArticle)
         .join(qLikeArticle.user,qUser)
-        .where(qUser.eq(user).and(qArticle.isDeleted.eq(false)));
+        .where(qUser.eq(user),
+               eqDelete(false));
 
     return getMyFavoriteArticleQuery.fetch()
         .stream().map(FavoriteArticleDto::toDto)
@@ -144,13 +132,32 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     var getUserArticleQuery = queryFactory.selectFrom(qArticle)
         .join(qArticle.user, qUser)
         .fetchJoin()
-        .where(qUser.eq(user)
-            .and(qArticle.isDeleted.eq(false))
-            .and(qArticle.isRecruiting.eq(true)))
+        .where(qUser.eq(user),
+               eqDelete(false),
+               eqRecruiting(true))
         .orderBy(qArticle.createDate.desc());
 
     return getUserArticleQuery.fetch()
         .stream().map(ArticleInfoDto::toDto)
         .collect(Collectors.toList());
+  }
+
+  private BooleanExpression eqDelete(boolean deleted){
+    return qArticle.isDeleted.eq(deleted);
+  }
+  private BooleanExpression eqRecruiting(boolean isRecruiting){
+    return qArticle.isRecruiting.eq(isRecruiting);
+  }
+  private BooleanExpression eqPeriod(String period){
+    return StringUtils.hasText(period)&&!period.equals(default_option)? qArticle.period.eq(Period.fromValue(period)):null;
+  }
+  private BooleanExpression eqGender(String gender){
+    return StringUtils.hasText(gender)&&!gender.equals(default_option)? qArticle.gender.eq(Gender.fromValue(gender)):null;
+  }
+  private BooleanExpression eqRegion(String region){
+    return StringUtils.hasText(region)&&!region.equals(default_option)? qArticle.region.eq(Seoul.fromValue(region)):null;
+  }
+  private BooleanExpression loePrice(String price){
+    return StringUtils.hasText(price)&&!price.equals(default_option)? qArticle.price.loe(Integer.parseInt(price)):null;
   }
 }

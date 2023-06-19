@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,9 +29,9 @@ public class ApplyController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
-  @PatchMapping("/refuse")
+  @PatchMapping("/refuse/{applyId}")
   public ResponseEntity<?> patchRefuse(@AuthenticationPrincipal User user,
-      @RequestParam Integer applyId) {
+      @PathVariable Integer applyId) {
     var result = applyService.patchRefuse(user, applyId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }

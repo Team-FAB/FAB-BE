@@ -113,9 +113,9 @@ public class ArticleController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
-  @PostMapping("/apply")
+  @PostMapping("/apply/{articleId}")
   public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
-      @RequestParam Integer articleId) {
+      @PathVariable Integer articleId) {
     var result = articleService.applyUser(user, articleId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
   }

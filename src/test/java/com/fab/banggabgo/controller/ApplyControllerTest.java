@@ -75,7 +75,7 @@ class ApplyControllerTest {
     @WithMockUser
     void patchRefuseSuccess() throws Exception {
 
-      mockMvc.perform(patch("/api/applicant/refuse?applyId=1")
+      mockMvc.perform(patch("/api/applicant/refuse/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk())
           .andDo(print());
@@ -84,7 +84,7 @@ class ApplyControllerTest {
     @DisplayName("룸메이트 신청 거절 - 비 로그인 유저")
     void patchRefuseFailNonUser() throws Exception {
 
-      mockMvc.perform(patch("/api/applicant/refuse?applyId=1")
+      mockMvc.perform(patch("/api/applicant/refuse/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized())
           .andDo(print());

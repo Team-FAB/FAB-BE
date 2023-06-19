@@ -507,7 +507,7 @@ class ArticleServiceImplTest {
     var result = articleService.getArticleByPageable(1, 5, true);
 
     //then
-    assertEquals(5, result.size());
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -541,7 +541,7 @@ class ArticleServiceImplTest {
     var result = articleService.getArticleByPageable(1, 5, false);
 
     //then
-    assertEquals(5, result.size());
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -576,7 +576,7 @@ class ArticleServiceImplTest {
     var result = articleService.getArticleByFilter(1, 5, true, "서초구", "1개월 ~ 3개월", "1000000", "남성");
 
     //then
-    assertEquals(5, result.size());
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -612,21 +612,7 @@ class ArticleServiceImplTest {
         "남성");
 
     //then
-    assertEquals(5, result.size());
-  }
-
-  @Test
-  @DisplayName("글 전체 개수 가져오기 성공")
-  void getArticleTotalCntSuccess() {
-    //given
-    given(articleRepository.getArticleTotalCnt())
-        .willReturn(5);
-
-    //when
-    Integer result = articleService.getArticleTotalCnt();
-
-    //then
-    assertEquals(5, result);
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test

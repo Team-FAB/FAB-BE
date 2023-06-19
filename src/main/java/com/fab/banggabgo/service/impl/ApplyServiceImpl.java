@@ -2,6 +2,7 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
+import com.fab.banggabgo.dto.apply.ApplyDeleteResultDto;
 import com.fab.banggabgo.dto.apply.ApproveUserDto;
 import com.fab.banggabgo.dto.apply.ApproveUserResultDto;
 import com.fab.banggabgo.dto.apply.RefuseUserResultDto;
@@ -72,7 +73,7 @@ public class ApplyServiceImpl {
         .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND_APPLY_ID));
 
     Article article = apply.getArticle();
-    if (!article.getUser().getId().equals(user.getId())){
+    if (!article.getUser().getId().equals(user.getId())) {
       throw new CustomException(ErrorCode.USER_NOT_MATCHED);
     }
 
@@ -90,10 +91,28 @@ public class ApplyServiceImpl {
         .build();
   }
 
-  private void validPatchRefuse(Apply apply, Article article){
+  public ApplyDeleteResultDto deleteApply(User user, Integer applyId) {
+    Apply apply = applyRepository.findById(applyId)
+        .orElseThrow(() -> new CustomException(ErrorCode.INVALID_APPLY_ID));
+    Article article = apply.getArticle();
+
+    if (!apply.getApplicantUser().getId().equals(user.getId())
+        && !article.getUser().getId().equals(user.getId())) {
+      throw new CustomException(ErrorCode.USER_NOT_MATCHED);
+    }
+
+    Integer applySaveId = Math.toIntExact(applyRepository.setApplyDelete(user.getId(), applyId,
+        apply.getApplicantUser().getId().equals(user.getId())));
+
+    return ApplyDeleteResultDto.builder()
+        .applyId(applySaveId)
+        .build();
+  }
+
+  private void validPatchRefuse(Apply apply, Article article) {
     validRecruitingArticle(article);
 
-    if (apply.getApproveStatus().equals(ApproveStatus.REFUSE)){
+    if (apply.getApproveStatus().equals(ApproveStatus.REFUSE)) {
       throw new CustomException(ErrorCode.ALREADY_REFUSE);
     }
   }
@@ -102,7 +121,7 @@ public class ApplyServiceImpl {
     validRecruitingArticle(article);
   }
 
-  private void validRecruitingArticle(Article article){
+  private void validRecruitingArticle(Article article) {
     if (!article.isRecruiting()) {
       throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
     }

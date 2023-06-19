@@ -5,6 +5,7 @@ import com.fab.banggabgo.entity.QApply;
 import com.fab.banggabgo.repository.ApplyRepositoryCustom;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 
@@ -55,5 +56,19 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         .orderBy(qApply.lastModifiedDate.desc());
 
     return pageQuery.fetch();
+  }
+
+  @Override
+  @Transactional
+  public Long setApplyDelete(Integer userId, Integer applyId, boolean isApplicant) {
+    var pageQuery = jpaQueryFactory.update(qApply)
+        .where(qApply.id.eq(applyId));
+    if (isApplicant) {
+      pageQuery.set(qApply.isApplicantDelete, true);
+    } else {
+      pageQuery.set(qApply.isArticleUserDelete, true);
+    }
+
+    return pageQuery.execute();
   }
 }

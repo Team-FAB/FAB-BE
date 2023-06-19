@@ -278,11 +278,11 @@ class MyContentServiceImplTest {
     void getApplicantsSuccess() {
 
       when(applyRepository.getMyApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
-              .approveStatus(ApproveStatus.WAIT)
-                  .article(article)
-                  .applicantUser(appliedUser)
-                  .approveStatus(ApproveStatus.WAIT)
-              .build()));
+          .approveStatus(ApproveStatus.WAIT)
+          .article(article)
+          .applicantUser(appliedUser)
+          .approveStatus(ApproveStatus.WAIT)
+          .build()));
 
       var result = myContentService.getMyFromApplicantList(loginUser, 4, 1);
 
@@ -292,7 +292,8 @@ class MyContentServiceImplTest {
       assertEquals(result.get(0).getArticleId(), article.getId());
       assertEquals(result.get(0).getOtherUserName(), appliedUser.getNickname());
       assertEquals(result.get(0).getOtherUserId(), appliedUser.getId());
-      
+    }
+
     @Test
     @DisplayName("이미지 업로드하기")
     void postImage() throws IOException {

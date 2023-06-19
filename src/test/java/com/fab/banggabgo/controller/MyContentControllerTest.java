@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -143,35 +144,39 @@ class MyContentControllerTest {
     @Test
     @DisplayName("신청자리스트 - 성공")
     @WithMockUser
-    void successGetApplicantList() throws Exception{
+    void successGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/from-applicants?page=1&size=4")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("신청자리스트 - 성공 페이지 누락")
     @WithMockUser
-    void successLostPageGetApplicantList() throws Exception{
+    void successLostPageGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/from-applicants?size=4")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("신청자리스트 - 성공 사이즈 누락")
     @WithMockUser
-    void successLostSizeGetApplicantList() throws Exception{
+    void successLostSizeGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/from-applicants?page=1")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("신청자리스트 - 실패 계정 누락")
-    void FailNonAuthGetApplicantList() throws Exception{
+    void FailNonAuthGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/from-applicants?page=1&size=4")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized());
     }
   }
+
   @Nested
   @DisplayName("내가신청한 신청자리스트")
   class toApplicantList {
@@ -179,46 +184,51 @@ class MyContentControllerTest {
     @Test
     @DisplayName("신청한리스트 - 성공")
     @WithMockUser
-    void successGetApplicantList() throws Exception{
+    void successGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/to-applicants?page=1&size=4")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("신청한리스트 - 성공 페이지 누락")
     @WithMockUser
-    void successLostPageGetApplicantList() throws Exception{
+    void successLostPageGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/to-applicants?size=4")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("신청한리스트 - 성공 사이즈 누락")
     @WithMockUser
-    void successLostSizeGetApplicantList() throws Exception{
+    void successLostSizeGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/to-applicants?page=1")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isOk());
     }
+
     @Test
     @DisplayName("신청한리스트 - 실패 계정 누락")
-    void FailNonAuthGetApplicantList() throws Exception{
+    void FailNonAuthGetApplicantList() throws Exception {
       mockMvc.perform(get("/api/my/to-applicants?page=1&size=4")
-          .with(SecurityMockMvcRequestPostProcessors.csrf()))
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized());
     }
-    
-  @Test
-  @DisplayName("이미지 변경 테스트")
-  @WithMockUser
-  void postMyImg() throws Exception {
-    Path imagePath = Paths.get("src/test/resources/wierd.png");
-    byte[] imageBytes = Files.readAllBytes(imagePath);
-    var image = new MockMultipartFile("image", "wierd.png", MediaType.IMAGE_PNG_VALUE, imageBytes);
-    mockMvc.perform(MockMvcRequestBuilders.multipart("/api/my/image")
-            .file(image)
-            .with(SecurityMockMvcRequestPostProcessors.csrf())
-        )
-        .andExpect(status().isOk());
+
+    @Test
+    @DisplayName("이미지 변경 테스트")
+    @WithMockUser
+    void postMyImg() throws Exception {
+      Path imagePath = Paths.get("src/test/resources/wierd.png");
+      byte[] imageBytes = Files.readAllBytes(imagePath);
+      var image = new MockMultipartFile("image", "wierd.png", MediaType.IMAGE_PNG_VALUE,
+          imageBytes);
+      mockMvc.perform(MockMvcRequestBuilders.multipart("/api/my/image")
+              .file(image)
+              .with(SecurityMockMvcRequestPostProcessors.csrf())
+          )
+          .andExpect(status().isOk());
+    }
   }
 }

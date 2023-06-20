@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApplyIsApplyResultDto {
 
-  boolean isApply;
+  private boolean isApply;
 
   public static ApplyIsApplyResultDto toDto(boolean isApply) {
     return ApplyIsApplyResultDto.builder()

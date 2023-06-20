@@ -72,7 +72,7 @@ public class MyContentServiceImpl implements MyContentService {
 
   @Override
   public PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto dto) {
-    var converted_user=convertUserData(user,dto);
+    var converted_user = convertUserData(user, dto);
     return PatchMyInfoResultDto.from(userRepository.save(converted_user));
   }
 
@@ -81,7 +81,7 @@ public class MyContentServiceImpl implements MyContentService {
   public PostMyInfoImageResultDto postMyInfoImage(User user, PostMyInfoImageRequestDto dto)
       throws IOException {
 
-    var img_url=s3Service.fileUpload(dto.getImage());
+    var img_url = s3Service.fileUpload(dto.getImage());
 
     user.setImage(img_url);
     userRepository.save(user);
@@ -90,6 +90,7 @@ public class MyContentServiceImpl implements MyContentService {
         .image(img_url)
         .build();
   }
+
   public User convertUserData(User user, PatchMyInfoRequestDto dto) {
     var changed_user = user;
     try {
@@ -109,7 +110,7 @@ public class MyContentServiceImpl implements MyContentService {
     return changed_user;
   }
 
-  public List<ApplyListResultDto> getMyFromApplicantList(User user, Integer page, Integer size) {
+  public ApplyListResultDto getMyFromApplicantList(User user, Integer page, Integer size) {
     page = page > 0 ? page - 1 : 0;
 
     Pageable pageable = PageRequest.of(page, size);
@@ -117,7 +118,7 @@ public class MyContentServiceImpl implements MyContentService {
         applyRepository.getMyApplicant(pageable, user.getId()));
   }
 
-  public List<ApplyListResultDto> getMyToApplicantList(User user, Integer page, Integer size) {
+  public ApplyListResultDto getMyToApplicantList(User user, Integer page, Integer size) {
     page = page > 0 ? page - 1 : 0;
 
     Pageable pageable = PageRequest.of(page, size);

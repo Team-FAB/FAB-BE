@@ -7,6 +7,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 @RequiredArgsConstructor
@@ -17,7 +19,7 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
   QApply qApply = QApply.apply;
 
   @Override
-  public List<Apply> getMyApplicant(Pageable pageable, Integer userId) {
+  public Page<Apply> getMyApplicant(Pageable pageable, Integer userId) {
     var pageQuery = jpaQueryFactory.selectFrom(qApply)
         .leftJoin(qApply.applicantUser)
         .fetchJoin()
@@ -29,11 +31,16 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());
 
-    return pageQuery.fetch();
+    var countQuery = jpaQueryFactory.select(qApply.count())
+        .from(qApply)
+        .where(qApply.article.user.id.eq(userId)
+            .and(qApply.isArticleUserDelete.eq(false)));
+
+    return new PageImpl<>(pageQuery.fetch(), pageable, countQuery.fetchOne());
   }
 
   @Override
-  public List<Apply> getMyToApplicant(Pageable pageable, Integer userId) {
+  public Page<Apply> getMyToApplicant(Pageable pageable, Integer userId) {
     var pageQuery = jpaQueryFactory.selectFrom(qApply)
         .leftJoin(qApply.article)
         .fetchJoin()
@@ -44,7 +51,12 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize());
 
-    return pageQuery.fetch();
+    var countQuery = jpaQueryFactory.select(qApply.count())
+        .from(qApply)
+        .where(qApply.applicantUser.id.eq(userId)
+            .and(qApply.isApplicantDelete.eq(false)));
+
+    return new PageImpl<>(pageQuery.fetch(), pageable, countQuery.fetchOne());
   }
 
   @Override

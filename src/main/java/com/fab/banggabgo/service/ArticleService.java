@@ -1,5 +1,6 @@
 package com.fab.banggabgo.service;
 
+import com.fab.banggabgo.dto.apply.ApplyIsApplyResultDto;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticleInfoDto;
@@ -58,4 +59,6 @@ public interface ArticleService {
   boolean getArticleFavorite(User user, Integer id);
 
   ApplyUserResultDto applyUser(User user, Integer articleId);
+
+  ApplyIsApplyResultDto isApply(User user, Integer articleId);
 }

@@ -2,6 +2,7 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
+import com.fab.banggabgo.dto.apply.ApplyIsApplyResultDto;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticleInfoDto;
@@ -237,36 +238,45 @@ public class ArticleServiceImpl implements ArticleService {
     return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
   }
 
+  @Override
   public ApplyUserResultDto applyUser(User user, Integer articleId) {
+    Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(),
+        articleId).orElseGet(() ->
+        Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .applicantUser(user)
+            .article(articleRepository.findById(articleId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS)))
+            .isApplicantDelete(true)
+            .build());
 
-    if (applyRepository.existsByApplicantUserIdAndArticleId(user.getId(),
-        articleId)) {
-      throw new CustomException(ErrorCode.ALREADY_APPLY);
-    }
+    validApplyUser(apply);
 
-    Article article = articleRepository.findById(articleId)
-        .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
+    apply.setApplicantDelete(!apply.isApplicantDelete());
 
-    validApplyUser(article);
-
-    Apply apply = Apply.builder()
-        .approveStatus(ApproveStatus.WAIT)
-        .applicantUser(user)
-        .article(article)
-        .build();
-
-    applyRepository.save(apply);
+    apply = applyRepository.save(apply);
 
     return ApplyUserResultDto.toDto(apply);
   }
 
-  private void validApplyUser(Article article) {
+  @Override
+  public ApplyIsApplyResultDto isApply(User user, Integer articleId) {
+    return ApplyIsApplyResultDto.toDto(
+        applyRepository.existsByApplicantUserIdAndArticleId(user.getId(), articleId));
+  }
+
+  private void validApplyUser(Apply apply) {
+    Article article = apply.getArticle();
     if (!article.isRecruiting()) {
       throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
     }
 
     if (article.isDeleted()) {
       throw new CustomException(ErrorCode.ARTICLE_DELETED);
+    }
+
+    if (!apply.getApproveStatus().equals(ApproveStatus.WAIT)) {
+      throw new CustomException(ErrorCode.ALREADY_DONE_APPLY);
     }
   }
 }

@@ -264,6 +264,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     validApplyUser(apply);
 
+    apply.setArticleUserDelete(!apply.isApplicantDelete());
     apply.setApplicantDelete(!apply.isApplicantDelete());
 
     apply = applyRepository.save(apply);
@@ -273,8 +274,11 @@ public class ArticleServiceImpl implements ArticleService {
 
   @Override
   public ApplyIsApplyResultDto isApply(User user, Integer articleId) {
-    return ApplyIsApplyResultDto.toDto(
-        applyRepository.existsByApplicantUserIdAndArticleId(user.getId(), articleId));
+    Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(), articleId)
+        .orElseGet(() -> Apply.builder()
+            .isApplicantDelete(true)
+            .build());
+    return ApplyIsApplyResultDto.toDto(apply.isApplicantDelete());
   }
 
   private void validApplyUser(Apply apply) {

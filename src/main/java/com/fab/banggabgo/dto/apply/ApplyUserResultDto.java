@@ -14,9 +14,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApplyUserResultDto {
 
-  String approveStatus;
-  String articleName;
-  Integer articleId;
+  private String approveStatus;
+  private String articleName;
+  private Integer articleId;
 
   public static ApplyUserResultDto toDto(Apply apply) {
     return ApplyUserResultDto.builder()

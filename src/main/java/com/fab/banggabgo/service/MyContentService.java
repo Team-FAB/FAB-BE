@@ -30,7 +30,7 @@ public interface MyContentService {
       throws IOException;
   PatchMyInfoResultDto patchMyInfo(User user, PatchMyInfoRequestDto form);
 
-  List<ApplyListResultDto> getMyFromApplicantList(User user, Integer page, Integer size);
+  ApplyListResultDto getMyFromApplicantList(User user, Integer page, Integer size);
 
-  List<ApplyListResultDto> getMyToApplicantList(User user, Integer page, Integer size);
+  ApplyListResultDto getMyToApplicantList(User user, Integer page, Integer size);
 }

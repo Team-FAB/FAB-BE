@@ -1,5 +1,6 @@
 package com.fab.banggabgo.dto.apply;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,13 +12,12 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplyIsApplyResultDto {
+public class ApplyPageDto {
 
-  private boolean isApply;
-
-  public static ApplyIsApplyResultDto toDto(boolean isApply) {
-    return ApplyIsApplyResultDto.builder()
-        .isApply(isApply)
-        .build();
-  }
+  private Integer applyId;
+  private Integer articleId;
+  private String articleTitle;
+  private Integer otherUserId;
+  private String otherUserName;
+  private String matchStatus;
 }

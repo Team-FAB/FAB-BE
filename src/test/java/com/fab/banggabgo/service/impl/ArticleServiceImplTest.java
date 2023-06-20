@@ -267,6 +267,7 @@ class ArticleServiceImplTest {
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(false)
+            .isRecruiting(true)
             .build()));
 
     //when
@@ -382,6 +383,7 @@ class ArticleServiceImplTest {
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user2)
             .isDeleted(false)
+            .isRecruiting(true)
             .build()));
 
     //when
@@ -745,6 +747,7 @@ class ArticleServiceImplTest {
         .isApplicantDelete(false)
         .isArticleUserDelete(false)
         .build();
+
     @Test
     @DisplayName("apply - 처음 신청 성공")
     void applySuccess() {
@@ -752,7 +755,6 @@ class ArticleServiceImplTest {
           anyInt())).willReturn(Optional.empty());
       given(articleRepository.findById(anyInt())).willReturn(Optional.of(article));
       given(applyRepository.save(any())).willReturn(apply);
-
 
       var result = articleService.applyUser(loginUser, article.getId());
 

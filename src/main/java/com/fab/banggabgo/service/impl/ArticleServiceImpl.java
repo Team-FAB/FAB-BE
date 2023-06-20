@@ -148,6 +148,10 @@ public class ArticleServiceImpl implements ArticleService {
       throw new CustomException(ErrorCode.ARTICLE_DELETED);
     }
 
+    if (!article.isRecruiting()) {
+      throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
+    }
+
     if (!Objects.equals(article.getUser().getId(), user.getId())) {
       throw new CustomException(ErrorCode.USER_NOT_MATCHED);
     }
@@ -177,6 +181,14 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     article.setDeleted(true);
+
+    List<Apply> applyList = applyRepository.findByArticleIdAndApproveStatus(id, ApproveStatus.WAIT);
+
+    for (Apply apply : applyList) {
+      apply.setApproveStatus(ApproveStatus.REFUSE);
+    }
+
+    applyRepository.saveAll(applyList);
 
     articleRepository.save(article);
   }

@@ -2,6 +2,7 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
+import com.fab.banggabgo.dto.apply.ApplyIsApplyResultDto;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
 import com.fab.banggabgo.dto.article.ArticleInfoDto;
@@ -259,8 +260,9 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
-  public boolean isApply(User user, Integer articleId) {
-    return applyRepository.existsByApplicantUserIdAndArticleId(user.getId(), articleId);
+  public ApplyIsApplyResultDto isApply(User user, Integer articleId) {
+    return ApplyIsApplyResultDto.toDto(
+        applyRepository.existsByApplicantUserIdAndArticleId(user.getId(), articleId));
   }
 
   private void validApplyUser(Apply apply) {

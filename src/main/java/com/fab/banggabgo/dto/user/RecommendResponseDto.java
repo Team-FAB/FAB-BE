@@ -15,5 +15,6 @@ import lombok.Setter;
 public class RecommendResponseDto {
 
   private String mbti;
+  private String nickname;
   private List<RecommendDto> recommendDtoList;
 }

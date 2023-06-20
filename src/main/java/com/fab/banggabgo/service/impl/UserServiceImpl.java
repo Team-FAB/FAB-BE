@@ -28,6 +28,7 @@ public class UserServiceImpl implements UserService {
 
     return RecommendResponseDto.builder()
         .mbti(user.getMbti().toString())
+        .nickname(user.getNickname())
         .recommendDtoList(RecommendDto.toDtoList(userList))
         .build();
   }

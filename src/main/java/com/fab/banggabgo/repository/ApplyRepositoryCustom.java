@@ -14,4 +14,6 @@ public interface ApplyRepositoryCustom {
   List<Apply> getAllMyApplicantByArticleId(Integer userId, Integer articleId);
 
   Long setApplyDelete(Integer userId, Integer applyId, boolean isApplicant);
+
+  Page<Apply> getMyNoticeApplicant(Pageable pageable, Integer userId);
 }

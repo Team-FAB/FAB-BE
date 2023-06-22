@@ -15,6 +15,7 @@ import lombok.Setter;
 public class ApplyPageDto {
 
   private Integer applyId;
+  private boolean isToMe;
   private Integer articleId;
   private String articleTitle;
   private Integer otherUserId;

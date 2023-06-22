@@ -3,6 +3,7 @@ package com.fab.banggabgo.service.impl;
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.apply.ApplyDeleteResultDto;
+import com.fab.banggabgo.dto.apply.ApplyListResultDto;
 import com.fab.banggabgo.dto.apply.ApproveUserDto;
 import com.fab.banggabgo.dto.apply.ApproveUserResultDto;
 import com.fab.banggabgo.dto.apply.RefuseUserResultDto;
@@ -13,6 +14,8 @@ import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.type.ApproveStatus;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -109,6 +112,13 @@ public class ApplyServiceImpl {
         .build();
   }
 
+  public ApplyListResultDto getNotices(User user, Integer page, Integer size) {
+    page = page >= 1 ? page - 1 : 1;
+    Pageable pageable = PageRequest.of(page, size);
+    return ApplyListResultDto.toMixApplicantDtoList(
+        applyRepository.getMyNoticeApplicant(pageable, user.getId()), user.getId());
+  }
+
   private void validPatchRefuse(Apply apply, Article article) {
     validRecruitingArticle(article);
 
@@ -130,4 +140,5 @@ public class ApplyServiceImpl {
       throw new CustomException(ErrorCode.ARTICLE_DELETED);
     }
   }
+
 }

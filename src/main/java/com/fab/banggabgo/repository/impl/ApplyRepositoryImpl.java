@@ -113,4 +113,18 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
 
     return new PageImpl<>(pageQuery.fetch(), pageable, countQuery.fetchOne());
   }
+
+  @Override
+  @Transactional
+  public Long setRead(Integer applyId, boolean isApplicant){
+    var pageQuery = jpaQueryFactory.update(qApply)
+        .where(qApply.id.eq(applyId));
+    if (isApplicant){
+      pageQuery.set(qApply.isApplicantRead, true);
+    } else {
+      pageQuery.set(qApply.isArticleUserRead, true);
+    }
+
+    return pageQuery.execute();
+  }
 }

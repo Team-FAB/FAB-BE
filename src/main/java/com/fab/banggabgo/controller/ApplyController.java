@@ -47,8 +47,15 @@ public class ApplyController {
 
   @GetMapping("/notices")
   public ResponseEntity<?> getNotices(@AuthenticationPrincipal User user,
-  @RequestParam Integer page, @RequestParam Integer size){
+      @RequestParam Integer page, @RequestParam Integer size) {
     var result = applyService.getNotices(user, page, size);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
+  }
+
+  @DeleteMapping("/notice/{applyId}")
+  public ResponseEntity<?> deleteNotices(@AuthenticationPrincipal User user,
+      @PathVariable Integer applyId) {
+    var result = applyService.deleteNotice(user, applyId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 }

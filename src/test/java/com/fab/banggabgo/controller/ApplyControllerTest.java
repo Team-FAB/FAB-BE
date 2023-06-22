@@ -2,6 +2,7 @@ package com.fab.banggabgo.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -108,6 +109,29 @@ class ApplyControllerTest {
     void deleteApplyFailNonUser() throws Exception {
 
       mockMvc.perform(delete("/api/applicant/1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+  }
+  @Nested
+  @DisplayName("알림 불러오기")
+  class getNotices {
+    @Test
+    @DisplayName("알림 불러오기 - 성공")
+    @WithMockUser
+    void deleteApplySuccess() throws Exception {
+
+      mockMvc.perform(get("/api/applicant/notices?page=1&size=5")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk())
+          .andDo(print());
+    }
+    @Test
+    @DisplayName("알림 불러오기 - 비 로그인 유저")
+    void deleteApplyFailNonUser() throws Exception {
+
+      mockMvc.perform(get("/api/applicant/notices?page=1&size=5")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized())
           .andDo(print());

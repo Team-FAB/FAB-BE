@@ -137,4 +137,27 @@ class ApplyControllerTest {
           .andDo(print());
     }
   }
+  @Nested
+  @DisplayName("알림 읽음표시")
+  class deleteNotices {
+    @Test
+    @DisplayName("알림 불러오기 - 성공")
+    @WithMockUser
+    void deleteApplySuccess() throws Exception {
+
+      mockMvc.perform(delete("/api/applicant/notice/3")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isOk())
+          .andDo(print());
+    }
+    @Test
+    @DisplayName("알림 불러오기 - 비 로그인 유저")
+    void deleteApplyFailNonUser() throws Exception {
+
+      mockMvc.perform(delete("/api/applicant/notice/3")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+  }
 }

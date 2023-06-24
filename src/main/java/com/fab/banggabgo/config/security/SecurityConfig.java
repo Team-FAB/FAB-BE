@@ -36,6 +36,7 @@ public class SecurityConfig {
         .antMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
         .antMatchers("/api/applicant/**").permitAll()
         .antMatchers(HttpMethod.GET, "/api/exception").permitAll()
+        .antMatchers("/ws/**").permitAll()
         .anyRequest().authenticated()
 
         .and()

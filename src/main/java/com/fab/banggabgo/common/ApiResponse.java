@@ -34,7 +34,9 @@ public class ApiResponse<T> {
     this.msg = code.getMsg();
     this.data = data;
   }
-
+  public ResponseEntity<ApiResponse<T>> toEntity(){
+    return ResponseEntity.status(this.status).body(this);
+  }
   public static <T> ApiResponseBuilder<T> builder() {
     return new ApiResponseBuilder<T>();
   }
@@ -59,11 +61,11 @@ public class ApiResponse<T> {
     }
 
     public ApiResponse<T> build() {
-      return new ApiResponse<T>(code, data);
+      return new ApiResponse<>(code, data);
     }
 
-    public ResponseEntity<?> toEntity() {
-      return ResponseEntity.status(this.code.getStatus()).body(new ApiResponse<T>(code, data));
+    public <T> ResponseEntity<ApiResponse<T>> toEntity() {
+      return ResponseEntity.status(this.code.getStatus()).body(new ApiResponse<>(code,(T) data));
     }
 
     public String toString() {

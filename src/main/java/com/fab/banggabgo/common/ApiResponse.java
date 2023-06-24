@@ -34,9 +34,6 @@ public class ApiResponse<T> {
     this.msg = code.getMsg();
     this.data = data;
   }
-  public ResponseEntity<ApiResponse<T>> toEntity(){
-    return ResponseEntity.status(this.status).body(this);
-  }
   public static <T> ApiResponseBuilder<T> builder() {
     return new ApiResponseBuilder<T>();
   }

@@ -22,6 +22,26 @@ services:
       - "8083:8083"
     networks:
       - bangapgo
+  rabbitmq:
+    image: pcloud/rabbitmq-stomp
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "61613:61613"
+      - "61614:61614"
+  banggabda-mongo:
+    image: mongo
+    restart: always
+    ports:
+        - 27017:27017
+    environment:
+        - MONGO_INITDB_ROOT_USERNAME=root
+        - MONGO_INITDB_ROOT_PASSWORD=root
+        - MONGO_INITDB_DATABASE=test
+    volumes:
+      - "C:/Users/wlals/Desktop/backend:/var/l"
+
+
 networks:
   bangapgo:
     driver: bridge

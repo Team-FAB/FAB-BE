@@ -5,6 +5,7 @@ import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
 import com.fab.banggabgo.dto.OAuth2.OAuth2ProfileDto;
 import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestDto;
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInResultDto;
 import com.fab.banggabgo.dto.sign.EmailCheckResultDto;
 import com.fab.banggabgo.dto.sign.LogOutResultDto;
 import com.fab.banggabgo.dto.sign.NickNameCheckResultDto;
@@ -107,14 +108,13 @@ public class SignServiceImpl implements SignService {
   }
 
   @Override
-  public SignInResultDto oauth2SignIn(OAuth2SignInRequestDto dto,
+  public OAuth2SignInResultDto oauth2SignIn(OAuth2SignInRequestDto dto,
       OAuth2RegistrationId oAuth2RegistrationId) {
     OAuth2ProfileDto profile;
     //todo 로그인 메서드구현
     try {
       profile = getProfile(dto.getCode(), oAuth2RegistrationId);
     } catch (ParseException | HttpClientErrorException e) {
-      System.out.println(e.getMessage());
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
     if (profile == null || profile.getEmail() == null) {
@@ -132,11 +132,13 @@ public class SignServiceImpl implements SignService {
     var atk = getAccessToken(user);
     var rtk = getRefreshToken();
 
-    var result = SignInResultDto.builder()
+    var result = OAuth2SignInResultDto.builder()
         .token(TokenDto.builder()
-            .atk(atk)
-            .rtk(rtk)
-            .build())
+                .atk(atk)
+                .rtk(rtk)
+                .build())
+        .email(user.getEmail())
+        .nickName(user.getNickname())
         .build();
 
     redisTemplate.opsForValue()
@@ -145,7 +147,6 @@ public class SignServiceImpl implements SignService {
 
     return result;
   }
-
 
 
   @Override

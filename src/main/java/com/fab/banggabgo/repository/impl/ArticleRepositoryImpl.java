@@ -40,7 +40,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .join(qArticle.user, qUser)
         .fetchJoin()
         .orderBy(qArticle.createDate.desc())
-        .where(eqDelete(false),eqRecruiting(true))
+        .where(eqDelete(false))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .distinct();
@@ -71,7 +71,6 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .fetchJoin()
         .orderBy(qArticle.createDate.desc())
         .where(eqDelete(false)
-            ,eqRecruiting(true)
             ,eqGender(gender)
             ,eqPeriod(period)
             ,eqRegion(region)
@@ -84,8 +83,17 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     var articleCountQuery = queryFactory.select(qArticle.count())
         .from(qArticle)
         .join(qArticle.user, qUser)
-        .where(qArticle.isDeleted.eq(false))
+        .where(eqDelete(false)
+            ,eqGender(gender)
+            ,eqPeriod(period)
+            ,eqRegion(region)
+            ,loePrice(price))
         .distinct();
+
+    if (isRecruiting) {
+      articleQuery = articleQuery.where(qArticle.isRecruiting.eq(true));
+      articleCountQuery = articleCountQuery.where(qArticle.isRecruiting.eq(true));
+    }
 
     List<Article> articleList = articleQuery.fetch();
 

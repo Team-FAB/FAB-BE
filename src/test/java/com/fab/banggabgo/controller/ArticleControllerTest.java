@@ -638,7 +638,7 @@ class ArticleControllerTest {
     @WithMockUser
     void getSuccessApply() throws Exception {
 
-      mockMvc.perform(post("/api/articles/apply?articleId=1")
+      mockMvc.perform(post("/api/articles/apply/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isCreated())
           .andDo(print());
@@ -647,9 +647,54 @@ class ArticleControllerTest {
     @Test
     @DisplayName("apply - 로그인 정보가 없을때")
     void getFailAuthApply() throws Exception {
-      mockMvc.perform(post("/api/articles/apply")
+      mockMvc.perform(post("/api/articles/apply/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 입력 정보가 없을때")
+    @WithMockUser
+    void getFailBadRequestApply() throws Exception {
+      mockMvc.perform(post("/api/articles/apply/")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isMethodNotAllowed())
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("apply - 룸메이트 신청 확인")
+  class GetApply {
+
+    @Test
+    @DisplayName("apply - 성공")
+    @WithMockUser
+    void getSuccessApply() throws Exception {
+
+      mockMvc.perform(get("/api/articles/apply/1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isCreated())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 로그인 정보가 없을때")
+    void getFailAuthApply() throws Exception {
+      mockMvc.perform(get("/api/articles/apply/1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 입력 정보가 없을때")
+    @WithMockUser
+    void getFailBadRequestApply() throws Exception {
+      mockMvc.perform(get("/api/articles/apply/")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isBadRequest())
           .andDo(print());
     }
   }

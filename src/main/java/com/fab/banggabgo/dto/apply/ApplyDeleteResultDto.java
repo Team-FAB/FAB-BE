@@ -1,6 +1,5 @@
-package com.fab.banggabgo.dto.user;
+package com.fab.banggabgo.dto.apply;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,9 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecommendResponseDto {
+public class ApplyDeleteResultDto {
 
-  private String mbti;
-  private String nickname;
-  private List<RecommendDto> recommendDtoList;
+  private Integer applyId;
 }

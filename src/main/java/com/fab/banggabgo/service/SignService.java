@@ -1,6 +1,7 @@
 package com.fab.banggabgo.service;
 
 
+import com.fab.banggabgo.dto.OAuth2.OAuth2SignInResultDto;
 import com.fab.banggabgo.dto.sign.EmailCheckResultDto;
 import com.fab.banggabgo.dto.sign.LogOutResultDto;
 import com.fab.banggabgo.dto.sign.NickNameCheckResultDto;
@@ -18,7 +19,7 @@ public interface SignService {
   SignInResultDto signIn(SignInRequestDto dto);
 
 
-  SignInResultDto oauth2SignIn(OAuth2SignInRequestDto dto,
+  OAuth2SignInResultDto oauth2SignIn(OAuth2SignInRequestDto dto,
       OAuth2RegistrationId oAuth2RegistrationId);
 
   LogOutResultDto logout(HttpServletRequest req);

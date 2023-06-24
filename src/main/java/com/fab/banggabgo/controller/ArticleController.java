@@ -118,10 +118,18 @@ public class ArticleController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).data(result).toEntity();
   }
 
-  @PostMapping("/apply")
-  public ResponseEntity<ApiResponse<ApplyUserResultDto>> getApply(@AuthenticationPrincipal User user,
-      @RequestParam Integer articleId) {
+
+  @PostMapping("/apply/{articleId}")
+  public ResponseEntity<ApiResponse<ApplyUserResultDto>> postApply(@AuthenticationPrincipal User user,
+      @PathVariable Integer articleId) {
     var result = articleService.applyUser(user, articleId);
+    return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
+  }
+  
+  @GetMapping("/apply/{articleId}")
+  public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
+      @PathVariable Integer articleId) {
+    var result = articleService.isApply(user, articleId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
   }
 }

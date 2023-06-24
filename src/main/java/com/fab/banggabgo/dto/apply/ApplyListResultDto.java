@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @Setter
@@ -16,20 +17,20 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ApplyListResultDto {
 
-  Integer applyId;
-  Integer articleId;
-  String articleTitle;
-  Integer otherUserId;
-  String otherUserName;
-  String matchStatus;
+  private Long totalCount;
 
-  public static List<ApplyListResultDto> toFromApplicantDtoList(List<Apply> applyPage) {
-    return applyPage.stream().map(ApplyListResultDto::toFromApplicantDto)
-        .collect(Collectors.toList());
+  private List<ApplyPageDto> applyPageList;
+
+  public static ApplyListResultDto toFromApplicantDtoList(Page<Apply> applyPage) {
+    return ApplyListResultDto.builder()
+        .totalCount(applyPage.getTotalElements())
+        .applyPageList(applyPage.stream().map(ApplyListResultDto::toFromApplicantDto)
+            .collect(Collectors.toList()))
+        .build();
   }
 
-  public static ApplyListResultDto toFromApplicantDto(Apply apply) {
-    return ApplyListResultDto.builder()
+  public static ApplyPageDto toFromApplicantDto(Apply apply) {
+    return ApplyPageDto.builder()
         .applyId(apply.getId())
         .articleId(apply.getArticle().getId())
         .articleTitle(apply.getArticle().getTitle())
@@ -38,13 +39,17 @@ public class ApplyListResultDto {
         .matchStatus(apply.getApproveStatus().getValue())
         .build();
   }
-  public static List<ApplyListResultDto> toToApplicantDtoList(List<Apply> applyPage) {
-    return applyPage.stream().map(ApplyListResultDto::toToApplicantDto)
-        .collect(Collectors.toList());
+
+  public static ApplyListResultDto toToApplicantDtoList(Page<Apply> applyPage) {
+    return ApplyListResultDto.builder()
+        .totalCount(applyPage.getTotalElements())
+        .applyPageList(applyPage.stream().map(ApplyListResultDto::toToApplicantDto)
+            .collect(Collectors.toList()))
+        .build();
   }
 
-  public static ApplyListResultDto toToApplicantDto(Apply apply) {
-    return ApplyListResultDto.builder()
+  public static ApplyPageDto toToApplicantDto(Apply apply) {
+    return ApplyPageDto.builder()
         .applyId(apply.getId())
         .articleId(apply.getArticle().getId())
         .articleTitle(apply.getArticle().getTitle())
@@ -53,4 +58,5 @@ public class ApplyListResultDto {
         .matchStatus(apply.getApproveStatus().getValue())
         .build();
   }
+
 }

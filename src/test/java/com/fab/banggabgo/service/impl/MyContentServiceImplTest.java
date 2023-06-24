@@ -15,13 +15,14 @@ import com.fab.banggabgo.dto.mycontent.FavoriteArticleDto;
 import com.fab.banggabgo.dto.mycontent.MyArticleDto;
 import com.fab.banggabgo.dto.mycontent.PatchMyInfoForm;
 import com.fab.banggabgo.dto.mycontent.PatchMyNicknameForm;
+import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.Article;
-import com.fab.banggabgo.dto.mycontent.PostMyInfoImageRequestDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.UserRepository;
+import com.fab.banggabgo.service.S3Service;
 import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.ApproveStatus;
 import com.fab.banggabgo.type.Gender;
@@ -31,7 +32,6 @@ import com.fab.banggabgo.type.Period;
 import com.fab.banggabgo.type.Seoul;
 import com.fab.banggabgo.type.UserRole;
 import com.fab.banggabgo.type.UserType;
-import com.fab.banggabgo.service.S3Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -46,6 +46,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.Authentication;
@@ -272,26 +274,29 @@ class MyContentServiceImplTest {
         .isRecruiting(true)
         .isDeleted(false)
         .build();
+
     @Test
     @DisplayName("신청자 목록 - 성공")
     @WithMockUser
     void getApplicantsSuccess() {
 
-      when(applyRepository.getMyApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
-          .approveStatus(ApproveStatus.WAIT)
-          .article(article)
-          .applicantUser(appliedUser)
-          .approveStatus(ApproveStatus.WAIT)
-          .build()));
+      when(applyRepository.getMyApplicant(any(), anyInt())).thenReturn(
+          new PageImpl<>(List.of(Apply.builder()
+              .approveStatus(ApproveStatus.WAIT)
+              .article(article)
+              .applicantUser(appliedUser)
+              .approveStatus(ApproveStatus.WAIT)
+              .build()), PageRequest.of(0, 5), 1L));
 
       var result = myContentService.getMyFromApplicantList(loginUser, 4, 1);
 
       verify(applyRepository, times(1)).getMyApplicant(any(Pageable.class), any(Integer.class));
-      assertEquals(result.get(0).getMatchStatus(), ApproveStatus.WAIT.getValue());
-      assertEquals(result.get(0).getArticleTitle(), article.getTitle());
-      assertEquals(result.get(0).getArticleId(), article.getId());
-      assertEquals(result.get(0).getOtherUserName(), appliedUser.getNickname());
-      assertEquals(result.get(0).getOtherUserId(), appliedUser.getId());
+      assertEquals(result.getApplyPageList().get(0).getMatchStatus(),
+          ApproveStatus.WAIT.getValue());
+      assertEquals(result.getApplyPageList().get(0).getArticleTitle(), article.getTitle());
+      assertEquals(result.getApplyPageList().get(0).getArticleId(), article.getId());
+      assertEquals(result.getApplyPageList().get(0).getOtherUserName(), appliedUser.getNickname());
+      assertEquals(result.getApplyPageList().get(0).getOtherUserId(), appliedUser.getId());
     }
 
     @Test
@@ -327,6 +332,7 @@ class MyContentServiceImplTest {
   @Nested
   @DisplayName("신청한 목록 불러오기")
   class toApplicant {
+
     private final User loginUser = User.builder()
         .id(1)
         .email("test@email.com")
@@ -381,25 +387,28 @@ class MyContentServiceImplTest {
         .isRecruiting(true)
         .isDeleted(false)
         .build();
+
     @Test
     @DisplayName("신청한 목록 - 성공")
     @WithMockUser
     void getApplicantsSuccess() {
-      when(applyRepository.getMyToApplicant(any(), anyInt())).thenReturn(List.of(Apply.builder()
-          .approveStatus(ApproveStatus.WAIT)
-          .article(article)
-          .applicantUser(loginUser)
-          .approveStatus(ApproveStatus.WAIT)
-          .build()));
+      when(applyRepository.getMyToApplicant(any(), anyInt())).thenReturn(
+          new PageImpl<>(List.of(Apply.builder()
+              .approveStatus(ApproveStatus.WAIT)
+              .article(article)
+              .applicantUser(loginUser)
+              .approveStatus(ApproveStatus.WAIT)
+              .build()), PageRequest.of(1, 5), 1L));
 
-      var result = myContentService.getMyToApplicantList(loginUser, 4, 1);
+      var result = myContentService.getMyToApplicantList(loginUser, 1, 5);
 
       verify(applyRepository, times(1)).getMyToApplicant(any(Pageable.class), any(Integer.class));
-      assertEquals(result.get(0).getMatchStatus(), ApproveStatus.WAIT.getValue());
-      assertEquals(result.get(0).getArticleTitle(), article.getTitle());
-      assertEquals(result.get(0).getArticleId(), article.getId());
-      assertEquals(result.get(0).getOtherUserName(), appliedUser.getNickname());
-      assertEquals(result.get(0).getOtherUserId(), appliedUser.getId());
+      assertEquals(result.getApplyPageList().get(0).getMatchStatus(),
+          ApproveStatus.WAIT.getValue());
+      assertEquals(result.getApplyPageList().get(0).getArticleTitle(), article.getTitle());
+      assertEquals(result.getApplyPageList().get(0).getArticleId(), article.getId());
+      assertEquals(result.getApplyPageList().get(0).getOtherUserName(), appliedUser.getNickname());
+      assertEquals(result.getApplyPageList().get(0).getOtherUserId(), appliedUser.getId());
     }
   }
 

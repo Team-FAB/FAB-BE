@@ -57,11 +57,13 @@ public enum ErrorCode implements Code {
    * Apply 에러코드
    */
   ALREADY_END_RECRUITING(HttpStatus.BAD_REQUEST, "이미 모집이 완료된 글입니다."),
-  NOT_FOUND_APPLIED(HttpStatus.BAD_REQUEST, "매칭된 유저를 찾을수 없습니다"),
+  NOT_FOUND_APPLY_ID(HttpStatus.BAD_REQUEST, "요청 목록을 찾을수 없습니다."),
   ALREADY_REFUSE(HttpStatus.BAD_REQUEST, "이미 거절된 상태입니다."),
   ALREADY_APPROVE(HttpStatus.BAD_REQUEST, "승인된 상대를 거절할수 없습니다."),
   ALREADY_APPLY(HttpStatus.BAD_REQUEST, "이미 요청하였습니다."),
-  NOT_YOUR_ARTICLE(HttpStatus.BAD_REQUEST, "게시글의 작성자가 아닙니다.");
+  INVALID_APPLY_USER_ID(HttpStatus.BAD_REQUEST, "신청자의 id가 존재하지않습니다."),
+  INVALID_APPLY_ID(HttpStatus.BAD_REQUEST, "신청 목록이 올바르지않습니다."),
+  ALREADY_DONE_APPLY(HttpStatus.BAD_REQUEST, "성공 혹은 실패가 된 신청은 다시 신청하실수 없습니다.");
 
   private final HttpStatus status;
   private final String msg;

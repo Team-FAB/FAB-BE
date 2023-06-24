@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExceptionController {
 
   @GetMapping
-  public ResponseEntity<?> getException() {
+  public ResponseEntity<ApiResponse<Object>> getException() {
     throw new CustomException(ErrorCode.USER_IS_NULL);
   }
 }

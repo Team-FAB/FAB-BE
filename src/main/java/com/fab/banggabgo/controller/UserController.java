@@ -2,6 +2,8 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
+import com.fab.banggabgo.dto.user.ProfileDto;
+import com.fab.banggabgo.dto.user.RecommendResponseDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("/recommendation")
-  public ResponseEntity<?> getRecommendUsers(
+  public ResponseEntity<ApiResponse<RecommendResponseDto>> getRecommendUsers(
       @AuthenticationPrincipal User user,
       @RequestParam(defaultValue = "9") Integer size
   ) {
@@ -30,7 +32,7 @@ public class UserController {
   }
 
   @GetMapping("/profile/{id}")
-  public ResponseEntity<?> getUserProfile(
+  public ResponseEntity<ApiResponse<ProfileDto>> getUserProfile(
       @PathVariable int id
   ) {
     var result = userService.getUserProfile(id);

@@ -2,10 +2,15 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
+import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditForm;
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
+import com.fab.banggabgo.dto.article.ArticlePageDto;
+import com.fab.banggabgo.dto.article.ArticlePageResultDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterForm;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.service.ArticleService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +32,7 @@ public class ArticleController {
   private final ArticleService articleService;
 
   @PostMapping
-  public ResponseEntity<?> postArticle(
+  public ResponseEntity<ApiResponse<Object>> postArticle(
       @AuthenticationPrincipal User user,
       @RequestBody ArticleRegisterForm form
   ) {
@@ -36,7 +41,7 @@ public class ArticleController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<?> getArticle(
+  public ResponseEntity<ApiResponse<ArticlePageDto>> getArticle(
       @PathVariable int id
   ) {
     var result = articleService.getArticle(id);
@@ -44,7 +49,7 @@ public class ArticleController {
   }
 
   @GetMapping("/users/{userId}")
-  public ResponseEntity<?> getUserArticles(
+  public ResponseEntity<ApiResponse<List<ArticleInfoDto>>> getUserArticles(
       @PathVariable int userId
   ) {
     var result = articleService.getUserArticles(userId);
@@ -52,7 +57,7 @@ public class ArticleController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> putArticle(
+  public ResponseEntity<ApiResponse<Object>> putArticle(
       @AuthenticationPrincipal User user,
       @PathVariable int id,
       @RequestBody ArticleEditForm form
@@ -62,7 +67,7 @@ public class ArticleController {
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteArticle(
+  public ResponseEntity<ApiResponse<Object>> deleteArticle(
       @AuthenticationPrincipal User user,
       @PathVariable int id
   ) {
@@ -71,7 +76,7 @@ public class ArticleController {
   }
 
   @GetMapping
-  public ResponseEntity<?> getArticleByPageable(
+  public ResponseEntity<ApiResponse<ArticlePageResultDto>> getArticleByPageable(
       @RequestParam("page") Integer page,
       @RequestParam("size") Integer size,
       @RequestParam(value = "isRecruiting", defaultValue = "true") boolean isRecruiting
@@ -81,7 +86,7 @@ public class ArticleController {
   }
 
   @GetMapping("/filter")
-  public ResponseEntity<?> getArticleByFilter(
+  public ResponseEntity<ApiResponse<ArticlePageResultDto>> getArticleByFilter(
       @RequestParam("page") Integer page,
       @RequestParam("size") Integer size,
       @RequestParam(value = "isRecruiting", defaultValue = "true") boolean isRecruiting,
@@ -96,7 +101,7 @@ public class ArticleController {
   }
 
   @PostMapping("/favorites/{id}")
-  public ResponseEntity<?> postArticleFavorite(
+  public ResponseEntity<ApiResponse<String>> postArticleFavorite(
       @AuthenticationPrincipal User user,
       @PathVariable int id
   ) {
@@ -105,7 +110,7 @@ public class ArticleController {
   }
 
   @GetMapping("/favorites/{id}")
-  public ResponseEntity<?> getArticleFavorite(
+  public ResponseEntity<ApiResponse<Boolean>> getArticleFavorite(
       @AuthenticationPrincipal User user,
       @PathVariable int id
   ) {
@@ -114,7 +119,7 @@ public class ArticleController {
   }
 
   @PostMapping("/apply")
-  public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
+  public ResponseEntity<ApiResponse<ApplyUserResultDto>> getApply(@AuthenticationPrincipal User user,
       @RequestParam Integer articleId) {
     var result = articleService.applyUser(user, articleId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();

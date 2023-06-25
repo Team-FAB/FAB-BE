@@ -13,18 +13,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class CustomExceptionHandler {
 
   @ExceptionHandler(CustomException.class)
-  public ResponseEntity<?> customExceptionResponseEntity(CustomException e) {
+  public ResponseEntity<ApiResponse<Object>> customExceptionResponseEntity(CustomException e) {
     return ApiResponse.builder().code(e.getErrorCode()).toEntity();
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
-  public ResponseEntity<?> missingServletRequestParameterException(
+  public ResponseEntity<ApiResponse<Object>> missingServletRequestParameterException(
       MissingServletRequestParameterException e) {
     return ApiResponse.builder().code(ErrorCode.INVALID_ARTICLE).toEntity();
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-  public ResponseEntity<?> methodArgumentTypeMismatchException(
+  public ResponseEntity<ApiResponse<Object>> methodArgumentTypeMismatchException(
       MethodArgumentTypeMismatchException e) {
     return ApiResponse.builder().code(ErrorCode.INVALID_ARTICLE).toEntity();
   }

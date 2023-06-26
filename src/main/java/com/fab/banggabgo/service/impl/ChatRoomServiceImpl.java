@@ -9,6 +9,7 @@ import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.MateRepository;
 import com.fab.banggabgo.type.ApproveStatus;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,12 @@ public class ChatRoomServiceImpl {
             .build()));
 
     return MateDto.toDto(mate);
+  }
+
+  public List<MateDto> getChatList(User user) {
+    List<Mate> mates = mateRepository.getChatList(user.getId());
+
+    return MateDto.toDtoList(mates);
   }
 
   private void validExistsChatRoom(User user, Apply apply) {

@@ -2,6 +2,8 @@ package com.fab.banggabgo.dto.chatRoom;
 
 import com.fab.banggabgo.dto.user.UserDto;
 import com.fab.banggabgo.entity.Mate;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,5 +27,9 @@ public class MateDto {
         .user1(UserDto.toDto(mate.getUser1()))
         .user2(UserDto.toDto(mate.getUser2()))
         .build();
+  }
+
+  public static List<MateDto> toDtoList(List<Mate> mates){
+    return mates.stream().map(MateDto::toDto).collect(Collectors.toList());
   }
 }

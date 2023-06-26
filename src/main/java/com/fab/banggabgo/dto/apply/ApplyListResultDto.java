@@ -32,6 +32,7 @@ public class ApplyListResultDto {
   public static ApplyPageDto toFromApplicantDto(Apply apply) {
     return ApplyPageDto.builder()
         .applyId(apply.getId())
+        .isToMe(false)
         .articleId(apply.getArticle().getId())
         .articleTitle(apply.getArticle().getTitle())
         .otherUserId(apply.getApplicantUser().getId())
@@ -51,6 +52,7 @@ public class ApplyListResultDto {
   public static ApplyPageDto toToApplicantDto(Apply apply) {
     return ApplyPageDto.builder()
         .applyId(apply.getId())
+        .isToMe(true)
         .articleId(apply.getArticle().getId())
         .articleTitle(apply.getArticle().getTitle())
         .otherUserId(apply.getArticle().getUser().getId())
@@ -59,4 +61,19 @@ public class ApplyListResultDto {
         .build();
   }
 
+  public static ApplyListResultDto toMixApplicantDtoList(Page<Apply> applyPage, Integer userId) {
+    return ApplyListResultDto.builder()
+        .totalCount(applyPage.getTotalElements())
+        .applyPageList(applyPage.stream().map((apply -> toMixApplicantDto(apply, userId)))
+            .collect(Collectors.toList()))
+        .build();
+  }
+
+  public static ApplyPageDto toMixApplicantDto(Apply apply, Integer userId) {
+    if (apply.getApplicantUser().getId().equals(userId)) {
+      return toToApplicantDto(apply);
+    } else {
+      return toFromApplicantDto(apply);
+    }
+  }
 }

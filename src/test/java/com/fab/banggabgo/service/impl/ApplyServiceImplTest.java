@@ -351,4 +351,46 @@ class ApplyServiceImplTest {
     }
   }
 
+  @Nested
+  @DisplayName("알림 제거")
+  class DeleteNotice {
+
+    Apply apply = Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .article(article)
+            .applicantUser(appliedUser)
+            .build();
+    @Test
+    @DisplayName("알림 제거 - 성공")
+    void deleteNoticeSuccess() {
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      given(applyRepository.setRead(anyInt(), anyBoolean())).willReturn(1L);
+      var result = applyService.deleteNotice(loginUser, 1);
+
+      assertEquals(result.getApplyId(), 1);
+    }
+    @Test
+    @DisplayName("알림 제거 - apply가 없는경우")
+    void deleteNoticeFailNonArticles() {
+      given(applyRepository.findById(any())).willReturn(Optional.empty());
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.deleteNotice(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.INVALID_APPLY_ID);
+    }
+
+    @Test
+    @DisplayName("알림 제거 - 본인이 작성한 게시글의 apply가 아닐때")
+    void deleteNoticeFailRecruiting() {
+      article.setUser(appliedUser);
+      apply.setApplicantUser(appliedUser2);
+
+      given(applyRepository.findById(any())).willReturn(Optional.of(apply));
+      CustomException customException = assertThrows(CustomException.class,
+          () -> applyService.deleteNotice(loginUser, 1));
+
+      assertEquals(customException.getErrorCode(), ErrorCode.USER_NOT_MATCHED);
+    }
+  }
+
 }

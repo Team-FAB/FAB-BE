@@ -278,7 +278,7 @@ public class ArticleServiceImpl implements ArticleService {
         .orElseGet(() -> Apply.builder()
             .isApplicantDelete(true)
             .build());
-    return ApplyIsApplyResultDto.toDto(apply.isApplicantDelete());
+    return ApplyIsApplyResultDto.toDto(!apply.isApplicantDelete());
   }
 
   private void validApplyUser(Apply apply) {

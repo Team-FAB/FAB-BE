@@ -37,6 +37,10 @@ public class Apply extends BaseEntity {
 
   private boolean isArticleUserDelete;
 
+  private boolean isApplicantRead;
+
+  private boolean isArticleUserRead;
+
   @ManyToOne
   @JoinColumn(name = "applicant_user_id")
   @ToString.Exclude

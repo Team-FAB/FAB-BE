@@ -46,12 +46,11 @@ public enum ErrorCode implements Code {
   ACCESS_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "만료된 로그인 토큰입니다.( 로그인 만료 )"),
 
   /**
-  * MyContent 에러코드
-  */
+   * MyContent 에러코드
+   */
   PATCH_MY_INFO_CONVERT_FAIL(HttpStatus.BAD_REQUEST, "내정보 데이터 변환오류"),
   FAIL_INFO_LOADING(HttpStatus.BAD_REQUEST, "정보를 불러오지 못했습니다."),
-  AMAZON_S3_UPLOAD_ERROR(HttpStatus.BAD_REQUEST,"S3 이미지 업로드 중 문제가 발생했습니다." ),
-
+  AMAZON_S3_UPLOAD_ERROR(HttpStatus.BAD_REQUEST, "S3 이미지 업로드 중 문제가 발생했습니다."),
 
   /**
    * Apply 에러코드
@@ -63,7 +62,8 @@ public enum ErrorCode implements Code {
   ALREADY_APPLY(HttpStatus.BAD_REQUEST, "이미 요청하였습니다."),
   INVALID_APPLY_USER_ID(HttpStatus.BAD_REQUEST, "신청자의 id가 존재하지않습니다."),
   INVALID_APPLY_ID(HttpStatus.BAD_REQUEST, "신청 목록이 올바르지않습니다."),
-  ALREADY_DONE_APPLY(HttpStatus.BAD_REQUEST, "성공 혹은 실패가 된 신청은 다시 신청하실수 없습니다.");
+  ALREADY_DONE_APPLY(HttpStatus.BAD_REQUEST, "성공 혹은 실패가 된 신청은 다시 신청하실수 없습니다."),
+  NOT_USER_APPLY(HttpStatus.BAD_REQUEST, "당신의 신청목록이 아닙니다.");
 
   private final HttpStatus status;
   private final String msg;

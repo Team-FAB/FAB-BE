@@ -85,4 +85,46 @@ public class ApplyRepositoryImpl implements ApplyRepositoryCustom {
 
     return pageQuery.execute();
   }
+
+  @Override
+  public Page<Apply> getMyNoticeApplicant(Pageable pageable, Integer userId) {
+    var pageQuery = jpaQueryFactory.selectFrom(qApply)
+        .leftJoin(qApply.article)
+        .fetchJoin()
+        .leftJoin(qApply.article.user)
+        .where(qApply.applicantUser.id.eq(userId)
+            .and(qApply.isApplicantDelete.eq(false))
+            .and(qApply.isApplicantRead.eq(false))
+            .or(qApply.article.user.id.eq(userId)
+                .and(qApply.isArticleUserDelete.eq(false))
+                .and(qApply.isArticleUserRead.eq(false))))
+        .orderBy(qApply.lastModifiedDate.desc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize());
+
+    var countQuery = jpaQueryFactory.select(qApply.count())
+        .from(qApply)
+        .where(qApply.applicantUser.id.eq(userId)
+            .and(qApply.isApplicantDelete.eq(false))
+            .and(qApply.isApplicantRead.eq(false))
+            .or(qApply.article.user.id.eq(userId)
+                .and(qApply.isArticleUserDelete.eq(false))
+                .and(qApply.isArticleUserRead.eq(false))));
+
+    return new PageImpl<>(pageQuery.fetch(), pageable, countQuery.fetchOne());
+  }
+
+  @Override
+  @Transactional
+  public Long setRead(Integer applyId, boolean isApplicant){
+    var pageQuery = jpaQueryFactory.update(qApply)
+        .where(qApply.id.eq(applyId));
+    if (isApplicant){
+      pageQuery.set(qApply.isApplicantRead, true);
+    } else {
+      pageQuery.set(qApply.isArticleUserRead, true);
+    }
+
+    return pageQuery.execute();
+  }
 }

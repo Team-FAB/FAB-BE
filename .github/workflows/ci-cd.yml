@@ -47,9 +47,9 @@ jobs:
           API_ENV_NAME: api.env
           MONGO_ENV_NAME: mongo.env
         run: |
-          echo $MYSQL_ENV | base64 --decode > ENV_DIR/MYSQL_ENV_NAME
-          echo $API_ENV | base64 --decode > ENV_DIR/API_ENV_NAME
-          echo $MONGO_ENV | base64 --decode > ENV_DIR/MONGO_ENV_NAME
+          echo $MYSQL_ENV | base64 --decode > $ENV_DIR/$MYSQL_ENV_NAME
+          echo $API_ENV | base64 --decode > $ENV_DIR/$API_ENV_NAME
+          echo $MONGO_ENV | base64 --decode > $ENV_DIR/$MONGO_ENV_NAME
 
       - name: Build Docker img 🐋
         run: |

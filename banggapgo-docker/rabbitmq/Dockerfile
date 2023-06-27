@@ -1,0 +1,1 @@
+FROM pcloud/rabbitmq-stomp

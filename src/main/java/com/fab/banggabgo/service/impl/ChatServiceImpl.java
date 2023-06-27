@@ -27,7 +27,7 @@ public class ChatServiceImpl implements ChatService {
   public Chat saveMsg(String roomId,RequestChatDto dto){
     var chat =Chat.builder()
         .roomId(roomId)
-        .userEmail(dto.getUsername())
+        .userEmail(dto.getUserEmail())
         .msg(dto.getMsg())
         .build();
     return chatRepository.save(chat);

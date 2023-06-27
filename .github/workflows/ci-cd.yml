@@ -2,7 +2,7 @@ name: ci-cd
 on:
   push:
     branches:
-      - main
+      - deploy-cicd
 
 jobs:
   build:
@@ -24,22 +24,68 @@ jobs:
       - name: Grant execute permission for gradlew 🐘
         run: chmod +x gradlew
 
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Build with Gradle 🐘
         run: ./gradlew build
 
+      - name: Add ENV
+        env:
+          MYSQL_ENV: ${{ secrets.MYSQL_ENV }}
+          API_ENV: ${{ secrets.API_ENV }}
+          MONGO_ENV: ${{ secrets.MONGO_ENV }}
+          ENV_DIR: banggapgo-docker/env
+          MYSQL_ENV_NAME: mysql.env
+          API_ENV_NAME: api.env
+          MONGO_ENV_NAME: mongo.env
+        run: |
+          echo $MYSQL_ENV | base64 --decode > ENV_DIR/MYSQL_ENV_NAME
+          echo $API_ENV | base64 --decode > ENV_DIR/API_ENV_NAME
+          echo $MONGO_ENV | base64 --decode > ENV_DIR/MONGO_ENV_NAME
+
       - name: Build Docker img 🐋
         run: |
-          docker build -t wlals4253/banggabgo:${{github.sha}} .
-          docker tag wlals4253/banggabgo:${{github.sha}} wlals4253/banggabgo:latest
+          docker build -t yjjjwww/banggabgo:${{github.sha}} .
+          docker tag yjjjwww/banggabgo:${{github.sha}} yjjjwww/banggabgo:latest
 
       - name: Log in to Docker registry 🐋
         uses: docker/login-action@v1
         with:
           registry: docker.io
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKER_USERNAME_TEST }}
+          password: ${{ secrets.DOCKER_PASSWORD_TEST }}
 
       - name: Push Docker ✔
         run: |
-          docker push wlals4253/banggabgo:${{github.sha}}
-          docker push wlals4253/banggabgo:latest
+          docker push yjjjwww/banggabgo:${{github.sha}}
+          docker push yjjjwww/banggabgo:latest
+
+      - name: copy file via ssh password
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          source: "./banggapgo-docker/docker-compose.yml"
+          target: "/home/ubuntu"
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          key: ${{ secrets.KEY }}
+          script: |
+            sudo chmod 666 /var/run/docker.sock
+            sudo docker rm -f $(docker ps -qa)
+            sudo docker pull ${{ secrets.DOCKER_REPO }}/cicd-web
+            sudo docker compose up -d
+            sudo docker image prune -f

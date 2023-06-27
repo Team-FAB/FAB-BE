@@ -20,7 +20,7 @@ public class Chat {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private String id;
   private String roomId;
-  private String userName;
+  private String userEmail;
   private String msg;
   @Field
   @CreatedDate

@@ -1,6 +1,7 @@
 package com.fab.banggabgo.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,13 +26,16 @@ public class Mate extends BaseEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer id;
 
-  @ManyToOne
+  private String chatRoomId;
+
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user1_id")
   @ToString.Exclude
   private User user1;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user2_id")
   @ToString.Exclude
   private User user2;
+
 }

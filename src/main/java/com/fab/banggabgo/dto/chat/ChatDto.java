@@ -22,7 +22,7 @@ public class ChatDto {
   public static ChatDto toDto(Chat chat){
     return ChatDto.builder()
         .roomId(chat.getRoomId())
-        .userName(chat.getUserName())
+        .userName(chat.getUserEmail())
         .msg(chat.getMsg())
         .createDate(chat.getCreateDate())
         .build();

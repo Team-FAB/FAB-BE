@@ -1,0 +1,4 @@
+spring:
+  OAuth2:
+    client_id: ${OAUTH2_CLIENT_ID}
+    redirect_uri: ${OAUTH2_REDIRECT_URI}

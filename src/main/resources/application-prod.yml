@@ -1,27 +1,29 @@
 spring:
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USER}:${MONGO_PASS}@${MONGO_CONTAINER}:${MONGO_PORT}/${MONGO_DATABASE}?authSource=admin
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   config:
-    import: jwt.yml
+    import: jwt.yml,oauth2-prod.yml, aws-prod.yml,rabbitmq-prod.yml
   datasource:
-    username: root
-    password: root
-    url: ${MYSQL_DATASOURCE_URL}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASS}
+    url: jdbc:mysql://${MYSQL_CONTAINER}:${MYSQL_PORT}/${MYSQL_DATABASE}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: ${API_DDL_OPTION}
     properties:
       hibernate:
         format_sql: true
 
   redis:
     host: ${REDIS_CONTAINER}
-    port: 6379
+    port: ${REDIS_PORT}
     timeout: 3
-
 server:
-  port: 8083
+  port: ${API_PORT}

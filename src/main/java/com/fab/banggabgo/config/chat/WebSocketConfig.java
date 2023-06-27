@@ -31,7 +31,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         .setRelayPort(stomp_port)
         .setVirtualHost("/")
         .setSystemLogin(username)
-        .setSystemPasscode(pass);
+        .setSystemPasscode(pass)
+        .setClientLogin(username)
+        .setClientPasscode(pass)
+    ;
   }
 
   @Override

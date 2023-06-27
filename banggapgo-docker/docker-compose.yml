@@ -1,47 +1,89 @@
-version: '3.2'
+version: "3.2"
 
 services:
-  banggabda-mysql:
-    image: mysql
+  nginx:
+    build:
+      context: nginx
     ports:
-      - "33060:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD : root
-    networks:
-      - bangapgo
-  banggabda-redis:
-    image: redis
+      - "80:80"
+    volumes:
+      - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api1
+      - api2
+  mysql:
+    build:
+      context: mysql
     ports:
-      - "63790:6379"
-    networks:
-      - bangapgo
+      - "3306:3306"
+    env_file:
+      - env/mysql.env
 
-  api:
-    image: wlals4253/banggabgo
+  redis:
+    env_file:
+      - env/redis.env
+    build:
+      context: redis
+    ports:
+      - "6379:6379"
+
+  api1:
+    restart: always
+    build:
+      context: api
+    env_file:
+      - env/api.env
+    environment:
+      - RABBIT_MQ_CONTAINER=rabbitmq
+      - USE_PROFILE=prod
+      - API_PORT=8083
+      - REDIS_CONTAINER=redis
+      - MONGO_CONTAINER=mongo
+      - MYSQL_CONTAINER=mysql
+      - API_DDL_OPTION=update
     ports:
       - "8083:8083"
-    networks:
-      - bangapgo
+    depends_on:
+      - mysql
+      - redis
+      - mongo
+  api2:
+    restart: always
+    build:
+      context: api
+    env_file:
+      - env/api.env
+    environment:
+      - RABBIT_MQ_CONTAINER=rabbitmq
+      - USE_PROFILE=prod
+      - API_PORT=8084
+      - REDIS_CONTAINER=redis
+      - MONGO_CONTAINER=mongo
+      - MYSQL_CONTAINER=mysql
+      - API_DDL_OPTION=update
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mysql
+      - redis
+      - mongo
   rabbitmq:
-    image: pcloud/rabbitmq-stomp
+    build:
+      context: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
       - "61613:61613"
       - "61614:61614"
-  banggabda-mongo:
-    image: mongo
+
+  mongo:
+    env_file:
+      - env/mongo.env
+    build:
+      context: mongo
     restart: always
     ports:
-        - 27017:27017
-    environment:
-        - MONGO_INITDB_ROOT_USERNAME=root
-        - MONGO_INITDB_ROOT_PASSWORD=root
-        - MONGO_INITDB_DATABASE=test
-    volumes:
-      - "C:/Users/wlals/Desktop/backend:/var/l"
-
-
+      - "27017:27017"
 networks:
   bangapgo:
     driver: bridge

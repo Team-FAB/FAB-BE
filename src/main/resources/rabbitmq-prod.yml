@@ -1,0 +1,8 @@
+spring:
+  rabbitmq:
+    host: ${RABBIT_MQ_CONTAINER}
+    username: ${RABBIT_MQ_USER}
+    password: ${RABBIT_MQ_PASS}
+    port:
+      static: ${RABBIT_MQ_PORT_STATIC}
+      stomp: ${RABBIT_MQ_PORT_STOMP}

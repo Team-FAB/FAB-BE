@@ -21,6 +21,7 @@ public class ArticlePageDto {
   private Integer id;
   private String title;
   private String email;
+  private String image;
   private String nickname;
   private String content;
   private String gender;
@@ -36,6 +37,7 @@ public class ArticlePageDto {
             .id(article.getId())
             .title(article.getTitle())
             .email(article.getUser().getEmail())
+            .image(article.getUser().getImage())
             .nickname(article.getUser().getNickname())
             .content(article.getContent())
             .gender(article.getGender().getValue())
@@ -53,6 +55,7 @@ public class ArticlePageDto {
         .id(article.getId())
         .title(article.getTitle())
         .email(article.getUser().getEmail())
+        .image(article.getUser().getImage())
         .nickname(article.getUser().getNickname())
         .content(article.getContent())
         .gender(article.getGender().getValue())

@@ -1,4 +1,4 @@
-package com.fab.banggabgo.dto.recommend;
+package com.fab.banggabgo.dto.user;
 
 import com.fab.banggabgo.entity.User;
 import java.util.List;

@@ -1,0 +1,8 @@
+spring:
+  rabbitmq:
+    host: localhost
+    username: admin
+    password: admin
+    port:
+      static: 15672
+      stomp: 61613

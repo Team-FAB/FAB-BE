@@ -14,14 +14,17 @@ import static org.mockito.Mockito.verify;
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
+import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.Article;
 import com.fab.banggabgo.entity.LikeArticle;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.LikeArticleRepository;
+import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.type.ActivityTime;
 import com.fab.banggabgo.type.ApproveStatus;
 import com.fab.banggabgo.type.Gender;
@@ -56,6 +59,10 @@ class ArticleServiceImplTest {
 
   @Mock
   private ApplyRepository applyRepository;
+
+  @Mock
+  private UserRepository userRepository;
+
   @InjectMocks
   private ArticleServiceImpl articleService;
 
@@ -200,6 +207,46 @@ class ArticleServiceImplTest {
   }
 
   @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 성공")
+  void getUserArticlesSuccess() {
+    //given
+    List<ArticleInfoDto> articleList = new ArrayList<>();
+
+    for (int i = 0; i < 5; i++) {
+      ArticleInfoDto articleInfoDto = ArticleInfoDto.builder()
+          .id(i + 1)
+          .title("글 제목" + i)
+          .build();
+
+      articleList.add(articleInfoDto);
+    }
+
+    given(articleRepository.getUserArticle(any()))
+        .willReturn(articleList);
+
+    given(userRepository.findById(anyInt()))
+        .willReturn(Optional.ofNullable(User.builder().build()));
+
+    //when
+    List<ArticleInfoDto> result = articleService.getUserArticles(1);
+
+    //then
+    assertEquals(5, result.size());
+  }
+
+  @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 실패 : 유저가 존재하지 않음")
+  void getUserArticlesFail_USER_IS_NULL() {
+    //given
+    //when
+    CustomException exception = assertThrows(CustomException.class,
+        () -> articleService.getUserArticles(1));
+
+    //then
+    assertEquals(exception.getMessage(), "유저 정보를 불러오는데 실패했습니다.");
+  }
+
+  @Test
   @DisplayName("글 수정 성공")
   void putArticleSuccess() {
     //given
@@ -220,6 +267,7 @@ class ArticleServiceImplTest {
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user)
             .isDeleted(false)
+            .isRecruiting(true)
             .build()));
 
     //when
@@ -335,6 +383,7 @@ class ArticleServiceImplTest {
         .willReturn(Optional.ofNullable(Article.builder()
             .user(user2)
             .isDeleted(false)
+            .isRecruiting(true)
             .build()));
 
     //when
@@ -461,7 +510,7 @@ class ArticleServiceImplTest {
     var result = articleService.getArticleByPageable(1, 5, true);
 
     //then
-    assertEquals(5, result.size());
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -495,7 +544,7 @@ class ArticleServiceImplTest {
     var result = articleService.getArticleByPageable(1, 5, false);
 
     //then
-    assertEquals(5, result.size());
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -530,7 +579,7 @@ class ArticleServiceImplTest {
     var result = articleService.getArticleByFilter(1, 5, true, "서초구", "1개월 ~ 3개월", "1000000", "남성");
 
     //then
-    assertEquals(5, result.size());
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -566,21 +615,7 @@ class ArticleServiceImplTest {
         "남성");
 
     //then
-    assertEquals(5, result.size());
-  }
-
-  @Test
-  @DisplayName("글 전체 개수 가져오기 성공")
-  void getArticleTotalCntSuccess() {
-    //given
-    given(articleRepository.getArticleTotalCnt())
-        .willReturn(5);
-
-    //when
-    Integer result = articleService.getArticleTotalCnt();
-
-    //then
-    assertEquals(5, result);
+    assertEquals(5, result.getArticleList().size());
   }
 
   @Test
@@ -648,7 +683,7 @@ class ArticleServiceImplTest {
 
   @Nested
   @DisplayName("apply - 유저 매칭")
-  class Apply {
+  class ApplyTest {
 
     private final User loginUser = User.builder()
         .id(1)
@@ -704,62 +739,63 @@ class ArticleServiceImplTest {
         .isRecruiting(true)
         .isDeleted(false)
         .build();
-    private Integer articleId = 1;
+
+    private Apply apply = Apply.builder()
+        .article(article)
+        .applicantUser(loginUser)
+        .approveStatus(ApproveStatus.WAIT)
+        .isApplicantDelete(false)
+        .isArticleUserDelete(false)
+        .build();
 
     @Test
-    @DisplayName("apply - 성공")
+    @DisplayName("apply - 처음 신청 성공")
     void applySuccess() {
+      given(applyRepository.findByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(Optional.empty());
+      given(articleRepository.findById(anyInt())).willReturn(Optional.of(article));
+      given(applyRepository.save(any())).willReturn(apply);
 
-      given(articleRepository.findById(any())).willReturn(Optional.of(article));
-      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
-          anyInt())).willReturn(false);
+      var result = articleService.applyUser(loginUser, article.getId());
 
-      var result = articleService.applyUser(loginUser, articleId);
+      verify(articleRepository, times(1)).findById(article.getId());
+      verify(applyRepository, times(1)).findByApplicantUserIdAndArticleId(
+          loginUser.getId(), article.getId());
 
-      verify(articleRepository, times(1)).findById(articleId);
-      verify(applyRepository, times(1)).existsByApplicantUserIdAndArticleId(
-          loginUser.getId(), articleId);
-
-      assertEquals(result.getArticleId(), articleId);
+      assertEquals(result.getArticleId(), article.getId());
       assertEquals(result.getArticleName(), article.getTitle());
       assertEquals(result.getApproveStatus(), ApproveStatus.WAIT.getValue());
     }
 
     @Test
-    @DisplayName("apply - 이미 신청이 되어있는경우")
+    @DisplayName("apply - 이미 신청이 되어있는경우 성공")
     void applyAlreadyApply() {
 
-      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
-          anyInt())).willReturn(true);
+      given(applyRepository.findByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(Optional.of(apply));
+      given(applyRepository.save(any())).willReturn(apply);
+      var result = articleService.applyUser(loginUser, article.getId());
 
-      CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, articleId));
+      verify(applyRepository, times(1)).findByApplicantUserIdAndArticleId(
+          loginUser.getId(), article.getId());
+      verify(applyRepository, times(1)).save(
+          apply);
 
-      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_APPLY);
+      assertEquals(result.getArticleId(), article.getId());
+      assertEquals(result.getArticleName(), article.getTitle());
+      assertEquals(result.getApproveStatus(), ApproveStatus.WAIT.getValue());
     }
 
     @Test
     @DisplayName("apply - 모집 완료된 글에 신청한 경우")
     void applyIsNotRecruiting() {
-      article = Article.builder()
-          .id(1)
-          .user(appliedUser)
-          .title("테스트 게시글")
-          .content("test test test")
-          .region(Seoul.DOBONG)
-          .period(Period.ONETOTHREE)
-          .price(10000000)
-          .gender(Gender.MALE)
-          .isRecruiting(false)
-          .isDeleted(false)
-          .build();
+      article.setRecruiting(false);
 
-      given(articleRepository.findById(any())).willReturn(Optional.of(article));
-      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
-          anyInt())).willReturn(false);
+      given(applyRepository.findByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(Optional.of(apply));
 
       CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, articleId));
+          () -> articleService.applyUser(loginUser, article.getId()));
 
       assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
     }
@@ -767,27 +803,15 @@ class ArticleServiceImplTest {
     @Test
     @DisplayName("apply - 삭제된 글에 신청한 경우")
     void applyIsDeleted() {
-      article = Article.builder()
-          .id(1)
-          .user(appliedUser)
-          .title("테스트 게시글")
-          .content("test test test")
-          .region(Seoul.DOBONG)
-          .period(Period.ONETOTHREE)
-          .price(10000000)
-          .gender(Gender.MALE)
-          .isRecruiting(false)
-          .isDeleted(true)
-          .build();
+      article.setDeleted(true);
 
-      given(articleRepository.findById(any())).willReturn(Optional.of(article));
-      given(applyRepository.existsByApplicantUserIdAndArticleId(anyInt(),
-          anyInt())).willReturn(false);
+      given(applyRepository.findByApplicantUserIdAndArticleId(anyInt(),
+          anyInt())).willReturn(Optional.of(apply));
 
       CustomException customException = assertThrows(CustomException.class,
-          () -> articleService.applyUser(loginUser, articleId));
+          () -> articleService.applyUser(loginUser, article.getId()));
 
-      assertEquals(customException.getErrorCode(), ErrorCode.ALREADY_END_RECRUITING);
+      assertEquals(customException.getErrorCode(), ErrorCode.ARTICLE_DELETED);
     }
   }
 }

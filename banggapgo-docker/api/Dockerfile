@@ -1,0 +1,1 @@
+FROM wlals4253/banggabgo-deploy

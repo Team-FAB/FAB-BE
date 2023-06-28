@@ -33,6 +33,14 @@ public class Apply extends BaseEntity {
   @Enumerated(value = EnumType.STRING)
   private ApproveStatus approveStatus;
 
+  private boolean isApplicantDelete;
+
+  private boolean isArticleUserDelete;
+
+  private boolean isApplicantRead;
+
+  private boolean isArticleUserRead;
+
   @ManyToOne
   @JoinColumn(name = "applicant_user_id")
   @ToString.Exclude
@@ -42,4 +50,5 @@ public class Apply extends BaseEntity {
   @JoinColumn(name = "article_id")
   @ToString.Exclude
   private Article article;
+
 }

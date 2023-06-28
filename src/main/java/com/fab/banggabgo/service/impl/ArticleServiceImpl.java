@@ -2,9 +2,12 @@ package com.fab.banggabgo.service.impl;
 
 import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.common.exception.ErrorCode;
+import com.fab.banggabgo.dto.apply.ApplyIsApplyResultDto;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditDto;
+import com.fab.banggabgo.dto.article.ArticleInfoDto;
 import com.fab.banggabgo.dto.article.ArticlePageDto;
+import com.fab.banggabgo.dto.article.ArticlePageResultDto;
 import com.fab.banggabgo.dto.article.ArticleRegisterDto;
 import com.fab.banggabgo.entity.Apply;
 import com.fab.banggabgo.entity.Article;
@@ -13,6 +16,7 @@ import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.ApplyRepository;
 import com.fab.banggabgo.repository.ArticleRepository;
 import com.fab.banggabgo.repository.LikeArticleRepository;
+import com.fab.banggabgo.repository.UserRepository;
 import com.fab.banggabgo.service.ArticleService;
 import com.fab.banggabgo.type.ApproveStatus;
 import com.fab.banggabgo.type.Gender;
@@ -35,6 +39,7 @@ public class ArticleServiceImpl implements ArticleService {
   private final ArticleRepository articleRepository;
   private final LikeArticleRepository likeArticleRepository;
   private final ApplyRepository applyRepository;
+  private final UserRepository userRepository;
 
   private static final String ADD_LIKE_ARTICLE_SUCCESS = "찜 등록 완료";
   private static final String DELETE_LIKE_ARTICLE_SUCCESS = "찜 삭제 완료";
@@ -99,6 +104,14 @@ public class ArticleServiceImpl implements ArticleService {
   }
 
   @Override
+  public List<ArticleInfoDto> getUserArticles(Integer userId) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new CustomException(ErrorCode.USER_IS_NULL));
+
+    return articleRepository.getUserArticle(user);
+  }
+
+  @Override
   public void putArticle(User user, Integer id, ArticleEditDto dto) {
 
     if (!StringUtils.hasText(dto.getContent()) || !StringUtils.hasText(dto.getTitle())
@@ -135,6 +148,10 @@ public class ArticleServiceImpl implements ArticleService {
       throw new CustomException(ErrorCode.ARTICLE_DELETED);
     }
 
+    if (!article.isRecruiting()) {
+      throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
+    }
+
     if (!Objects.equals(article.getUser().getId(), user.getId())) {
       throw new CustomException(ErrorCode.USER_NOT_MATCHED);
     }
@@ -165,11 +182,19 @@ public class ArticleServiceImpl implements ArticleService {
 
     article.setDeleted(true);
 
+    List<Apply> applyList = applyRepository.findByArticleIdAndApproveStatus(id, ApproveStatus.WAIT);
+
+    for (Apply apply : applyList) {
+      apply.setApproveStatus(ApproveStatus.REFUSE);
+    }
+
+    applyRepository.saveAll(applyList);
+
     articleRepository.save(article);
   }
 
   @Override
-  public List<ArticlePageDto> getArticleByPageable(Integer page, Integer size,
+  public ArticlePageResultDto getArticleByPageable(Integer page, Integer size,
       boolean isRecruiting) {
 
     page = page < 1 ? 1 : page;
@@ -178,11 +203,11 @@ public class ArticleServiceImpl implements ArticleService {
 
     Page<Article> articleList = articleRepository.getArticle(pageable, isRecruiting);
 
-    return ArticlePageDto.toDtoList(articleList);
+    return ArticlePageResultDto.toDto(articleList);
   }
 
   @Override
-  public List<ArticlePageDto> getArticleByFilter(Integer page, Integer size, boolean isRecruiting,
+  public ArticlePageResultDto getArticleByFilter(Integer page, Integer size, boolean isRecruiting,
       String region, String period, String price, String gender) {
 
     page = page < 1 ? 1 : page;
@@ -192,13 +217,7 @@ public class ArticleServiceImpl implements ArticleService {
     Page<Article> articleList = articleRepository.getArticleByFilter(pageable, isRecruiting, region,
         period, price, gender);
 
-    return ArticlePageDto.toDtoList(articleList);
-  }
-
-  @Override
-  public Integer getArticleTotalCnt() {
-
-    return articleRepository.getArticleTotalCnt();
+    return ArticlePageResultDto.toDto(articleList);
   }
 
   @Override
@@ -231,36 +250,49 @@ public class ArticleServiceImpl implements ArticleService {
     return likeArticleRepository.existsByUserIdAndArticleId(user.getId(), id);
   }
 
+  @Override
   public ApplyUserResultDto applyUser(User user, Integer articleId) {
+    Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(),
+        articleId).orElseGet(() ->
+        Apply.builder()
+            .approveStatus(ApproveStatus.WAIT)
+            .applicantUser(user)
+            .article(articleRepository.findById(articleId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS)))
+            .isApplicantDelete(true)
+            .build());
 
-    if (applyRepository.existsByApplicantUserIdAndArticleId(user.getId(),
-        articleId)) {
-      throw new CustomException(ErrorCode.ALREADY_APPLY);
-    }
+    validApplyUser(apply);
 
-    Article article = articleRepository.findById(articleId)
-        .orElseThrow(() -> new CustomException(ErrorCode.ARTICLE_NOT_EXISTS));
+    apply.setArticleUserDelete(!apply.isApplicantDelete());
+    apply.setApplicantDelete(!apply.isApplicantDelete());
 
-    validApplyUser(article);
-
-    Apply apply = Apply.builder()
-        .approveStatus(ApproveStatus.WAIT)
-        .applicantUser(user)
-        .article(article)
-        .build();
-
-    applyRepository.save(apply);
+    apply = applyRepository.save(apply);
 
     return ApplyUserResultDto.toDto(apply);
   }
 
-  private void validApplyUser(Article article) {
+  @Override
+  public ApplyIsApplyResultDto isApply(User user, Integer articleId) {
+    Apply apply = applyRepository.findByApplicantUserIdAndArticleId(user.getId(), articleId)
+        .orElseGet(() -> Apply.builder()
+            .isApplicantDelete(true)
+            .build());
+    return ApplyIsApplyResultDto.toDto(!apply.isApplicantDelete());
+  }
+
+  private void validApplyUser(Apply apply) {
+    Article article = apply.getArticle();
     if (!article.isRecruiting()) {
       throw new CustomException(ErrorCode.ALREADY_END_RECRUITING);
     }
 
     if (article.isDeleted()) {
       throw new CustomException(ErrorCode.ARTICLE_DELETED);
+    }
+
+    if (!apply.getApproveStatus().equals(ApproveStatus.WAIT)) {
+      throw new CustomException(ErrorCode.ALREADY_DONE_APPLY);
     }
   }
 }

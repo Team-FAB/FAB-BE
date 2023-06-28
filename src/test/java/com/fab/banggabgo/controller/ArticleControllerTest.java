@@ -226,6 +226,41 @@ class ArticleControllerTest {
   }
 
   @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 성공")
+  @WithMockUser
+  void getUserArticlesSuccess() throws Exception {
+    //given
+    //when
+    //then
+    mockMvc.perform(get("/api/articles/users/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("유저가 작성한 글 목록 가져오기 실패 : 유저가 존재하지 않음")
+  @WithMockUser
+  void getUserArticlesFail_USER_IS_NULL() throws Exception {
+    //given
+    doThrow(new CustomException(ErrorCode.USER_IS_NULL))
+        .when(articleService)
+        .getUserArticles(anyInt());
+
+    //when
+    MvcResult result = mockMvc.perform(get("/api/articles/users/1")
+            .with(SecurityMockMvcRequestPostProcessors.csrf()))
+        .andExpect(status().isBadRequest())
+        .andReturn();
+
+    //then
+    String responseBody = result.getResponse().getContentAsString();
+    JsonNode responseJson = objectMapper.readTree(responseBody);
+    String errorCode = responseJson.get("code").asText();
+    assertThat(errorCode).isEqualTo("USER_IS_NULL");
+  }
+
+  @Test
   @DisplayName("글 수정 성공")
   @WithMockUser
   void putArticleSuccess() throws Exception {
@@ -524,19 +559,6 @@ class ArticleControllerTest {
   }
 
   @Test
-  @DisplayName("게시글 총 개수 가져오기")
-  @WithMockUser
-  void getArticleTotalCntSuccess() throws Exception {
-    //given
-    //when
-    //then
-    mockMvc.perform(get("/api/articles/total")
-            .with(SecurityMockMvcRequestPostProcessors.csrf()))
-        .andExpect(status().isOk())
-        .andDo(print());
-  }
-
-  @Test
   @DisplayName("글 찜 등록 및 삭제 성공")
   @WithMockUser
   void postArticleFavoriteSuccess() throws Exception {
@@ -616,7 +638,7 @@ class ArticleControllerTest {
     @WithMockUser
     void getSuccessApply() throws Exception {
 
-      mockMvc.perform(post("/api/articles/apply?articleId=1")
+      mockMvc.perform(post("/api/articles/apply/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isCreated())
           .andDo(print());
@@ -625,9 +647,54 @@ class ArticleControllerTest {
     @Test
     @DisplayName("apply - 로그인 정보가 없을때")
     void getFailAuthApply() throws Exception {
-      mockMvc.perform(post("/api/articles/apply")
+      mockMvc.perform(post("/api/articles/apply/1")
               .with(SecurityMockMvcRequestPostProcessors.csrf()))
           .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 입력 정보가 없을때")
+    @WithMockUser
+    void getFailBadRequestApply() throws Exception {
+      mockMvc.perform(post("/api/articles/apply/")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isMethodNotAllowed())
+          .andDo(print());
+    }
+  }
+
+  @Nested
+  @DisplayName("apply - 룸메이트 신청 확인")
+  class GetApply {
+
+    @Test
+    @DisplayName("apply - 성공")
+    @WithMockUser
+    void getSuccessApply() throws Exception {
+
+      mockMvc.perform(get("/api/articles/apply/1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isCreated())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 로그인 정보가 없을때")
+    void getFailAuthApply() throws Exception {
+      mockMvc.perform(get("/api/articles/apply/1")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isUnauthorized())
+          .andDo(print());
+    }
+
+    @Test
+    @DisplayName("apply - 입력 정보가 없을때")
+    @WithMockUser
+    void getFailBadRequestApply() throws Exception {
+      mockMvc.perform(get("/api/articles/apply/")
+              .with(SecurityMockMvcRequestPostProcessors.csrf()))
+          .andExpect(status().isBadRequest())
           .andDo(print());
     }
   }

@@ -20,8 +20,6 @@ services:
       - env/mysql.env
 
   redis:
-    env_file:
-      - env/redis.env
     build:
       context: redis
     ports:

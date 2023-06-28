@@ -39,10 +39,6 @@ jobs:
 
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
-        env:
-          MYSQL_ENV: ${{ secrets.MYSQL_ENV }}
-          API_ENV: ${{ secrets.API_ENV }}
-          MONGO_ENV: ${{ secrets.MONGO_ENV }}
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
@@ -54,9 +50,9 @@ jobs:
             git clone -b deploy-cicd https://github.com/Team-FAB/FAB-BE.git
             ls -al
             cd FAB-BE/banggapgo-docker/env/
-            echo "$MYSQL_ENV" | base64 --decode > mysql.env
-            echo "$API_ENV" | base64 --decode > api.env
-            echo "$MONGO_ENV" | base64 --decode > mongo.env
+            echo "${{ secrets.MYSQL_ENV }}" | base64 --decode > mysql.env
+            echo "${{ secrets.API_ENV }}" | base64 --decode > api.env
+            echo "${{ secrets.MONGO_ENV }}" | base64 --decode > mongo.env
             sudo chmod 666 /var/run/docker.sock
             sudo docker rm -f $(docker ps -qa)
             sudo docker compose up -d

@@ -55,9 +55,12 @@ jobs:
               rm -rf FAB-BE
             fi
             git clone -b deploy-cicd https://github.com/Team-FAB/FAB-BE.git
+            ls -al
             cd ./FAB-BE/banggapgo-docker/env/
             echo "$MYSQL_ENV" | base64 --decode > "$MYSQL_ENV_NAME"
             echo "$API_ENV" | base64 --decode > "$API_ENV_NAME"
             echo "$MONGO_ENV" | base64 --decode > "$MONGO_ENV_NAME"
+            sudo chmod 666 /var/run/docker.sock
+            sudo docker rm -f $(docker ps -qa)
             sudo docker compose up -d
             sudo docker image prune -f

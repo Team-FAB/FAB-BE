@@ -43,9 +43,6 @@ jobs:
           MYSQL_ENV: ${{ secrets.MYSQL_ENV }}
           API_ENV: ${{ secrets.API_ENV }}
           MONGO_ENV: ${{ secrets.MONGO_ENV }}
-          MYSQL_ENV_NAME: mysql.env
-          API_ENV_NAME: api.env
-          MONGO_ENV_NAME: mongo.env
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
@@ -57,9 +54,9 @@ jobs:
             git clone -b deploy-cicd https://github.com/Team-FAB/FAB-BE.git
             ls -al
             cd ./FAB-BE/banggapgo-docker/env/
-            echo "$MYSQL_ENV" | base64 --decode > "$MYSQL_ENV_NAME"
-            echo "$API_ENV" | base64 --decode > "$API_ENV_NAME"
-            echo "$MONGO_ENV" | base64 --decode > "$MONGO_ENV_NAME"
+            echo "$MYSQL_ENV" | base64 --decode > mysql.env
+            echo "$API_ENV" | base64 --decode > api.env
+            echo "$MONGO_ENV" | base64 --decode > mongo.env
             sudo chmod 666 /var/run/docker.sock
             sudo docker rm -f $(docker ps -qa)
             sudo docker compose up -d

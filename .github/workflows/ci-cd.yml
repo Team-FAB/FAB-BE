@@ -53,7 +53,7 @@ jobs:
             fi
             git clone -b deploy-cicd https://github.com/Team-FAB/FAB-BE.git
             ls -al
-            cd ./FAB-BE/banggapgo-docker/env/
+            cd FAB-BE/banggapgo-docker/env/
             echo "$MYSQL_ENV" | base64 --decode > mysql.env
             echo "$API_ENV" | base64 --decode > api.env
             echo "$MONGO_ENV" | base64 --decode > mongo.env

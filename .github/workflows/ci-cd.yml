@@ -54,6 +54,5 @@ jobs:
             echo "${{ secrets.API_ENV }}" | base64 --decode > api.env
             echo "${{ secrets.MONGO_ENV }}" | base64 --decode > mongo.env
             sudo chmod 666 /var/run/docker.sock
-            sudo docker rm -f $(docker ps -qa)
-            sudo docker compose up -d
+            sudo docker compose up -d --force-recreate
             sudo docker image prune -f

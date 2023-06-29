@@ -21,8 +21,6 @@ public class ArticleRegisterForm {
   private String period;
   @ApiModelProperty(value = "보증금", example = "10000000")
   private Integer price;
-  @ApiModelProperty(value = "구하는 룸메이트 성별", example = "MALE")
-  private String gender;
   @ApiModelProperty(value = "내용", example = "룸메이트 구해요 :)")
   private String content;
 
@@ -32,7 +30,6 @@ public class ArticleRegisterForm {
         .region(form.getRegion())
         .period(form.getPeriod())
         .price(form.getPrice())
-        .gender(form.getGender())
         .content(form.getContent())
         .build();
   }

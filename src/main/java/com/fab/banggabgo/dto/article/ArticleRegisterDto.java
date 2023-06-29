@@ -17,6 +17,5 @@ public class ArticleRegisterDto {
   private String region;
   private String period;
   private Integer price;
-  private String gender;
   private String content;
 }

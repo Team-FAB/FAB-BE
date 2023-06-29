@@ -17,8 +17,8 @@ public class MyArticleDto {
 
   private Integer id;
   private String title;
-
   private String email;
+  private String image;
   private String nickname;
   private String content;
   private String gender;
@@ -36,6 +36,7 @@ public class MyArticleDto {
         .id(article.getId())
         .title(article.getTitle())
         .email(article.getUser().getEmail())
+        .image(article.getUser().getImage())
         .nickname(article.getUser().getNickname())
         .gender(article.getGender().getValue())
         .content(article.getContent())

@@ -71,10 +71,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .fetchJoin()
         .orderBy(qArticle.createDate.desc())
         .where(eqDelete(false)
-            ,eqGender(gender)
             ,eqPeriod(period)
             ,eqRegion(region)
-          ,loePrice(price))
+            ,loePrice(price)
+            ,eqGender(gender))
         .offset(pageable.getOffset())
         .limit(pageable.getPageSize())
         .distinct();
@@ -84,10 +84,10 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
         .from(qArticle)
         .join(qArticle.user, qUser)
         .where(eqDelete(false)
-            ,eqGender(gender)
             ,eqPeriod(period)
             ,eqRegion(region)
-            ,loePrice(price))
+            ,loePrice(price)
+            ,eqGender(gender))
         .distinct();
 
     if (isRecruiting) {
@@ -160,7 +160,7 @@ public class ArticleRepositoryImpl implements ArticleRepositoryCustom {
     return StringUtils.hasText(period)&&!period.equals(default_option)? qArticle.period.eq(Period.fromValue(period)):null;
   }
   private BooleanExpression eqGender(String gender){
-    return StringUtils.hasText(gender)&&!gender.equals(default_option)? qArticle.gender.eq(Gender.fromValue(gender)):null;
+    return StringUtils.hasText(gender)&&!gender.equals(default_option)? qArticle.user.gender.eq(Gender.fromValue(gender)):null;
   }
   private BooleanExpression eqRegion(String region){
     return StringUtils.hasText(region)&&!region.equals(default_option)? qArticle.region.eq(Seoul.fromValue(region)):null;

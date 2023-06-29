@@ -60,13 +60,6 @@ public class ArticleServiceImpl implements ArticleService {
       throw new CustomException(ErrorCode.REGION_NOT_EXISTS);
     }
 
-    Gender gender = null;
-    try {
-      gender = Gender.fromValue(dto.getGender());
-    } catch (IllegalArgumentException e) {
-      throw new CustomException(ErrorCode.GENDER_NOT_EXISTS);
-    }
-
     Period period = null;
     try {
       period = Period.fromValue(dto.getPeriod());
@@ -87,7 +80,6 @@ public class ArticleServiceImpl implements ArticleService {
         .region(region)
         .period(period)
         .price(dto.getPrice())
-        .gender(gender)
         .isRecruiting(true)
         .isDeleted(false)
         .build();
@@ -127,13 +119,6 @@ public class ArticleServiceImpl implements ArticleService {
       throw new CustomException(ErrorCode.REGION_NOT_EXISTS);
     }
 
-    Gender gender = null;
-    try {
-      gender = Gender.fromValue(dto.getGender());
-    } catch (IllegalArgumentException e) {
-      throw new CustomException(ErrorCode.GENDER_NOT_EXISTS);
-    }
-
     Period period = null;
     try {
       period = Period.fromValue(dto.getPeriod());
@@ -161,7 +146,6 @@ public class ArticleServiceImpl implements ArticleService {
     article.setRegion(region);
     article.setPeriod(period);
     article.setPrice(dto.getPrice());
-    article.setGender(gender);
 
     articleRepository.save(article);
   }

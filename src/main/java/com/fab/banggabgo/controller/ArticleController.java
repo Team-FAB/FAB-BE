@@ -92,8 +92,8 @@ public class ArticleController {
     return ApiResponse.builder().code(ResponseCode.RESPONSE_SUCCESS).toEntity();
   }
   @ApiOperation(
-      value = "게시물 삭제",
-      notes = "id 에 해당하는 게시물을 삭제합니다."
+      value = "게시물 조회",
+      notes = "모집 마감 여부 에 해당하는 글들을 최신순으로 반환합니다."
   )
   @GetMapping
   public ResponseEntity<ApiResponse<ArticlePageResultDto>> getArticleByPageable(

@@ -87,7 +87,7 @@ public class MyContentController {
 
   @ApiOperation(
       value = "사용자 정보 변경",
-      notes = "로그인정보(토큰)를 을 통해 내 정보 변경"
+      notes = "로그인정보(토큰)를 을 통해 내 정보 변경 합니다."
   )
   @PatchMapping
   public ResponseEntity<ApiResponse<PatchMyInfoResultDto>> patchMyInfo(@AuthenticationPrincipal User user,

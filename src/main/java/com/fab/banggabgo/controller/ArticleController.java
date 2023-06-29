@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-@Api(tags = {"Article Controller 채팅방 API"})
+@Api(tags = {"Article Controller 게시물 API"})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/articles")
@@ -57,7 +57,7 @@ public class ArticleController {
   }
   @ApiOperation(
       value = "작성자 작성글 보기",
-      notes = "id 에 해당하는 유저의 작성글을 불러옵니다.."
+      notes = "id 에 해당하는 유저의 작성글을 불러옵니다."
   )
   @GetMapping("/users/{userId}")
   public ResponseEntity<ApiResponse<List<ArticleInfoDto>>> getUserArticles(
@@ -68,7 +68,7 @@ public class ArticleController {
   }
   @ApiOperation(
       value = "게시물 수정",
-      notes = "id 에 해당하는 게시물의 내용을 수정합니다.."
+      notes = "id 에 해당하는 게시물의 내용을 수정합니다."
   )
   @PutMapping("/{id}")
   public ResponseEntity<ApiResponse<Object>> putArticle(
@@ -106,7 +106,7 @@ public class ArticleController {
   }
   @ApiOperation(
       value = "게시물 검색(필터)",
-      notes = "검색 조건(파라미터) 에 해당하는 글들을 반환합니다.."
+      notes = "검색 조건(파라미터) 에 해당하는 글들을 반환합니다."
   )
   @GetMapping("/filter")
   public ResponseEntity<ApiResponse<ArticlePageResultDto>> getArticleByFilter(
@@ -149,7 +149,7 @@ public class ArticleController {
 
   @ApiOperation(
       value = "룸메이트 지원하기",
-      notes = "id 에 해당하는 게시물에 룸메이트를 지원합니다.."
+      notes = "id 에 해당하는 게시물에 룸메이트를 지원합니다."
   )
   @PostMapping("/apply/{articleId}")
   public ResponseEntity<ApiResponse<ApplyUserResultDto>> postApply(@AuthenticationPrincipal User user,
@@ -160,7 +160,7 @@ public class ArticleController {
 
   @ApiOperation(
       value = "룸메이트 지원여부 확인",
-      notes = "id 에 해당하는 게시물에 룸메이트를 지원 했는지 확인합니다..."
+      notes = "id 에 해당하는 게시물에 룸메이트를 지원 했는지 확인합니다."
   )
   @GetMapping("/apply/{articleId}")
   public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,

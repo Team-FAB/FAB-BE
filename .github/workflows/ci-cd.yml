@@ -37,6 +37,23 @@ jobs:
       - name: Build with Gradle 🐘
         run: ./gradlew build
 
+      - name: Build Docker img 🐋
+        run: |
+          docker build -t yjjjwww/banggabgo:${{github.sha}} .
+          docker tag yjjjwww/banggabgo:${{github.sha}} yjjjwww/banggabgo:latest
+
+      - name: Log in to Docker registry 🐋
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME_TEST }}
+          password: ${{ secrets.DOCKER_PASSWORD_TEST }}
+
+      - name: Push Docker ✔
+        run: |
+          docker push yjjjwww/banggabgo:${{github.sha}}
+          docker push yjjjwww/banggabgo:latest
+
       - name: executing remote ssh commands using password
         uses: appleboy/ssh-action@master
         with:
@@ -47,7 +64,7 @@ jobs:
             if [ -d "FAB-BE" ]; then
               rm -rf FAB-BE
             fi
-            git clone -b deploy-cicd https://github.com/Team-FAB/FAB-BE.git
+            git clone https://github.com/Team-FAB/FAB-BE.git
             cd FAB-BE/banggapgo-docker/env/
             echo "${{ secrets.MYSQL_ENV }}" | base64 --decode > mysql.env
             echo "${{ secrets.API_ENV }}" | base64 --decode > api.env

@@ -75,7 +75,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -99,7 +98,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(0)
-        .gender("남성")
         .content("")
         .build();
 
@@ -124,7 +122,6 @@ class ArticleServiceImplTest {
         .region("경기")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -141,31 +138,6 @@ class ArticleServiceImplTest {
   }
 
   @Test
-  @DisplayName("글 등록 실패 : 성별 오류")
-  void postArticleFail_INVALID_GENDER() {
-    //given
-    ArticleRegisterDto dto = ArticleRegisterDto.builder()
-        .title("글 제목")
-        .region("강남구")
-        .period("1개월 ~ 3개월")
-        .price(3000000)
-        .gender("외계인")
-        .content("글 내용")
-        .build();
-
-    User user = User.builder()
-        .id(1)
-        .build();
-
-    //when
-    CustomException exception = assertThrows(CustomException.class,
-        () -> articleService.postArticle(user, dto));
-
-    //then
-    assertEquals(exception.getMessage(), "존재하지 않는 성별 입니다.");
-  }
-
-  @Test
   @DisplayName("글 가져오기 성공")
   void getArticleSuccess() {
     //given
@@ -174,6 +146,7 @@ class ArticleServiceImplTest {
     article.setTitle("글" + 1);
     article.setUser(User.builder()
         .nickname("유저" + 1)
+        .gender(Gender.MALE)
         .build());
     article.setContent("글 내용" + 1);
     article.setGender(Gender.MALE);
@@ -255,7 +228,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -286,7 +258,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(0)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -311,7 +282,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -336,7 +306,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -367,7 +336,6 @@ class ArticleServiceImplTest {
         .region("강남구")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -490,9 +458,9 @@ class ArticleServiceImplTest {
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
+          .gender(Gender.MALE)
           .build());
       article.setContent("글 내용" + i);
-      article.setGender(Gender.MALE);
       article.setCreateDate(LocalDateTime.now());
       article.setRegion(Seoul.DONGJAK);
       article.setPeriod(Period.ONETOTHREE);
@@ -524,9 +492,9 @@ class ArticleServiceImplTest {
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
+          .gender(Gender.MALE)
           .build());
       article.setContent("글 내용" + i);
-      article.setGender(Gender.MALE);
       article.setCreateDate(LocalDateTime.now());
       article.setRegion(Seoul.DONGJAK);
       article.setPeriod(Period.ONETOTHREE);
@@ -558,9 +526,9 @@ class ArticleServiceImplTest {
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
+          .gender(Gender.MALE)
           .build());
       article.setContent("글 내용" + i);
-      article.setGender(Gender.MALE);
       article.setCreateDate(LocalDateTime.now());
       article.setRegion(Seoul.DONGJAK);
       article.setPeriod(Period.ONETOTHREE);
@@ -593,9 +561,9 @@ class ArticleServiceImplTest {
       article.setTitle("글" + i);
       article.setUser(User.builder()
           .nickname("유저" + i)
+          .gender(Gender.MALE)
           .build());
       article.setContent("글 내용" + i);
-      article.setGender(Gender.MALE);
       article.setCreateDate(LocalDateTime.now());
       article.setRegion(Seoul.DONGJAK);
       article.setPeriod(Period.ONETOTHREE);

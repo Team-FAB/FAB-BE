@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 
 @Service
 @RequiredArgsConstructor
@@ -126,7 +127,8 @@ public class SignServiceImpl implements SignService {
     //todo 로그인 메서드구현
     try {
       profile = getProfile(dto.getCode(), oAuth2RegistrationId);
-    } catch (ParseException e) {
+    } catch (ParseException | WebClientException e) {
+      log.error(e.toString());
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
     if (profile == null || profile.getEmail() == null) {

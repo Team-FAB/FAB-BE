@@ -129,7 +129,9 @@ public class SignServiceImpl implements SignService {
       profile = getProfile(dto.getCode(), oAuth2RegistrationId);
     } catch (ParseException | WebClientException e) {
       log.error(e.toString());
-      throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
+      return OAuth2SignInResultDto.builder()
+          .nickName(e.toString())
+          .build();
     }
     if (profile == null || profile.getEmail() == null) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);

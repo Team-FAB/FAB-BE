@@ -14,15 +14,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatDto {
+
   private String roomId;
-  private String userName;
+  private String userEmail;
   private String msg;
   private LocalDateTime createDate;
 
-  public static ChatDto toDto(Chat chat){
+  public static ChatDto toDto(Chat chat) {
     return ChatDto.builder()
         .roomId(chat.getRoomId())
-        .userName(chat.getUserEmail())
+        .userEmail(chat.getUserEmail())
         .msg(chat.getMsg())
         .createDate(chat.getCreateDate())
         .build();

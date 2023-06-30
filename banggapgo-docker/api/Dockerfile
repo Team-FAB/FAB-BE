@@ -1,1 +1,1 @@
-FROM wlals4253/banggabgo-deploy
+FROM yjjjwww/banggabgo

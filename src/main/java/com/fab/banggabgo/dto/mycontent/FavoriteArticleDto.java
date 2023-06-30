@@ -36,7 +36,7 @@ public class FavoriteArticleDto {
         .email(article.getUser().getEmail())
         .image(article.getUser().getImage())
         .nickname(article.getUser().getNickname())
-        .gender(article.getGender().getValue())
+        .gender(article.getUser().getGender().getValue())
         .content(article.getContent())
         .createdDate(article.getCreateDate())
         .modifiedDate(article.getLastModifiedDate())

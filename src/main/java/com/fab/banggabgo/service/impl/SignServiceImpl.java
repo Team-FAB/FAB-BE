@@ -28,15 +28,13 @@ import org.apache.tomcat.util.json.JSONParser;
 import org.apache.tomcat.util.json.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
@@ -48,11 +46,25 @@ public class SignServiceImpl implements SignService {
   private final PasswordEncoder passwordEncoder;
   private final RedisTemplate<String, String> redisTemplate;
 
-  private final RestTemplate restTemplate;
-  @Value("${spring.OAuth2.client_id}")
+  private final WebClient webClient;
+
+  @Value("${spring.OAuth2.Kakao.client_id}")
   String clientId;
-  @Value("${spring.OAuth2.redirect_uri}")
+  @Value("${spring.OAuth2.Kakao.redirect_uri}")
   String redirectUri;
+
+  @Value("${spring.OAuth2.Kakao.token_uri}")
+  String kakaoTokenUri;
+
+  @Value("${spring.OAuth2.Kakao.user_info_uri}")
+  String kakaoInfoUri;
+
+  @Value("${spring.OAuth2.Kakao.property_keys}")
+  String kakaoProperty;
+
+  @Value("${spring.OAuth2.Google.user_info_uri}")
+  String googleInfoUri;
+
   @Value("${jwt.rtk-prefix}")
   String REDIS_PREFIX;
 
@@ -114,7 +126,7 @@ public class SignServiceImpl implements SignService {
     //todo 로그인 메서드구현
     try {
       profile = getProfile(dto.getCode(), oAuth2RegistrationId);
-    } catch (ParseException | HttpClientErrorException e) {
+    } catch (ParseException e) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
     if (profile == null || profile.getEmail() == null) {
@@ -134,9 +146,9 @@ public class SignServiceImpl implements SignService {
 
     var result = OAuth2SignInResultDto.builder()
         .token(TokenDto.builder()
-                .atk(atk)
-                .rtk(rtk)
-                .build())
+            .atk(atk)
+            .rtk(rtk)
+            .build())
         .email(user.getEmail())
         .nickName(user.getNickname())
         .build();
@@ -201,40 +213,45 @@ public class SignServiceImpl implements SignService {
   }
 
   private String getGoogleProfile(String accessToken) {
-    return restTemplate.getForObject(
-        "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken, String.class
-    );
+    return webClient.get()
+        .uri(googleInfoUri + "?access_token=" + accessToken)
+        .retrieve()
+        .bodyToMono(String.class)
+        .block();
   }
 
   private String getKakaoProfile(String code) throws ParseException {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
     MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
     map.add("grant_type", "authorization_code");
     map.add("client_id", clientId);
     map.add("redirect_uri", redirectUri);
     map.add("code", code);
 
-    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
+    String response = webClient
+        .post()
+        .uri(kakaoTokenUri)
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+        .bodyValue(map)
+        .retrieve()
+        .bodyToMono(String.class)
+        .block();
 
-    String response = restTemplate.postForObject(
-        "https://kauth.kakao.com/oauth/token",
-        requestEntity, String.class
-    );
     Map<String, Object> m = new JSONParser(response).parseObject();
 
-    headers.setBearerAuth((String) m.get("access_token"));
-
     map = new LinkedMultiValueMap<>();
-    map.add("property_keys", "[\"kakao_account.email\",\"kakao_account.profile\"]");
+    map.add("property_keys", kakaoProperty);
 
-    requestEntity = new HttpEntity<>(map, headers);
-
-    return restTemplate.postForObject(
-        "https://kapi.kakao.com/v2/user/me",
-        requestEntity, String.class
-    );
+    return webClient
+        .post()
+        .uri(kakaoInfoUri)
+        .headers(httpHeaders -> {
+          httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+          httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + m.get("access_token"));
+        })
+        .bodyValue(map)
+        .retrieve()
+        .bodyToMono(String.class)
+        .block();
   }
 
   private String getRefreshToken() {

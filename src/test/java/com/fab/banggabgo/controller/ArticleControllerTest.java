@@ -55,7 +55,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -78,7 +77,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -101,7 +99,6 @@ class ArticleControllerTest {
         .region("경기")
         .period("1개월 ~ 3개월")
         .price(0)
-        .gender("외계인")
         .content("")
         .build();
 
@@ -134,7 +131,6 @@ class ArticleControllerTest {
         .region("경기")
         .period("1개월 ~ 3개월")
         .price(3000)
-        .gender("외계인")
         .content("글 내용")
         .build();
 
@@ -167,7 +163,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000)
-        .gender("외계인")
         .content("글 내용")
         .build();
 
@@ -270,7 +265,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -294,7 +288,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -318,7 +311,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(0)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -351,7 +343,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -384,7 +375,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 
@@ -417,7 +407,6 @@ class ArticleControllerTest {
         .region("강남")
         .period("1개월 ~ 3개월")
         .price(3000000)
-        .gender("남성")
         .content("글 내용")
         .build();
 

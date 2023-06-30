@@ -131,6 +131,11 @@ public class SignServiceImpl implements SignService {
       log.error(e.toString());
       return OAuth2SignInResultDto.builder()
           .nickName(e.toString())
+          .email(e.toString())
+          .token(TokenDto.builder()
+              .atk(e.toString())
+              .rtk(e.toString())
+              .build())
           .build();
     }
     if (profile == null || profile.getEmail() == null) {

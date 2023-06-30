@@ -52,6 +52,8 @@ dependencies {
 	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
     testImplementation 'junit:junit:4.13.1'
 
+	//webclient
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 
     compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

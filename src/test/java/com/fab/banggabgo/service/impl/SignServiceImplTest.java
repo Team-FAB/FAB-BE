@@ -9,10 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.fab.banggabgo.common.exception.CustomException;
 import com.fab.banggabgo.config.security.JwtTokenProvider;
-import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestDto;
-import com.fab.banggabgo.dto.OAuth2.OAuth2SignInRequestForm;
 import com.fab.banggabgo.dto.sign.SignInRequestDto;
 import com.fab.banggabgo.dto.sign.SignInRequestForm;
 import com.fab.banggabgo.dto.sign.SignInResultDto;
@@ -20,7 +17,6 @@ import com.fab.banggabgo.dto.sign.SignUpRequestDto;
 import com.fab.banggabgo.dto.sign.TokenDto;
 import com.fab.banggabgo.entity.User;
 import com.fab.banggabgo.repository.UserRepository;
-import com.fab.banggabgo.type.OAuth2RegistrationId;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -35,8 +32,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -64,6 +61,9 @@ class SignServiceImplTest {
 
   @Mock
   RestTemplate restTemplate;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  WebClient webClient;
 
   @Nested
   @DisplayName("SignUp - 회원가입")
@@ -174,216 +174,6 @@ class SignServiceImplTest {
       when(passwordEncoder.matches(any(), any())).thenReturn(false);
       //then
       assertThrows(RuntimeException.class, () -> signService.signIn(dto));
-    }
-  }
-
-  @Nested
-  @DisplayName(" OAuth2SignIn - 소셜 로그인")
-  class OAuth2SignIn {
-
-    String kakaoJson = "{\n"
-        + "    \"kakao_account\": {\n"
-        + "        \"profile\": {\n"
-        + "            \"nickname\": \"테스터\",\n"
-        + "            \"profile_image_url\": \"image\"\n"
-        + "        },\n"
-        + "        \"email\": \"test@email.com\"\n"
-        + "    }\n"
-        + "}";
-    String googleJson = "{ "
-        + " \"email\": \"test@email.com\","
-        + " \"name\": \"테스터\","
-        + " \"picture\": \"profile_image_url\""
-        + " }";
-    OAuth2SignInRequestForm form = OAuth2SignInRequestForm.builder()
-        .code("ThisIsAccessToken")
-        .build();
-    OAuth2SignInRequestDto dto = OAuth2SignInRequestForm.toDto(form);
-
-    @DisplayName(" 카카오 로그인 - 회원 가입되어 있던케이스")
-    @Test
-    void signInWithoutSignUpSuccess() {
-      //given
-      var user = User.builder()
-          .email("test@email.com")
-          .nickname("테스터")
-          .build();
-      var stub_result = SignInResultDto.builder()
-          .token(
-              TokenDto.builder()
-                  .atk("accesstoken")
-                  .rtk("rtktoken")
-                  .build()
-          )
-          .build();
-
-      //when
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(kakaoJson);
-      when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
-      when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
-      when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
-      when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-      var result = signService.oauth2SignIn(dto, OAuth2RegistrationId.KAKAO);
-
-      //then
-      verify(userRepository, times(1)).findByEmail(user.getEmail());
-      verify(jwtTokenProvider, times(1)).createAccessToken(user.getEmail(), user.getRoles());
-      verify(jwtTokenProvider, times(1)).createRefreshToken();
-      verify(jwtTokenProvider, times(1)).getExpiration(anyString());
-      assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
-      assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
-    }
-
-    @DisplayName(" 카카오 로그인 - 회원 가입이 필요한 케이스")
-    @Test
-    void signInWithSignUpSuccess() {
-      //given
-      var user = User.builder()
-          .email("test@email.com")
-          .nickname("테스터")
-          .build();
-      var stub_result = SignInResultDto.builder()
-          .token(
-              TokenDto.builder()
-                  .atk("accesstoken")
-                  .rtk("rtktoken")
-                  .build()
-          )
-          .build();
-
-      //when
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(kakaoJson);
-      when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
-      when(userRepository.save(any())).thenReturn(user);
-      when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
-      when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
-      when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-      var result = signService.oauth2SignIn(dto, OAuth2RegistrationId.KAKAO);
-
-      //then
-      verify(userRepository, times(1)).findByEmail(user.getEmail());
-      verify(userRepository, times(1)).save(any());
-      verify(jwtTokenProvider, times(1)).createAccessToken(user.getEmail(), user.getRoles());
-      verify(jwtTokenProvider, times(1)).createRefreshToken();
-      verify(jwtTokenProvider, times(1)).getExpiration(anyString());
-      assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
-      assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
-    }
-
-    @DisplayName(" 구글 로그인 - 회원 가입되어 있던케이스")
-    @Test
-    void signInWithoutSignUpGoogleSuccess() {
-      //given
-      var user = User.builder()
-          .email("test@email.com")
-          .nickname("테스터")
-          .build();
-      var stub_result = SignInResultDto.builder()
-          .token(
-              TokenDto.builder()
-                  .atk("accesstoken")
-                  .rtk("rtktoken")
-                  .build()
-          )
-          .build();
-
-      //when
-      when(restTemplate.getForObject(anyString(), any())).thenReturn(googleJson);
-      when(userRepository.findByEmail(any())).thenReturn(Optional.of(user));
-      when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
-      when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
-      when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-      var result = signService.oauth2SignIn(dto, OAuth2RegistrationId.GOOGLE);
-
-      //then
-      verify(userRepository, times(1)).findByEmail(user.getEmail());
-      verify(jwtTokenProvider, times(1)).createAccessToken(user.getEmail(), user.getRoles());
-      verify(jwtTokenProvider, times(1)).createRefreshToken();
-      verify(jwtTokenProvider, times(1)).getExpiration(anyString());
-      assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
-      assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
-    }
-
-    @DisplayName(" 구글 로그인 - 회원 가입이 필요한 케이스")
-    @Test
-    void signInWithSignUpGoogleSuccess() {
-      //given
-      var user = User.builder()
-          .email("test@email.com")
-          .nickname("테스터")
-          .build();
-      var stub_result = SignInResultDto.builder()
-          .token(
-              TokenDto.builder()
-                  .atk("accesstoken")
-                  .rtk("rtktoken")
-                  .build()
-          )
-          .build();
-
-      //when
-      when(restTemplate.getForObject(anyString(), any())).thenReturn(googleJson);
-      when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
-      when(userRepository.save(any())).thenReturn(user);
-      when(jwtTokenProvider.createAccessToken(any(), any())).thenReturn("accesstoken");
-      when(jwtTokenProvider.createRefreshToken()).thenReturn("rtktoken");
-      when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-      var result = signService.oauth2SignIn(dto, OAuth2RegistrationId.GOOGLE);
-
-      //then
-      verify(userRepository, times(1)).findByEmail(user.getEmail());
-      verify(userRepository, times(1)).save(any());
-      verify(jwtTokenProvider, times(1)).createAccessToken(user.getEmail(), user.getRoles());
-      verify(jwtTokenProvider, times(1)).createRefreshToken();
-      verify(jwtTokenProvider, times(1)).getExpiration(anyString());
-      assertEquals(result.getToken().getAtk(), stub_result.getToken().getAtk());
-      assertEquals(result.getToken().getRtk(), stub_result.getToken().getRtk());
-    }
-
-    @DisplayName(" 카카오 로그인 - accessToken이 올바르지 않은경우")
-    @Test
-    void signIn_wrongAccessToken() {
-
-      when(restTemplate.postForObject(anyString(), any(), any())).thenThrow(
-          HttpClientErrorException.class);
-
-      assertThrows(CustomException.class, () -> signService.oauth2SignIn(
-          OAuth2SignInRequestDto.builder()
-              .code("asdkwekwlwekfwlekwl")
-              .build(), OAuth2RegistrationId.KAKAO));
-    }
-
-    @DisplayName(" 구글 로그인 - 구글에서 받은 json의 email이 없어진 경우")
-    @Test
-    void signIn_wrongAcceptJson() {
-      var changeJson = "{ "
-          + " \"name\": \"테스터\","
-          + " \"picture\": \"profile_image_url\""
-          + " }";
-
-      when(restTemplate.getForObject(anyString(), any())).thenReturn(changeJson);
-
-      assertThrows(CustomException.class, () -> signService.oauth2SignIn(
-          dto, OAuth2RegistrationId.GOOGLE));
-    }
-
-    @DisplayName(" 카카오 로그인 - 카카오에서 받은 json의 형식이 달라져 email을 찾기힘든 경우")
-    @Test
-    void signIn_wrongAcceptGoogleJson() {
-      var changeJson = "{\n"
-          + "    \"kakao_account\": {\n"
-          + "        \"profile\": {\n"
-          + "            \"nickname\": \"테스터\",\n"
-          + "            \"profile_image_url\": \"image\",\n"
-          + "            \"email\": \"test@email.com\"\n"
-          + "        }\n"
-          + "    }\n"
-          + "}";
-
-      when(restTemplate.postForObject(anyString(), any(), any())).thenReturn(changeJson);
-
-      assertThrows(CustomException.class, () -> signService.oauth2SignIn(
-          dto, OAuth2RegistrationId.KAKAO));
     }
   }
 

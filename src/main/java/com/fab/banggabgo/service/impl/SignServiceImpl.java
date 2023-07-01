@@ -129,14 +129,7 @@ public class SignServiceImpl implements SignService {
       profile = getProfile(dto.getCode(), oAuth2RegistrationId);
     } catch (ParseException | WebClientException e) {
       log.error(e.toString());
-      return OAuth2SignInResultDto.builder()
-          .nickName(e.toString())
-          .email(e.toString())
-          .token(TokenDto.builder()
-              .atk(e.toString())
-              .rtk(e.toString())
-              .build())
-          .build();
+      throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
     }
     if (profile == null || profile.getEmail() == null) {
       throw new CustomException(ErrorCode.FAIL_INFO_LOADING);
@@ -145,7 +138,7 @@ public class SignServiceImpl implements SignService {
     User user = userRepository.findByEmail(profile.getEmail())
         .orElseGet(() -> userRepository.save(User.builder()
             .email(profile.getEmail())
-            .nickname(profile.getNickName())
+            .nickname(profile.getNickName() == null ? profile.getEmail() : profile.getNickName())
             .image(profile.getImageUrl())
             .roles(List.of(UserRole.USER_ROLE))
             .build()));

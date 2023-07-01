@@ -1,4 +1,10 @@
 spring:
   OAuth2:
-    client_id: ${OAUTH2_CLIENT_ID}
-    redirect_uri: ${OAUTH2_REDIRECT_URI}
+    Google:
+      user_info_uri: https://www.googleapis.com/oauth2/v2/userinfo
+    Kakao:
+      client_id: ${OAUTH2_CLIENT_ID}
+      redirect_uri: ${OAUTH2_REDIRECT_URI}
+      token_uri: https://kauth.kakao.com/oauth/token
+      user_info_uri: https://kapi.kakao.com/v2/user/me
+      property_keys: "[\"kakao_account.email\",\"kakao_account.profile\"]"

@@ -1,12 +1,12 @@
 
-방갑고 : Room mate matching service
+👨‍🚀 방갑고 : Room mate matching service
 ===
 >
 > 사회 초년생들이 사회에 첫 발을 내딛을 때, 주거비용은 상당한 부담으로 다가옵니다.
 특히 월세나 전세금이 계속해서 높아지는 현실에서 혼자 주거비용을 감당하는 것은 새로운 지역으로 이동하거나 독립을 할 때 생각보다 많은 경제적 압박을 받게 됩니다.
 > 저희팀에서는 이러한 문제를 해결하고자 하였습니다.
 
-## 해결하고자하는 목표/ 서비스 ✨
+## ✨ 해결하고자하는 목표/ 서비스 
 사회 초년생들이 사회에 첫 발을 내딛을 때, 주거비용은 상당한 부담으로 다가옵니다.
 특히 월세나 전세금이 계속해서 높아지는 현실에서 혼자 주거비용을 감당하는 것은 새로운 지역으로 이동하거나 독립을 할 때 생각보다 많은 경제적 압박을 받게 됩니다.
 
@@ -23,7 +23,7 @@
     - 사용자는 원하는 지역, 기간, 보증금, 성별 정보를 기반으로 게시글을 검색하고 필터링할 수 있습니다. 또한, 모집 중인 글만 따로 보거나 마감된 글까지 전체로 보는 것이 가능합니다.
     이를 통해 사용자들은 자신의 선호사항에 맞는 룸메이트 구하는 게시글을 빠르게 찾을 수 있습니다.
 
-## Skills & Tools :
+## 🛠️ Skills & Tools :
 
 - SpringBoot
 - Java 11
@@ -41,7 +41,7 @@
 - Nginx
 - GithubAction
 
-## Library:
+## 📚 Library:
 
 - Swagger (Api doc)
 - jwt(Json web token)
@@ -59,20 +59,20 @@
 - Query-dsl
 ---
 
-## ERD
+## 🗺️ ERD
 
 ---
 
 ![ERD-IMG](docs/img/ERD.png)
 
-## CI-CD
+## 🐋 CI-CD
 
 ---
 ![CI-CD](docs/img/ci-cd.png)
-## Infra
+## 📜 Project Architecture
 
 ---
-![INFRA](docs/img/Infra.png)
+![Project_Architecture](docs/img/Project_Architecture.png)
 ## 👨‍👨‍👧‍👦Contributor
 
 <br>

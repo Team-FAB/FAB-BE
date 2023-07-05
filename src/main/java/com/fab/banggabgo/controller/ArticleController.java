@@ -2,6 +2,7 @@ package com.fab.banggabgo.controller;
 
 import com.fab.banggabgo.common.ApiResponse;
 import com.fab.banggabgo.common.ResponseCode;
+import com.fab.banggabgo.dto.apply.ApplyIsApplyResultDto;
 import com.fab.banggabgo.dto.apply.ApplyUserResultDto;
 import com.fab.banggabgo.dto.article.ArticleEditForm;
 import com.fab.banggabgo.dto.article.ArticleInfoDto;
@@ -163,7 +164,7 @@ public class ArticleController {
       notes = "id 에 해당하는 게시물에 룸메이트를 지원 했는지 확인합니다."
   )
   @GetMapping("/apply/{articleId}")
-  public ResponseEntity<?> getApply(@AuthenticationPrincipal User user,
+  public ResponseEntity<ApiResponse<ApplyIsApplyResultDto>> getApply(@AuthenticationPrincipal User user,
       @PathVariable Integer articleId) {
     var result = articleService.isApply(user, articleId);
     return ApiResponse.builder().code(ResponseCode.RESPONSE_CREATED).data(result).toEntity();
